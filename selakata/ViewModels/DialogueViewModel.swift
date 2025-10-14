@@ -16,7 +16,6 @@ class DialogueViewModel: ObservableObject {
     }
 
     func stop() {
-        // sementara: cuma set status (belum handle stop synth)
         isPlaying = false
     }
 }

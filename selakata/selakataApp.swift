@@ -11,7 +11,7 @@ import SwiftUI
 struct selakataApp: App {
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            DialogueView()
         }
     }
 }

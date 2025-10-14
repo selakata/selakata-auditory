@@ -1,4 +1,5 @@
 import Foundation
+import AVFoundation
 
 func parseDialogue(from text: String) -> [DialogueLine] {
     let lines = text.split(separator: "\n")
@@ -16,12 +17,12 @@ func parseDialogue(from text: String) -> [DialogueLine] {
         let delay: TimeInterval
         
         if speaker == "A" {
-            pitch = 1.0
-            rate = 0.45
+            pitch = 0.8
+            rate = 0.2
             delay = 0.2
         } else {
-            pitch = 1.3
-            rate = 0.4
+            pitch = 1.5
+            rate = 0.6
             delay = 0.3
         }
         

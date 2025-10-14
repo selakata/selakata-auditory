@@ -21,12 +21,12 @@ struct DialogueView: View {
                 Text(viewModel.currentSpeaker)
                     .font(.title2)
                     .foregroundColor(.blue)
-                Text("“\(viewModel.currentLine)”")
-                    .font(.body)
-                    .italic()
+//                Text("“\(viewModel.currentLine)”")
+//                    .font(.body)
+//                    .italic()
             }
             .padding()
-            .frame(maxWidth: .infinity)
+            .frame(maxWidth: .infinity) 
             .background(Color.gray.opacity(0.1))
             .cornerRadius(12)
 
@@ -43,7 +43,6 @@ struct DialogueView: View {
         }
         .padding()
         .onAppear {
-            // Hubungkan callback dari DialogueReader ke ViewModel
             viewModel.reader.onLineStart = { line in
                 Task { @MainActor in
                     viewModel.currentSpeaker = line.speaker
