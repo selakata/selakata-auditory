@@ -19,8 +19,9 @@ struct DialogueView: View {
                         Button(action: {
                             viewModel.playDialogue(track.dialogues, from: track.title)
                         }) {
-                            Label("Play", systemImage: "play.circle.fill")
-                                .labelStyle(.iconOnly)
+                            Image(systemName: viewModel.currentTrackTitle == track.title && viewModel.isPlaying
+                                  ? "pause.circle.fill"
+                                  : "play.circle.fill")
                                 .font(.title2)
                         }
                         .buttonStyle(.borderless)

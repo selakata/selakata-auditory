@@ -59,6 +59,47 @@ class DummyData {
                         delay: 0.3),
                 ]
             ),
+            
+            Track(
+                title: "Pagi di Kafe Langganan",
+                dialogues: [
+                    DialogueLine(
+                        speaker: "A", text: "Pagi ini aku mulai hari",
+                        voiceLanguage: "id-ID", pitch: 1.0, rate: 0.4,
+                        delay: 0.05),
+                    DialogueLine(
+                        speaker: "A",
+                        text: "dengan sarapan roti dan kopi di kafe langganan.",
+                        voiceLanguage: "id-ID", pitch: 0.95, rate: 0.35,
+                        delay: 0.25),
+
+                    DialogueLine(
+                        speaker: "A", text: "Biasanya aku pesan americano,",
+                        voiceLanguage: "id-ID", pitch: 1.1, rate: 0.4,
+                        delay: 0.15),
+                    DialogueLine(
+                        speaker: "A",
+                        text: "tapi hari ini aku coba cappuccino.",
+                        voiceLanguage: "id-ID", pitch: 1.0, rate: 0.38,
+                        delay: 0.25),
+
+                    DialogueLine(
+                        speaker: "A", text: "Oh iya,", voiceLanguage: "id-ID",
+                        pitch: 1.3, rate: 0.5, delay: 0.05),
+                    DialogueLine(
+                        speaker: "A",
+                        text:
+                            "barista-nya tadi bilang minggu depan mereka akan buka menu baru,",
+                        voiceLanguage: "id-ID", pitch: 1.1, rate: 0.42,
+                        delay: 0.1),
+                    DialogueLine(
+                        speaker: "A",
+                        text: "kayak croissant isi keju dan coklat.",
+                        voiceLanguage: "id-ID", pitch: 0.9, rate: 0.35,
+                        delay: 0.3),
+                ]
+            ),
+
         ]
     }
 }

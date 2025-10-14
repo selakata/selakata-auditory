@@ -34,4 +34,17 @@ class DialogueReader: NSObject, AVSpeechSynthesizerDelegate {
         currentIndex += 1
         speakNextLine()
     }
+    
+    func pause() {
+        synthesizer.pauseSpeaking(at: .immediate)
+    }
+
+    func resume() {
+        synthesizer.continueSpeaking()
+    }
+
+    func stop() {
+        synthesizer.stopSpeaking(at: .immediate)
+    }
+
 }
