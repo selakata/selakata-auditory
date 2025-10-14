@@ -2,44 +2,46 @@ import SwiftUI
 
 struct DialogueView: View {
     @StateObject private var viewModel = DialogueViewModel()
-
-    private let sampleText = """
-    A: Hey, kamu udah makan?
-    B: Belum, lagi nunggu delivery.
-    A: Wah, jangan kelamaan ya!
-    """
+    private let tracks = DummyData.shared.tracks
 
     var body: some View {
         VStack(spacing: 20) {
-            Text("Percakapan TTS")
+            Text("Daftar Percakapan")
                 .font(.title)
                 .bold()
 
-            VStack {
-                Text("Sedang dibacakan oleh:")
-                    .font(.headline)
-                Text(viewModel.currentSpeaker)
-                    .font(.title2)
-                    .foregroundColor(.blue)
-//                Text("“\(viewModel.currentLine)”")
-//                    .font(.body)
-//                    .italic()
-            }
-            .padding()
-            .frame(maxWidth: .infinity) 
-            .background(Color.gray.opacity(0.1))
-            .cornerRadius(12)
+            List(tracks, id: \.title) { track in
+                VStack(alignment: .leading, spacing: 10) {
+                    HStack {
+                        Text(track.title)
+                            .font(.headline)
+                        Spacer()
+                        Button(action: {
+                            viewModel.playDialogue(track.dialogues, from: track.title)
+                        }) {
+                            Label("Play", systemImage: "play.circle.fill")
+                                .labelStyle(.iconOnly)
+                                .font(.title2)
+                        }
+                        .buttonStyle(.borderless)
+                    }
 
-            Button(action: {
-                viewModel.playDialogue(from: sampleText)
-            }) {
-                Label("Play Dialogue", systemImage: "play.circle.fill")
-                    .font(.title2)
+                    if viewModel.currentTrackTitle == track.title {
+                        VStack(alignment: .leading, spacing: 5) {
+                            Text("Sedang dibacakan oleh:")
+                                .font(.subheadline)
+                            Text(viewModel.currentSpeaker)
+                                .font(.headline)
+                                .foregroundColor(.blue)
+                            Text(viewModel.currentLine)
+                                .font(.body)
+                                .foregroundColor(.secondary)
+                        }
+                    }
+                }
+                .padding(.vertical, 6)
             }
-            .buttonStyle(.borderedProminent)
-            .padding()
-
-            Spacer()
+            .listStyle(.insetGrouped)
         }
         .padding()
         .onAppear {
