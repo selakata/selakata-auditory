@@ -11,16 +11,16 @@ struct QuizView: View {
     @Environment(\.dismiss) private var dismiss
 
     @State private var progress: Double = 0.35
-    @State private var selectedIndex: Int? = 0
+    @State private var selectedAnswer: Answer? = nil
+    @State private var hasAnswered: Bool = false
 
-    private let answers = ["Sakit", "Melayat", "Ujian"]
     private let question = Question(
         text: "Kenapa Nathan tidak main basket?",
         answers: [
-            Answer(title: "Sakit"),
-            Answer(title: "Melayat"),
-            Answer(title: "Cuti"),
-            Answer(title: "Urusan keluarga"),
+            Answer(title: "Sakit", isCorrect: true),
+            Answer(title: "Melayat", isCorrect: false),
+            Answer(title: "Cuti", isCorrect: false),
+            Answer(title: "Urusan keluarga", isCorrect: false),
         ]
     )
 
@@ -61,9 +61,15 @@ struct QuizView: View {
             // Answers
             AnswerView(
                 question: question,
-                selectedAnswer: nil,
+                selectedAnswer: selectedAnswer,
+                hasAnswered: hasAnswered,
                 layout: .grid(columns: 2),
-                onSelect: { _ in }
+                onSelect: { answer in
+                    withAnimation(.easeInOut(duration: 0.3)) {
+                        selectedAnswer = answer
+                        hasAnswered = true
+                    }
+                }
             )
             .padding(.horizontal)
 

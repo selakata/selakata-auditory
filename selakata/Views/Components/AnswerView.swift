@@ -8,6 +8,7 @@ enum AnswerLayout {
 struct AnswerView: View {
     let question: Question
     let selectedAnswer: Answer?
+    let hasAnswered: Bool
     let layout: AnswerLayout
     let onSelect: (Answer) -> Void
     
@@ -30,6 +31,7 @@ struct AnswerView: View {
                         AnswerRow(
                             answer: answer,
                             isSelected: selectedAnswer?.id == answer.id,
+                            hasAnswered: hasAnswered,
                             action: { onSelect(answer) }
                         )
                     }
@@ -42,6 +44,7 @@ struct AnswerView: View {
                         AnswerRow(
                             answer: answer,
                             isSelected: selectedAnswer?.id == answer.id,
+                            hasAnswered: hasAnswered,
                             action: { onSelect(answer) }
                         )
                     }
@@ -68,6 +71,7 @@ struct AnswerView: View {
         AnswerView(
             question: question,
             selectedAnswer: nil,
+            hasAnswered: false,
             layout: .list,
             onSelect: { _ in }
         )
@@ -76,6 +80,7 @@ struct AnswerView: View {
         AnswerView(
             question: question,
             selectedAnswer: nil,
+            hasAnswered: false,
             layout: .grid(columns: 2),
             onSelect: { _ in }
         )
