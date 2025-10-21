@@ -3,6 +3,7 @@ import AVFoundation
 
 struct SimpleAudioPlayer: View {
     let title: String
+    let fileName: String
     @StateObject private var audioPlayer = AudioPlayerService()
     @State private var hasAudio = false
     
@@ -86,34 +87,42 @@ struct SimpleAudioPlayer: View {
     }
     
     private func loadAudio() {
-        // Debug: print all available audio files
+        // Debug: print available audio files in bundle
         audioPlayer.debugAudioFiles()
         
-        // Try to load audio from various locations
-        let audioOptions = [
-            ("identification1", "Resources/Audio"),
-            ("identification", "Resources/Audio"),
-            ("identification1", nil),
-            ("identification", nil)
-        ]
-        
-        for (fileName, subdirectory) in audioOptions {
-            if Bundle.main.url(forResource: fileName, withExtension: "mp3", subdirectory: subdirectory) != nil {
-                if let subdirectory = subdirectory {
-                    audioPlayer.loadAudioFromPath(fileName: fileName, subdirectory: subdirectory)
-                } else {
-                    audioPlayer.loadAudio(fileName: fileName)
-                }
-                hasAudio = true
-                print("✅ Successfully loaded: \(fileName).mp3")
-                return
+        do {
+            // Coba cari file audio di bundle
+            guard let audioURL = Bundle.main.url(
+                forResource: fileName,
+                withExtension: "mp3",
+            ) else {
+                throw AudioError.fileNotFound(fileName: fileName)
             }
+            
+            // Coba load audio
+            audioPlayer.loadAudioFromPath(fileName: fileName)
+            hasAudio = true
+            print("✅ Successfully loaded: \(fileName).mp3 from \(audioURL.lastPathComponent)")
+            
+        } catch {
+            hasAudio = false
+            handleAudioError(error)
         }
-        
-        hasAudio = false
-        print("❌ No audio file found")
     }
     
+    private func handleAudioError(_ error: Error) {
+        switch error {
+        case let error as AudioError:
+            print("❌ Audio Error:", error.localizedDescription)
+            
+        default:
+            print("❌ Unexpected Error:", error.localizedDescription)
+        }
+        
+        // Optional: tampilkan alert atau fallback
+        // showAlert(title: "Audio Error", message: error.localizedDescription)
+    }
+
     private func formatTime(_ time: TimeInterval) -> String {
         let minutes = Int(time) / 60
         let seconds = Int(time) % 60
@@ -122,6 +131,6 @@ struct SimpleAudioPlayer: View {
 }
 
 #Preview {
-    SimpleAudioPlayer(title: "Audio Soal")
+    SimpleAudioPlayer(title: "Audio Soal", fileName: "identification1")
         .padding()
 }

@@ -14,6 +14,15 @@ struct QuizView: View {
     @State private var selectedIndex: Int? = 0
 
     private let answers = ["Sakit", "Melayat", "Ujian"]
+    private let question = Question(
+        text: "Kenapa Nathan tidak main basket?",
+        answers: [
+            Answer(title: "Sakit"),
+            Answer(title: "Melayat"),
+            Answer(title: "Cuti"),
+            Answer(title: "Urusan keluarga"),
+        ]
+    )
 
     var body: some View {
         VStack(spacing: 16) {
@@ -41,36 +50,21 @@ struct QuizView: View {
             // Progress bar
             ProgressView(value: progress)
                 .tint(Color(.systemGray3))
-                .background(
-                    Capsule().fill(Color(.systemGray5))
-                        .frame(height: 6)
-                )
                 .progressViewStyle(.linear)
-                .frame(height: 6)
-                .padding(.horizontal)
+                .frame(height: 16)
+                .padding(.horizontal, 32)
 
             // Simple Audio Player
-            SimpleAudioPlayer(title: "Audio Soal")
-                .padding(.horizontal)
-                .padding(.top, 4)
-
-            // Question text
-            Text("Kenapa Nathan tidak bisa ikut\nmain basket?")
-                .font(.title3.weight(.semibold))
-                .multilineTextAlignment(.center)
-                .foregroundStyle(.primary)
-                .padding(.horizontal, 24)
-                .padding(.top, 4)
+            SimpleAudioPlayer(title: "Audio Soal", fileName: "identification1")
+                .padding(.horizontal, 32)
 
             // Answers
-            VStack(spacing: 14) {
-                ForEach(answers.indices, id: \.self) { index in
-                    AnswerRow(title: answers[index], isSelected: selectedIndex == index) {
-                        withAnimation(.snappy) { selectedIndex = index }
-                    }
-                }
-            }
-            .padding(.top, 4)
+            AnswerView(
+                question: question,
+                selectedAnswer: nil,
+                layout: .grid(columns: 2),
+                onSelect: { _ in }
+            )
             .padding(.horizontal)
 
             Spacer(minLength: 0)
