@@ -10,9 +10,6 @@ struct SimpleAudioPlayer: View {
     var body: some View {
         VStack(spacing: 16) {
             // Audio Icon
-            Image(systemName: hasAudio ? "speaker.wave.2.fill" : "speaker.slash.fill")
-                .font(.system(size: 40))
-                .foregroundColor(hasAudio ? .blue : .gray)
             
             Text(title)
                 .font(.headline)
@@ -131,6 +128,6 @@ struct SimpleAudioPlayer: View {
 }
 
 #Preview {
-    SimpleAudioPlayer(title: "Audio Soal", fileName: "identification1")
+    SimpleAudioPlayer(title: "Dengarkan Audio Ini", fileName: "identification1")
         .padding()
 }

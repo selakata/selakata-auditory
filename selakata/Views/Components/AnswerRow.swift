@@ -10,6 +10,14 @@ struct AnswerRow: View {
     let answer: Answer
     let isSelected: Bool
     let action: () -> Void
+    
+    var borderColor: Color {
+        if isSelected {
+            return answer.isCorrect ? .blue : .red
+        } else {
+            return Color(.separator)
+        }
+    }
 
     var body: some View {
         Button(action: action) {
@@ -20,8 +28,15 @@ struct AnswerRow: View {
                 .frame(maxWidth: .infinity)
                 .overlay(
                     RoundedRectangle(cornerRadius: 10)
-                        .stroke(isSelected ? Color.blue : Color(.separator), lineWidth: 1.5)
+                        .stroke(
+                            borderColor,
+                            lineWidth: 1.5
+                        )
                 )
         }
     }
+}
+
+#Preview {
+    AnswerRow(answer: Answer(title: "User"), isSelected: false, action: {})
 }

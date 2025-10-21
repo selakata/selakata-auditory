@@ -10,6 +10,7 @@ import Foundation
 struct Answer: Identifiable {
     let id = UUID()
     let title: String
+    let isCorrect: Bool = false
 }
 
 struct Question {
