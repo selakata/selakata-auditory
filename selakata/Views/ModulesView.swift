@@ -24,14 +24,14 @@ struct ModulesView: View {
                     ForEach(allModules) { module in
                         let isUnlocked = viewModel.isModuleUnlocked(module, in: allModules)
                         
-                        NavigationLink(destination: Text("Module Detail Page")) {
-                            ModuleCard(module: module, showProgressBar: false)
-                                .overlay(
-                                    isUnlocked ? nil : LockOverlay()
-                                )
-                        }
-                        .buttonStyle(.plain)
-                        .disabled(!isUnlocked)
+                        NavigationLink(destination: ModuleDetailView(module: module)) {
+                                ModuleCard(module: module, showProgressBar: false)
+                                    .overlay(
+                                        isUnlocked ? nil : LockOverlay()
+                                    )
+                            }
+                            .buttonStyle(.plain)
+                            .disabled(!isUnlocked)
                     }
                     .padding(.horizontal, 24)
                 }
