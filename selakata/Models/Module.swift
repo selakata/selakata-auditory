@@ -16,6 +16,8 @@ final class Module {
     var progress: Double
     var image: String
     var orderIndex: Int
+    @Relationship(deleteRule: .cascade, inverse: \Level.module)
+        var levels: [Level] = []
 
     init(id: String, name: String, details: String, progress: Double, image: String, orderIndex: Int) {
         self.id = id
