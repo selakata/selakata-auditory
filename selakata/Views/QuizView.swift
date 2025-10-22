@@ -9,20 +9,7 @@ import SwiftUI
 
 struct QuizView: View {
     @Environment(\.dismiss) private var dismiss
-
-    @State private var progress: Double = 0.35
-    @State private var selectedAnswer: Answer? = nil
-    @State private var hasAnswered: Bool = false
-
-    private let question = Question(
-        text: "Kenapa Nathan tidak main basket?",
-        answers: [
-            Answer(title: "Sakit", isCorrect: true),
-            Answer(title: "Melayat", isCorrect: false),
-            Answer(title: "Cuti", isCorrect: false),
-            Answer(title: "Urusan keluarga", isCorrect: false),
-        ]
-    )
+    @StateObject private var viewModel = QuizViewModel()
 
     var body: some View {
         VStack(spacing: 16) {
@@ -47,27 +34,39 @@ struct QuizView: View {
             .padding(.horizontal)
             .padding(.top, 8)
 
-            // Progress bar
-            ProgressView(value: progress)
-                .tint(Color(.systemGray3))
-                .progressViewStyle(.linear)
-                .frame(height: 16)
+            // Progress bar with question indicator
+            VStack(spacing: 8) {
+                HStack {
+                    Text(viewModel.questionNumber)
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                    Spacer()
+                    Text(viewModel.scoreText)
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                }
                 .padding(.horizontal, 32)
+                
+                ProgressView(value: viewModel.progress)
+                    .tint(Color(.darkGray))
+                    .progressViewStyle(.linear)
+                    .frame(height: 6)
+                    .padding(.horizontal, 32)
+            }
 
             // Simple Audio Player
-            SimpleAudioPlayer(title: "Audio Soal", fileName: "identification1")
+            SimpleAudioPlayer(title: viewModel.audioTitle, fileName: viewModel.audioFileName)
                 .padding(.horizontal, 32)
 
             // Answers
             AnswerView(
-                question: question,
-                selectedAnswer: selectedAnswer,
-                hasAnswered: hasAnswered,
+                question: viewModel.currentQuestion,
+                selectedAnswer: viewModel.selectedAnswer,
+                hasAnswered: viewModel.hasAnswered,
                 layout: .grid(columns: 2),
                 onSelect: { answer in
                     withAnimation(.easeInOut(duration: 0.3)) {
-                        selectedAnswer = answer
-                        hasAnswered = true
+                        viewModel.selectAnswer(answer)
                     }
                 }
             )
@@ -75,22 +74,46 @@ struct QuizView: View {
 
             Spacer(minLength: 0)
 
-            // Next button
-            Button(action: {}) {
-                Text("Next")
-                    .font(.headline)
-                    .foregroundStyle(.white)
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, 16)
+            // Next button - only show when answered
+            if viewModel.hasAnswered {
+                Button(action: {
+                    withAnimation(.easeInOut(duration: 0.5)) {
+                        viewModel.nextQuestion()
+                    }
+                }) {
+                    Text(viewModel.nextButtonText)
+                        .font(.headline)
+                        .foregroundStyle(.white)
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 16)
+                }
+                .background(
+                    Capsule().fill(Color(.darkGray))
+                )
+                .padding(.horizontal, 24)
+                .padding(.bottom)
+                .transition(.move(edge: .bottom).combined(with: .opacity))
             }
-            .background(
-                Capsule().fill(Color(.systemIndigo))
-            )
-            .padding(.horizontal, 24)
-            .padding(.bottom)
         }
         .navigationBarBackButtonHidden(true)
         .background(Color(.systemBackground))
+        .sheet(isPresented: $viewModel.showResults) {
+            QuizResultsView(
+                score: viewModel.score,
+                totalQuestions: viewModel.totalQuestions,
+                onRestart: {
+                    viewModel.dismissResults()
+                    viewModel.restartQuiz()
+                },
+                onDismiss: {
+                    viewModel.dismissResults()
+                    dismiss()
+                }
+            )
+            .presentationDetents([.height(280), .medium])
+            .presentationDragIndicator(.visible)
+            .presentationCornerRadius(20)
+        }
     }
 }
 
