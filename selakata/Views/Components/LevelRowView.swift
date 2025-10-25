@@ -4,10 +4,10 @@ struct LevelRowView: View {
     let level: LevelData
     let module: Module
     let isUnlocked: Bool
-    
-    var body: some View {
+        var body: some View {
+        Text("aisDebug" + level.moduleId)
         NavigationLink(
-            destination: QuizView(questionCategory: QuestionCategory(rawValue: QuestionCategory.RawValue(level.id)) ?? QuestionCategory.identification, level: level.id)
+            destination: QuizView(questionCategory: QuestionCategory(rawValue: QuestionCategory.RawValue(level.moduleId)) ?? QuestionCategory.identification, level: level.id)
         ) {
             HStack(spacing: 16) {
                 // Level Number Circle
