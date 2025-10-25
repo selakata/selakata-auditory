@@ -8,8 +8,27 @@
 import SwiftUI
 
 struct QuizView: View {
+    let questionCategory: QuestionCategory
+    let level: Int
     @Environment(\.dismiss) private var dismiss
-    @StateObject private var viewModel = QuizViewModel()
+
+    @StateObject private var viewModel: QuizViewModel
+
+    var answerLayout: AnswerLayout {
+        if questionCategory == .comprehension {
+            .list
+        } else {
+            .grid(columns: 2)
+        }
+    }
+
+    init(questionCategory: QuestionCategory, level: Int) {
+        self.questionCategory = questionCategory
+        self.level = level
+        _viewModel = StateObject(
+            wrappedValue: QuizViewModel(category: questionCategory, level: level)
+        )
+    }
 
     var body: some View {
         VStack(spacing: 16) {
@@ -46,7 +65,7 @@ struct QuizView: View {
                         .foregroundColor(.secondary)
                 }
                 .padding(.horizontal, 32)
-                
+
                 ProgressView(value: viewModel.progress)
                     .tint(Color(.darkGray))
                     .progressViewStyle(.linear)
@@ -55,15 +74,18 @@ struct QuizView: View {
             }
 
             // Simple Audio Player
-            SimpleAudioPlayer(title: viewModel.audioTitle, fileName: viewModel.audioFileName)
-                .padding(.horizontal, 32)
+            SimpleAudioPlayer(
+                title: viewModel.audioTitle,
+                fileName: viewModel.audioFileName
+            )
+            .padding(.horizontal, 32)
 
             // Answers
             AnswerView(
                 question: viewModel.currentQuestion,
                 selectedAnswer: viewModel.selectedAnswer,
                 hasAnswered: viewModel.hasAnswered,
-                layout: .grid(columns: 2),
+                layout: answerLayout,
                 onSelect: { answer in
                     withAnimation(.easeInOut(duration: 0.3)) {
                         viewModel.selectAnswer(answer)
@@ -118,5 +140,5 @@ struct QuizView: View {
 }
 
 #Preview {
-    NavigationStack { QuizView() }
+    NavigationStack { QuizView(questionCategory: .identification, level: 1) }
 }

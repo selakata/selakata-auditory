@@ -24,16 +24,17 @@ struct QuizResultsView: View {
     }
 
     private var resultColor: Color {
-        switch percentage {
-        case 90...100:
-            return .green
-        case 70..<90:
-            return .blue
-        case 50..<70:
-            return .orange
-        default:
-            return .red
-        }
+//        switch percentage {
+//        case 90...100:
+//            return .green
+//        case 70..<90:
+//            return .blue
+//        case 50..<70:
+//            return .orange
+//        default:
+//            return .red
+//        }
+        return .gray
     }
 
     var body: some View {
@@ -50,11 +51,11 @@ struct QuizResultsView: View {
                         Text(resultMessage)
                             .font(.title2)
                             .fontWeight(.bold)
-                            .foregroundColor(resultColor)
+//                            .foregroundColor(resultColor)
                         
                         Text("Score: \(score)/\(totalQuestions) (\(Int(percentage))%)")
                             .font(.subheadline)
-                            .foregroundColor(.secondary)
+//                            .foregroundColor(.secondary)
                     }
                     
                     Spacer()
@@ -94,7 +95,8 @@ struct QuizResultsView: View {
                     .padding(.vertical, 14)
                 }
                 .background(
-                    Capsule().fill(Color(.systemIndigo))
+//                    Capsule().fill(Color(.systemIndigo))
+                    Capsule().fill(Color(.darkGray))
                 )
                 
                 Button(action: onDismiss) {
@@ -103,12 +105,14 @@ struct QuizResultsView: View {
                         Text("Back to Menu")
                     }
                     .font(.headline)
-                    .foregroundStyle(Color(.systemIndigo))
+                    .foregroundStyle(Color(.darkGray))
+//                    .foregroundStyle(Color(.systemIndigo))
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 14)
                 }
                 .background(
-                    Capsule().stroke(Color(.systemIndigo), lineWidth: 2)
+//                    Capsule().stroke(Color(.systemIndigo), lineWidth: 2)
+                    Capsule().stroke(Color(.darkGray), lineWidth: 2)
                 )
             }
         }
