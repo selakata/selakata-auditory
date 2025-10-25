@@ -11,8 +11,6 @@ import SwiftUI
 struct ModulesView: View {
     @StateObject private var viewModel = ModulesViewModel()
 
-    @Query(sort: \Module.orderIndex) private var allModules: [Module]
-
     var body: some View {
         NavigationStack {
             ScrollView {
@@ -21,24 +19,13 @@ struct ModulesView: View {
                         .font(.largeTitle.weight(.bold))
                         .padding([.horizontal, .top])
 
-                    ForEach(allModules) { module in
-                        let isUnlocked = true
-                        
-                        // Coba konversi nama module ke QuestionCategory
-                        if let category = QuestionCategory(rawValue: module.id) {
-//                            NavigationLink(
-//                                destination: QuizView(questionCategory: category)
-//                            ) {
-//                                ModuleCard(module: module, showProgressBar: false)
-//                                    .overlay(isUnlocked ? nil : LockOverlay())
-//                            }
-//                            .buttonStyle(.plain)
-//                            .disabled(!isUnlocked)
-                        } else {
-                            // Kalau name tidak cocok dengan enum, bisa tampilkan placeholder / error handler
-                            Text("Invalid category for module: \(module.name)")
-                                .foregroundColor(.red)
+                    ForEach(viewModel.modules) { module in
+                        NavigationLink(
+                            destination: ModuleDetailView(module: module)
+                        ) {
+                            ModuleCard(module: module, showProgressBar: true)
                         }
+                        .buttonStyle(.plain)
                     }
                     .padding(.horizontal, 24)
                 }

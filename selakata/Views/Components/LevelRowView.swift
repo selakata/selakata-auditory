@@ -1,86 +1,182 @@
-//
-//  LevelRowView.swift
-//  selakata
-//
-//  Created by Anisa Amalia on 21/10/25.
-//
-
-
 import SwiftUI
 
 struct LevelRowView: View {
-    @Bindable var level: Level
+    let level: LevelData
+    let module: Module
     let isUnlocked: Bool
     
-    @ScaledMetric var iconBackgroundSize: CGFloat = 40
-    @ScaledMetric var levelCardPadding: CGFloat = 12
-    @ScaledMetric var levelCardHeight: CGFloat = 75
-
     var body: some View {
-        HStack(spacing: 16) {
-            TimelineIndicator(isCompleted: level.isCompleted)
-//                .opacity(isUnlocked ? 1.0 : 0.4)
-
-            NavigationLink(destination: Text("Question page for \(level.name)")) {
-                HStack(spacing: 12) {
-                    Image(systemName: isUnlocked ? "play.fill" : "lock.fill")
-                        .font(.callout)
-                        .foregroundStyle(.secondary)
-                        .frame(width: iconBackgroundSize, height: iconBackgroundSize)
-                        .background(
-                            Circle()
-                                .fill(Color.gray.opacity(isUnlocked ? 0.2 : 0.1))
-                        )
+        NavigationLink(
+            destination: QuizView(questionCategory: QuestionCategory(rawValue: QuestionCategory.RawValue(level.id)) ?? QuestionCategory.identification, level: level.id)
+        ) {
+            HStack(spacing: 16) {
+                // Level Number Circle
+                ZStack {
+                    Circle()
+                        .fill(isUnlocked ? level.difficultyColor : Color.gray)
+                        .frame(width: 50, height: 50)
                     
-                    Text(level.name)
-                        .fontWeight(.semibold)
-                        .foregroundStyle(isUnlocked ? .primary : .secondary)
-                    
-                    Spacer()
+                    if level.isCompleted {
+                        Image(systemName: "checkmark")
+                            .font(.title2)
+                            .fontWeight(.bold)
+                            .foregroundColor(.white)
+                    } else if !isUnlocked {
+                        Image(systemName: "lock.fill")
+                            .font(.title3)
+                            .foregroundColor(.white)
+                    } else {
+                        Text("\(level.id)")
+                            .font(.title2)
+                            .fontWeight(.bold)
+                            .foregroundColor(.white)
+                    }
                 }
-                .padding(levelCardPadding)
-                .frame(maxWidth: .infinity)
-                .frame(height: levelCardHeight)
-                .background(Color(UIColor.systemGray5))
-                .cornerRadius(12)
+                
+                // Level Info
+                VStack(alignment: .leading, spacing: 4) {
+                    HStack {
+                        Text(level.name)
+                            .font(.headline)
+                            .fontWeight(.semibold)
+                            .foregroundColor(isUnlocked ? .primary : .gray)
+                        
+                        Spacer()
+                        
+                        // Difficulty Badge
+                        Text(level.difficulty.rawValue)
+                            .font(.caption)
+                            .fontWeight(.medium)
+                            .padding(.horizontal, 8)
+                            .padding(.vertical, 4)
+                            .background(level.difficultyColor.opacity(0.2))
+                            .foregroundColor(level.difficultyColor)
+                            .cornerRadius(8)
+                    }
+                    
+                    Text(level.description)
+                        .font(.subheadline)
+                        .foregroundColor(isUnlocked ? .secondary : .gray)
+                        .lineLimit(2)
+                    
+                    HStack {
+                        Text("\(level.questionCount) questions")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                        
+                        Spacer()
+                        
+                        if level.progress > 0 {
+                            Text(level.progressPercentage)
+                                .font(.caption)
+                                .fontWeight(.semibold)
+                                .foregroundColor(level.difficultyColor)
+                        }
+                    }
+                    
+                    // Progress Bar
+                    if level.progress > 0 {
+                        ProgressView(value: level.progress / 100.0)
+                            .progressViewStyle(LinearProgressViewStyle(tint: level.difficultyColor))
+                            .frame(height: 4)
+                    }
+                }
+                
+                // Arrow or Status
+                Group {
+                    if isUnlocked {
+                        Image(systemName: "chevron.right")
+                            .font(.caption)
+                            .foregroundColor(.gray)
+                    } else {
+                        Image(systemName: "lock.fill")
+                            .font(.caption)
+                            .foregroundColor(.gray)
+                    }
+                }
             }
-            .disabled(!isUnlocked)
-            .buttonStyle(.plain)
+            .padding()
+            .background(Color(.systemBackground))
+            .cornerRadius(12)
+            .shadow(color: Color.black.opacity(0.1), radius: 2, x: 0, y: 1)
+            .overlay(
+                RoundedRectangle(cornerRadius: 12)
+                    .stroke(isUnlocked ? Color.clear : Color.gray.opacity(0.3), lineWidth: 1)
+            )
         }
-    }
-}
-
-struct TimelineIndicator: View {
-    let isCompleted: Bool
-    @ScaledMetric var circleSize: CGFloat = 20
-
-    var body: some View {
-        ZStack {
-            if isCompleted {
-                Image(systemName: "checkmark.circle.fill")
-                    .font(.system(size: circleSize))
-                    .foregroundStyle(.gray)
-                    .background(Circle().fill(Color(UIColor.systemBackground)).frame(width: circleSize, height: circleSize))
-            } else {
-                Circle()
-                    .strokeBorder(Color.gray.opacity(0.5), lineWidth: 5)
-                    .background(Circle().fill(Color(UIColor.systemBackground)))
-                    .frame(width: circleSize, height: circleSize)
-            }
-        }
-        .zIndex(1)
+        .buttonStyle(.plain)
+        .disabled(!isUnlocked)
+        .opacity(isUnlocked ? 1.0 : 0.6)
     }
 }
 
 #Preview {
-    let level1 = Level(name: "Level 1", orderIndex: 0, isCompleted: true)
-    let level2 = Level(name: "Level 2", orderIndex: 1, isCompleted: false)
-    let level3 = Level(name: "Level 3", orderIndex: 2, isCompleted: false)
-    
-    VStack(spacing: 16) {
-        LevelRowView(level: level1, isUnlocked: true)
-        LevelRowView(level: level2, isUnlocked: true)
-        LevelRowView(level: level3, isUnlocked: false)
+    VStack(spacing: 12) {
+        LevelRowView(
+            level: LevelData(
+                id: 1,
+                name: "Level 1",
+                description: "Basic identification exercises",
+                difficulty: .easy,
+                progress: 85.0,
+                isUnlocked: true,
+                questionCount: 4,
+                moduleId: "identification"
+            ),
+            module: Module(
+                id: "identification",
+                name: "Identification",
+                details: "Test module",
+                progress: 0.0,
+                image: "ear.fill",
+                orderIndex: 0
+            ),
+            isUnlocked: true
+        )
+        
+        LevelRowView(
+            level: LevelData(
+                id: 2,
+                name: "Level 2",
+                description: "Intermediate identification challenges",
+                difficulty: .medium,
+                progress: 45.0,
+                isUnlocked: true,
+                questionCount: 6,
+                moduleId: "identification"
+            ),
+            module: Module(
+                id: "identification",
+                name: "Identification",
+                details: "Test module",
+                progress: 0.0,
+                image: "ear.fill",
+                orderIndex: 0
+            ),
+            isUnlocked: true
+        )
+        
+        LevelRowView(
+            level: LevelData(
+                id: 3,
+                name: "Level 3",
+                description: "Advanced identification mastery",
+                difficulty: .hard,
+                progress: 0.0,
+                isUnlocked: true,
+                questionCount: 6,
+                moduleId: "identification"
+            ),
+            module: Module(
+                id: "identification",
+                name: "Identification",
+                details: "Test module",
+                progress: 0.0,
+                image: "ear.fill",
+                orderIndex: 0
+            ),
+            isUnlocked: true
+        )
     }
     .padding()
 }

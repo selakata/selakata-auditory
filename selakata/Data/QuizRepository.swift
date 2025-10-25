@@ -13,26 +13,26 @@ class QuizRepository: QuizRepositoryProtocol {
     func getQuestionsByCategory(category: QuestionCategory, level: Int) -> [Question] {
         switch category {
         case .identification:
-            return QuizData.identificationQuestions[level]
+            return QuizData.identificationQuestions[level-1]
         case .discrimination:
-            return QuizData.discriminationQuestions[level]
+            return QuizData.discriminationQuestions[level-1]
         case .comprehension:
-            return QuizData.comprehensionQuestions[level]
+            return QuizData.comprehensionQuestions[level-1]
         case .computationSpeaker:
-            return QuizData.computationSpeakerQuestions[level]
+            return QuizData.computationSpeakerQuestions[level-1]
         }
     }
 
     func getAudioName(category: QuestionCategory, level: Int) -> [String] {
         switch category {
         case .identification:
-            return QuizData.audioIdentification[level]
+            return QuizData.audioIdentification[level-1]
         case .discrimination:
-            return QuizData.audioDiscrimintion[level]
+            return QuizData.audioDiscrimintion[level-1]
         case .comprehension:
-            return QuizData.audioComprehension[level]
+            return QuizData.audioComprehension[level-1]
         case .computationSpeaker:
-            return QuizData.audioComputingSpeaker[level]
+            return QuizData.audioComputingSpeaker[level-1]
         }
     }
 }

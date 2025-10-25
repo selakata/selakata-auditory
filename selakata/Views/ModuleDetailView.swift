@@ -1,111 +1,132 @@
-//
-//  ModuleDetailView.swift
-//  selakata
-//
-//  Created by Anisa Amalia on 21/10/25.
-//
-
 import SwiftUI
-import SwiftData
 
 struct ModuleDetailView: View {
     let module: Module
-    
     @StateObject private var viewModel = ModuleDetailViewModel()
-
-    @ScaledMetric var contentHorizontalPadding: CGFloat = 24
-    @ScaledMetric var topImageHeight: CGFloat = 362
-    @ScaledMetric var overlapAmount: CGFloat = 50
-
+    @Environment(\.dismiss) private var dismiss
+    
     var body: some View {
-        ZStack(alignment: .top) {
-            Image("sampleImage")
-                .resizable()
-                .frame(height: topImageHeight)
-                .frame(maxHeight: .infinity, alignment: .top)
-                .ignoresSafeArea(edges: .top)
-
-            infoCardContent
+        ScrollView {
+            VStack(spacing: 24) {
+                // Header
+                headerView
+                
+                // Module Info
+                moduleInfoView
+                
+                // Levels
+                levelsView
+                
+                Spacer(minLength: 50)
+            }
+            .padding()
         }
-        .background(Color(.systemBackground))
-        .toolbar(.hidden, for: .tabBar)
+        .navigationBarBackButtonHidden(true)
+        .toolbar {
+            ToolbarItem(placement: .navigationBarLeading) {
+                Button(action: { dismiss() }) {
+                    HStack(spacing: 6) {
+                        Image(systemName: "chevron.left")
+                        Text("Back")
+                    }
+                    .foregroundColor(.primary)
+                }
+            }
+        }
+        .onAppear {
+            viewModel.loadLevels(for: module)
+        }
     }
     
-    private var infoCardContent: some View {
-        ScrollView {
-            Spacer().frame(height: topImageHeight - overlapAmount)
+    // MARK: - Header View
+    private var headerView: some View {
+        VStack(spacing: 16) {
+            // Module Icon
+            Image(systemName: module.image)
+                .font(.system(size: 60))
+                .foregroundColor(.blue)
+                .frame(width: 100, height: 100)
+                .background(Color.blue.opacity(0.1))
+                .cornerRadius(20)
             
-            VStack(alignment: .leading, spacing: 20) {
-                // header
-                VStack(alignment: .leading, spacing: 8) {
-                    Text(module.name)
-                        .font(.title.weight(.bold))
-                    Text(module.details)
-                        .foregroundStyle(.secondary)
-                }
-                
-                // exercise
-                VStack(alignment: .leading, spacing: 16) {
+            // Module Title
+            Text(module.name)
+                .font(.largeTitle)
+                .fontWeight(.bold)
+                .multilineTextAlignment(.center)
+        }
+    }
+    
+    // MARK: - Module Info View
+    private var moduleInfoView: some View {
+        VStack(spacing: 16) {
+            // Description
+            Text(module.details)
+                .font(.body)
+                .foregroundColor(.secondary)
+                .multilineTextAlignment(.center)
+                .lineLimit(nil)
+            
+            // Progress
+            if module.progress > 0 {
+                VStack(spacing: 8) {
                     HStack {
-                        Text("Exercise")
-                            .font(.title3.weight(.semibold))
+                        Text("Overall Progress")
+                            .font(.subheadline)
+                            .fontWeight(.medium)
+                        
                         Spacer()
-                        Image(systemName: "folder")
-                        Text("\(module.levels.count) levels")
+                        
+                        Text("\(Int(module.progress))%")
+                            .font(.subheadline)
+                            .fontWeight(.semibold)
+                            .foregroundColor(.blue)
                     }
                     
-                    ZStack(alignment: .topLeading) {
-                        Rectangle()
-                            .fill(Color.gray.opacity(0.5))
-                            .frame(width: 2)
-                            .padding(.leading, 9)
-
-                        VStack(spacing: 16) {
-                            let sortedLevels = module.levels.sorted { $0.orderIndex < $1.orderIndex }
-                            ForEach(sortedLevels) { level in
-                                let isUnlocked = viewModel.isLevelUnlocked(level, in: sortedLevels)
-                                LevelRowView(level: level, isUnlocked: isUnlocked)
-                            }
-                        }
-                    }
+                    ProgressView(value: module.progress / 100.0)
+                        .progressViewStyle(LinearProgressViewStyle(tint: .blue))
+                        .frame(height: 8)
+                        .background(Color.gray.opacity(0.2))
+                        .cornerRadius(4)
                 }
-                
-                Spacer()
+                .padding()
+                .background(Color(.systemGray6))
+                .cornerRadius(12)
             }
-            .padding(contentHorizontalPadding)
-            .padding(.top, 20)
-            .frame(maxWidth: .infinity)
-            .background(Color(.systemBackground))
-            .cornerRadius(20, corners: [.topLeft, .topRight])
         }
-        .ignoresSafeArea()
     }
-}
-
-extension View {
-    func cornerRadius(_ radius: CGFloat, corners: UIRectCorner) -> some View {
-        clipShape(RoundedCorner(radius: radius, corners: corners))
-    }
-}
-
-struct RoundedCorner: Shape {
-    var radius: CGFloat = .infinity
-    var corners: UIRectCorner = .allCorners
-
-    func path(in rect: CGRect) -> Path {
-        let path = UIBezierPath(roundedRect: rect, byRoundingCorners: corners, cornerRadii: CGSize(width: radius, height: radius))
-        return Path(path.cgPath)
+    
+    // MARK: - Levels View
+    private var levelsView: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            Text("Levels")
+                .font(.title2)
+                .fontWeight(.bold)
+            
+            VStack(spacing: 12) {
+                ForEach(viewModel.levels) { level in
+                    LevelRowView(
+                        level: level,
+                        module: module,
+                        isUnlocked: viewModel.isLevelUnlocked(level)
+                    )
+                }
+            }
+        }
     }
 }
 
 #Preview {
-    let idModule = Module(id: "identification", name: "Identification", details: "Learn to identify and recognize key sounds.", progress: 0.0, image: "ear", orderIndex: 0)
-        
-    let l1 = Level(name: "Level 1", orderIndex: 0, isCompleted: true, module: idModule)
-    let l2 = Level(name: "Level 2", orderIndex: 1, isCompleted: false, module: idModule)
-    let l3 = Level(name: "Level 3", orderIndex: 2, isCompleted: false, module: idModule)
-    
-    NavigationStack {
-        ModuleDetailView(module: idModule)
+    NavigationView {
+        ModuleDetailView(
+            module: Module(
+                id: "identification",
+                name: "Identification",
+                details: "Learn to identify and recognize key sounds and speech patterns in various environments.",
+                progress: 45.0,
+                image: "ear.fill",
+                orderIndex: 0
+            )
+        )
     }
 }
