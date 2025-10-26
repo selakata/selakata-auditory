@@ -12,6 +12,7 @@ struct QuizData {
             "identification-easy-2",
             "identification-easy-3",
             "identification-easy-4",
+            "identification-easy-5",
         ],
         [
             "identification-medium-1",
@@ -19,7 +20,6 @@ struct QuizData {
             "identification-medium-3",
             "identification-medium-4",
             "identification-medium-5",
-            "identification-medium-6",
         ],
         [
             "identification-hard-1",
@@ -27,7 +27,6 @@ struct QuizData {
             "identification-hard-3",
             "identification-hard-4",
             "identification-hard-5",
-            "identification-hard-6",
         ],
     ]
 
@@ -77,7 +76,24 @@ struct QuizData {
             "comprehension-hard-5",
         ],
     ]
-    static let audioComputingSpeaker : [[String]] = []
+
+    static let audioComputingSpeaker: [[String]] = [
+        [
+            "CS-II-1-SNR-(8dB).mp3",
+            "CS-II-2-SNR-(5dB).mp3",
+            "CS-II-3-SNR-(5dB).mp3",
+            "CS-II-4-SNR-(3dB).mp3",
+            "CS-II-5-SNR-(0dB).mp3",
+        ],
+        [
+            "CS-III-1-SNR-(8dB).mp3",
+            "CS-III-2-SNR-(5dB).mp3",
+            "CS-III-3-SNR-(5dB).mp3",
+            "CS-III-4-SNR-(3dB).mp3",
+            "CS-III-5-SNR-(0dB).mp3",
+        ],
+
+    ]
 
     static let identificationQuestions = [
         [
@@ -103,9 +119,9 @@ struct QuizData {
                 text: "Apa kata yang diucapkan?",
                 answers: [
                     Answer(title: "Rapu", isCorrect: false),
-                    Answer(title: "Saku", isCorrect: false),
+                    Answer(title: "Saku", isCorrect: true),
                     Answer(title: "Satu", isCorrect: false),
-                    Answer(title: "Sapu", isCorrect: true),
+                    Answer(title: "Sapu", isCorrect: false),
                 ]
             ),
             Question(
@@ -115,6 +131,15 @@ struct QuizData {
                     Answer(title: "Rupa", isCorrect: false),
                     Answer(title: "Supa", isCorrect: false),
                     Answer(title: "Kuda", isCorrect: true),
+                ]
+            ),
+            Question(
+                text: "Apa kata yang diucapkan?",
+                answers: [
+                    Answer(title: "Kaki", isCorrect: true),
+                    Answer(title: "Sari", isCorrect: false),
+                    Answer(title: "Dari", isCorrect: false),
+                    Answer(title: "Maki", isCorrect: false),
                 ]
             ),
         ],
@@ -169,15 +194,6 @@ struct QuizData {
             Question(
                 text: "Apa kata yang diucapkan?",
                 answers: [
-                    Answer(title: "Menanti", isCorrect: false),
-                    Answer(title: "Mencari", isCorrect: false),
-                    Answer(title: "Menari", isCorrect: false),
-                    Answer(title: "Menyanyi", isCorrect: true),
-                ]
-            ),
-            Question(
-                text: "Soal 11 - Apa kata yang diucapkan?",
-                answers: [
                     Answer(title: "Komuter", isCorrect: false),
                     Answer(title: "Komputer", isCorrect: true),
                     Answer(title: "Komputel", isCorrect: false),
@@ -185,7 +201,7 @@ struct QuizData {
                 ]
             ),
             Question(
-                text: "Soal 12 - Apa kata yang diucapkan?",
+                text: "Apa kata yang diucapkan?",
                 answers: [
                     Answer(title: "Menari", isCorrect: true),
                     Answer(title: "Menarik", isCorrect: false),
@@ -194,7 +210,7 @@ struct QuizData {
                 ]
             ),
             Question(
-                text: "Soal 14 - Apa kata yang diucapkan?",
+                text: "Apa kata yang diucapkan?",
                 answers: [
                     Answer(title: "Kegaduhan", isCorrect: false),
                     Answer(title: "Kerapuhan", isCorrect: false),
@@ -203,12 +219,21 @@ struct QuizData {
                 ]
             ),
             Question(
-                text: "Soal 15 - Apa kata yang diucapkan?",
+                text: "Apa kata yang diucapkan?",
                 answers: [
                     Answer(title: "Kecipratan", isCorrect: false),
                     Answer(title: "Kepintaran", isCorrect: false),
                     Answer(title: "Kecintaan", isCorrect: true),
                     Answer(title: "Keciptaan", isCorrect: false),
+                ]
+            ),
+            Question(
+                text: "Apa kata yang diucapkan?",
+                answers: [
+                    Answer(title: "Keseringan", isCorrect: false),
+                    Answer(title: "Kesenian", isCorrect: true),
+                    Answer(title: "Keserian", isCorrect: false),
+                    Answer(title: "Kesekian", isCorrect: false),
                 ]
             ),
         ],
@@ -247,12 +272,19 @@ struct QuizData {
             Question(
                 text: "Yang manakah suaranya?",
                 answers: [
-                    Answer(title: "Anjing", isCorrect: false),
-                    Answer(title: "Anting", isCorrect: true),
+                    Answer(title: "Panjang", isCorrect: true),
+                    Answer(title: "Ranjang", isCorrect: false),
                 ]
             ),
         ],
         [
+            Question(
+                text: "Yang manakah suaranya?",
+                answers: [
+                    Answer(title: "Anting", isCorrect: true),
+                    Answer(title: "Anjing", isCorrect: false),
+                ]
+            ),
             Question(
                 text: "Yang manakah suaranya?",
                 answers: [
@@ -281,6 +313,8 @@ struct QuizData {
                     Answer(title: "Pisau", isCorrect: true),
                 ]
             ),
+        ],
+        [
             Question(
                 text: "Yang manakah suaranya?",
                 answers: [
@@ -288,8 +322,6 @@ struct QuizData {
                     Answer(title: "Dingin", isCorrect: true),
                 ]
             ),
-        ],
-        [
             Question(
                 text: "Yang manakah suaranya?",
                 answers: [
@@ -360,6 +392,17 @@ struct QuizData {
                 ]
             ),
             Question(
+                text: "Kata sebelum \"makan\" adalah?",
+                answers: [
+                    Answer(title: "Piring", isCorrect: false),
+                    Answer(title: "Untuk", isCorrect: false),
+                    Answer(title: "Setelah", isCorrect: true),
+                    Answer(title: "Ibunya", isCorrect: false),
+                ]
+            ),
+        ],
+        [
+            Question(
                 text: "Kenapa Budi berhenti di perjalanan?",
                 answers: [
                     Answer(title: "Ban motor bocor", isCorrect: false),
@@ -368,8 +411,6 @@ struct QuizData {
                     Answer(title: "Sekolahnya tutup", isCorrect: false),
                 ]
             ),
-        ],
-        [
             Question(
                 text: "Apa yang Dina lupakan?",
                 answers: [
@@ -415,6 +456,8 @@ struct QuizData {
                     Answer(title: "Karena pastanya habis", isCorrect: false),
                 ]
             ),
+        ],
+        [
             Question(
                 text: "Apa yang sebenarnya Mia pesan?",
                 answers: [
@@ -424,8 +467,6 @@ struct QuizData {
                     Answer(title: "Salad dan alpukat", isCorrect: false),
                 ]
             ),
-        ],
-        [
             Question(
                 text: "Pukul berapa seharusnya kereta berangkat?",
                 answers: [
@@ -468,14 +509,98 @@ struct QuizData {
     static let computationSpeakerQuestions = [
         [
             Question(
-                text: "Apa maksud dari percakapan tersebut?",
+                text: "Kenapa Nathan tidak ikut main basket hari ini?",
                 answers: [
-                    Answer(title: "Mengajak makan", isCorrect: true),
-                    Answer(title: "Mengajak jalan", isCorrect: false),
-                    Answer(title: "Mengajak belajar", isCorrect: false),
-                    Answer(title: "Mengajak tidur", isCorrect: false),
+                    Answer(title: "", isCorrect: true),
+                    Answer(title: "", isCorrect: false),
+                    Answer(title: "", isCorrect: false),
+                    Answer(title: "", isCorrect: false),
                 ]
-            )
-        ]
+            ),
+            Question(
+                text: "Apa minuman yang diminum pembicara utama har ini?",
+                answers: [
+                    Answer(title: "", isCorrect: true),
+                    Answer(title: "", isCorrect: false),
+                    Answer(title: "", isCorrect: false),
+                    Answer(title: "", isCorrect: false),
+                ]
+            ),
+            Question(
+                text: "Kegiatan apa yang sering pembaca lakukan di pagi hari?",
+                answers: [
+                    Answer(title: "", isCorrect: true),
+                    Answer(title: "", isCorrect: false),
+                    Answer(title: "", isCorrect: false),
+                    Answer(title: "", isCorrect: false),
+                ]
+            ),
+            Question(
+                text: "Kapan laporan di tim harus dikumpulkan?",
+                answers: [
+                    Answer(title: "", isCorrect: true),
+                    Answer(title: "", isCorrect: false),
+                    Answer(title: "", isCorrect: false),
+                    Answer(title: "", isCorrect: false),
+                ]
+            ),
+            Question(
+                text: "Jalur berapa yang harus dipilih untuk ke Blok M?",
+                answers: [
+                    Answer(title: "", isCorrect: true),
+                    Answer(title: "", isCorrect: false),
+                    Answer(title: "", isCorrect: false),
+                    Answer(title: "", isCorrect: false),
+                ]
+            ),
+        ],
+        [
+            Question(
+                text: "Diskon diadakan di hari apa?",
+                answers: [
+                    Answer(title: "", isCorrect: true),
+                    Answer(title: "", isCorrect: false),
+                    Answer(title: "", isCorrect: false),
+                    Answer(title: "", isCorrect: false),
+                ]
+            ),
+            Question(
+                text: "Jam berapa file harus dikirim?",
+                answers: [
+                    Answer(title: "", isCorrect: true),
+                    Answer(title: "", isCorrect: false),
+                    Answer(title: "", isCorrect: false),
+                    Answer(title: "", isCorrect: false),
+                ]
+            ),
+            Question(
+                text: "Mengapa banyak yang belum mengetahui perubahan jadwal?",
+                answers: [
+                    Answer(title: "", isCorrect: true),
+                    Answer(title: "", isCorrect: false),
+                    Answer(title: "", isCorrect: false),
+                    Answer(title: "", isCorrect: false),
+                ]
+            ),
+            Question(
+                text: "Vendor apa yang harus dihubungi hari ini?",
+                answers: [
+                    Answer(title: "", isCorrect: true),
+                    Answer(title: "", isCorrect: false),
+                    Answer(title: "", isCorrect: false),
+                    Answer(title: "", isCorrect: false),
+                ]
+            ),
+            Question(
+                text: "Apa fokus utama tim minggu ini?",
+                answers: [
+                    Answer(title: "", isCorrect: true),
+                    Answer(title: "", isCorrect: false),
+                    Answer(title: "", isCorrect: false),
+                    Answer(title: "", isCorrect: false),
+                ]
+            ),
+        ],
+
     ]
 }

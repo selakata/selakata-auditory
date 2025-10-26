@@ -15,7 +15,7 @@ class ModuleDetailViewModel: ObservableObject {
                 difficulty: .easy,
                 progress: 0.0,
                 isUnlocked: true,
-                questionCount: 4,
+                questionCount: 5,
                 moduleId: module.id,
             ),
             LevelData(
@@ -25,7 +25,7 @@ class ModuleDetailViewModel: ObservableObject {
                 difficulty: .medium,
                 progress: 0.0,
                 isUnlocked: true,
-                questionCount: 6,
+                questionCount: 5,
                 moduleId: module.id
             ),
             LevelData(
@@ -35,7 +35,7 @@ class ModuleDetailViewModel: ObservableObject {
                 difficulty: .hard,
                 progress: 0.0,
                 isUnlocked: true,
-                questionCount: 6,
+                questionCount: 5,
                 moduleId: module.id
             )
         ]

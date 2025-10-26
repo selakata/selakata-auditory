@@ -14,6 +14,10 @@ struct QuizView: View {
 
     @StateObject private var viewModel: QuizViewModel
     @State private var audioCompleted: Bool = false
+    @State private var lives: Int = 3
+    @State private var hasPlayedOnce: Bool = false
+    @State private var showReplayConfirmation: Bool = false
+    @State private var triggerReplay: Bool = false
 
     var answerLayout: AnswerLayout {
         if questionCategory == .comprehension {
@@ -46,9 +50,9 @@ struct QuizView: View {
                 Spacer()
 
                 HStack(spacing: 12) {
-                    Heart(isFilled: false)
-                    Heart(isFilled: true)
-                    Heart(isFilled: true)
+                    ForEach(0..<3, id: \.self) { index in
+                        Heart(isFilled: index < lives)
+                    }
                 }
             }
             .padding(.horizontal)
@@ -87,7 +91,11 @@ struct QuizView: View {
                     withAnimation(.easeInOut(duration: 0.5)) {
                         audioCompleted = true
                     }
-                }
+                },
+                onReplayRequested: {
+                    showReplayConfirmation = true
+                },
+                shouldReplay: triggerReplay
             )
             .padding(.horizontal, 32)
 
@@ -101,6 +109,19 @@ struct QuizView: View {
                     onSelect: { answer in
                         withAnimation(.easeInOut(duration: 0.3)) {
                             viewModel.selectAnswer(answer)
+                            
+                            // Reduce life if answer is wrong
+                            if !answer.isCorrect {
+                                lives = max(0, lives - 1)
+                                
+                                // Check if game over
+                                if lives == 0 {
+                                    // Handle game over
+                                    DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+                                        dismiss()
+                                    }
+                                }
+                            }
                         }
                     }
                 )
@@ -151,9 +172,11 @@ struct QuizView: View {
         }
         .navigationBarBackButtonHidden(true)
         .background(Color(.systemBackground))
+        .toolbar(.hidden, for: .tabBar)
         .onChange(of: viewModel.currentQuestionIndex) { oldValue, newValue in
             // Reset audio completion when question changes
             audioCompleted = false
+            hasPlayedOnce = false
         }
         .sheet(isPresented: $viewModel.showResults) {
             QuizResultsView(
@@ -171,6 +194,21 @@ struct QuizView: View {
             .presentationDetents([.height(280), .medium])
             .presentationDragIndicator(.visible)
             .presentationCornerRadius(20)
+        }
+        .alert("Replay Audio", isPresented: $showReplayConfirmation) {
+            Button("Cancel", role: .cancel) { }
+            Button("Replay (-1 ❤️)") {
+                if lives > 0 {
+                    lives -= 1
+                    // Reset audio state and replay
+                    audioCompleted = false
+                    hasPlayedOnce = false
+                    // Trigger audio replay in SimpleAudioPlayer
+                    triggerReplay.toggle()
+                }
+            }
+        } message: {
+            Text("Replaying audio will cost 1 life. You have \(lives) lives remaining.")
         }
     }
 }

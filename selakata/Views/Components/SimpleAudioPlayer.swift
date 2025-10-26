@@ -5,15 +5,20 @@ struct SimpleAudioPlayer: View {
     let title: String
     let fileName: String
     let onAudioCompleted: (() -> Void)?
+    let onReplayRequested: (() -> Void)?
+    let shouldReplay: Bool
     @StateObject private var audioPlayer = AudioPlayerService()
     @State private var hasAudio = false
     @State private var hasCompletedOnce = false
     @State private var timer: Timer?
+    @State private var hasPlayedOnce = false
     
-    init(title: String, fileName: String, onAudioCompleted: (() -> Void)? = nil) {
+    init(title: String, fileName: String, onAudioCompleted: (() -> Void)? = nil, onReplayRequested: (() -> Void)? = nil, shouldReplay: Bool = false) {
         self.title = title
         self.fileName = fileName
         self.onAudioCompleted = onAudioCompleted
+        self.onReplayRequested = onReplayRequested
+        self.shouldReplay = shouldReplay
     }
     
     var body: some View {
@@ -45,7 +50,13 @@ struct SimpleAudioPlayer: View {
                         if audioPlayer.isPlaying {
                             audioPlayer.pause()
                         } else {
-                            audioPlayer.play()
+                            // Check if this is a replay attempt
+                            if hasPlayedOnce && hasCompletedOnce {
+                                onReplayRequested?()
+                            } else {
+                                audioPlayer.play()
+                                hasPlayedOnce = true
+                            }
                         }
                     }) {
                         Image(systemName: audioPlayer.isPlaying ? "pause.circle.fill" : "play.circle.fill")
@@ -69,19 +80,19 @@ struct SimpleAudioPlayer: View {
 //                    }
                     
                     // Debug button for testing completion
-                    Button(action: {
-                        print("🧪 Manual completion trigger")
-                        hasCompletedOnce = true
-                        onAudioCompleted?()
-                    }) {
-                        Text("Done")
-                            .font(.caption)
-                            .padding(.horizontal, 8)
-                            .padding(.vertical, 4)
-                            .background(Color.green.opacity(0.2))
-                            .foregroundColor(.green)
-                            .cornerRadius(4)
-                    }
+//                    Button(action: {
+//                        print("🧪 Manual completion trigger")
+//                        hasCompletedOnce = true
+//                        onAudioCompleted?()
+//                    }) {
+//                        Text("Done")
+//                            .font(.caption)
+//                            .padding(.horizontal, 8)
+//                            .padding(.vertical, 4)
+//                            .background(Color.green.opacity(0.2))
+//                            .foregroundColor(.green)
+//                            .cornerRadius(4)
+//                    }
                 }
             } else {
                 Text("Audio tidak tersedia")
@@ -107,6 +118,15 @@ struct SimpleAudioPlayer: View {
         }
         .onDisappear {
             stopTimer()
+        }
+        .onChange(of: shouldReplay) { oldValue, newValue in
+            if newValue {
+                // Reset states and replay
+                hasCompletedOnce = false
+                hasPlayedOnce = false
+                audioPlayer.stop()
+                audioPlayer.play()
+            }
         }
         .onChange(of: fileName) { oldValue, newValue in
             print("🔄 Audio file changed from '\(oldValue)' to '\(newValue)'")
@@ -220,6 +240,9 @@ struct SimpleAudioPlayer: View {
         fileName: "identification1",
         onAudioCompleted: {
             print("Audio completed in preview")
+        },
+        onReplayRequested: {
+            print("Replay requested in preview")
         }
     )
     .padding()
