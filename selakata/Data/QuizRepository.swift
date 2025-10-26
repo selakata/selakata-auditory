@@ -18,7 +18,7 @@ class QuizRepository: QuizRepositoryProtocol {
             return QuizData.discriminationQuestions[level-1]
         case .comprehension:
             return QuizData.comprehensionQuestions[level-1]
-        case .computationSpeaker:
+        case .competingSpeaker:
             return QuizData.computationSpeakerQuestions[level-1]
         }
     }
@@ -31,7 +31,7 @@ class QuizRepository: QuizRepositoryProtocol {
             return QuizData.audioDiscrimintion[level-1]
         case .comprehension:
             return QuizData.audioComprehension[level-1]
-        case .computationSpeaker:
+        case .competingSpeaker:
             return QuizData.audioComputingSpeaker[level-1]
         }
     }
@@ -41,5 +41,5 @@ enum QuestionCategory: String {
     case identification = "identification"
     case discrimination = "discrimination"
     case comprehension = "comprehension"
-    case computationSpeaker = "competing_speaker"
+    case competingSpeaker = "competing_speaker"
 }

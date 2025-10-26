@@ -20,7 +20,7 @@ struct QuizView: View {
     @State private var triggerReplay: Bool = false
 
     var answerLayout: AnswerLayout {
-        if questionCategory == .comprehension {
+        if questionCategory == .comprehension || questionCategory == .competingSpeaker {
             .list
         } else {
             .grid(columns: 2)

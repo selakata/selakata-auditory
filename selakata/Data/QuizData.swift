@@ -79,18 +79,18 @@ struct QuizData {
 
     static let audioComputingSpeaker: [[String]] = [
         [
-            "CS-II-1-SNR-(8dB).mp3",
-            "CS-II-2-SNR-(5dB).mp3",
-            "CS-II-3-SNR-(5dB).mp3",
-            "CS-II-4-SNR-(3dB).mp3",
-            "CS-II-5-SNR-(0dB).mp3",
+            "CS-II-1-SNR-(8dB)",
+            "CS-II-2-SNR-(5dB)",
+            "CS-II-3-SNR-(5dB)",
+            "CS-II-4-SNR-(3dB)",
+            "CS-II-5-SNR-(0dB)",
         ],
         [
-            "CS-III-1-SNR-(8dB).mp3",
-            "CS-III-2-SNR-(5dB).mp3",
-            "CS-III-3-SNR-(5dB).mp3",
-            "CS-III-4-SNR-(3dB).mp3",
-            "CS-III-5-SNR-(0dB).mp3",
+            "CS-III-1-SNR-(8dB)",
+            "CS-III-2-SNR-(5dB)",
+            "CS-III-3-SNR-(5dB)",
+            "CS-III-4-SNR-(3dB)",
+            "CS-III-5-SNR-(0dB)",
         ],
 
     ]
@@ -511,46 +511,46 @@ struct QuizData {
             Question(
                 text: "Kenapa Nathan tidak ikut main basket hari ini?",
                 answers: [
-                    Answer(title: "", isCorrect: true),
-                    Answer(title: "", isCorrect: false),
-                    Answer(title: "", isCorrect: false),
-                    Answer(title: "", isCorrect: false),
+                    Answer(title: "Karena sedang berlibur", isCorrect: false),
+                    Answer(title: "Karena sedang sakit", isCorrect: true),
+                    Answer(title: "Karena ada tugas dadakan", isCorrect: false),
+                    Answer(title: "Karena besok ulangan", isCorrect: false),
                 ]
             ),
             Question(
-                text: "Apa minuman yang diminum pembicara utama har ini?",
+                text: "Apa minuman yang diminum pembicara utama hari ini?",
                 answers: [
-                    Answer(title: "", isCorrect: true),
-                    Answer(title: "", isCorrect: false),
-                    Answer(title: "", isCorrect: false),
-                    Answer(title: "", isCorrect: false),
+                    Answer(title: "Americano", isCorrect: false),
+                    Answer(title: "Coffe Latte", isCorrect: false),
+                    Answer(title: "Cappucino", isCorrect: true),
+                    Answer(title: "Espresso", isCorrect: false),
                 ]
             ),
             Question(
                 text: "Kegiatan apa yang sering pembaca lakukan di pagi hari?",
                 answers: [
-                    Answer(title: "", isCorrect: true),
-                    Answer(title: "", isCorrect: false),
-                    Answer(title: "", isCorrect: false),
-                    Answer(title: "", isCorrect: false),
+                    Answer(title: "Memeriksa email dan membuat daftar tugas", isCorrect: true),
+                    Answer(title: "Memperbaiki pekerjaan hari kemarin", isCorrect: false),
+                    Answer(title: "Membuat email untuk mengirim tugas", isCorrect: false),
+                    Answer(title: "Membuat daftar tugas untuk laporan", isCorrect: false),
                 ]
             ),
             Question(
                 text: "Kapan laporan di tim harus dikumpulkan?",
                 answers: [
-                    Answer(title: "", isCorrect: true),
-                    Answer(title: "", isCorrect: false),
-                    Answer(title: "", isCorrect: false),
-                    Answer(title: "", isCorrect: false),
+                    Answer(title: "Hari Selasa", isCorrect: true),
+                    Answer(title: "Hari Senin", isCorrect: false),
+                    Answer(title: "Hari Rabu", isCorrect: false),
+                    Answer(title: "Hari Jum'at", isCorrect: false),
                 ]
             ),
             Question(
                 text: "Jalur berapa yang harus dipilih untuk ke Blok M?",
                 answers: [
-                    Answer(title: "", isCorrect: true),
-                    Answer(title: "", isCorrect: false),
-                    Answer(title: "", isCorrect: false),
-                    Answer(title: "", isCorrect: false),
+                    Answer(title: "Jalur Satu", isCorrect: false),
+                    Answer(title: "Jalur Dua", isCorrect: true),
+                    Answer(title: "Jalur Empat", isCorrect: false),
+                    Answer(title: "Jalur Lima", isCorrect: false),
                 ]
             ),
         ],
@@ -558,46 +558,47 @@ struct QuizData {
             Question(
                 text: "Diskon diadakan di hari apa?",
                 answers: [
-                    Answer(title: "", isCorrect: true),
-                    Answer(title: "", isCorrect: false),
-                    Answer(title: "", isCorrect: false),
-                    Answer(title: "", isCorrect: false),
+                    Answer(title: "Senin", isCorrect: true),
+                    Answer(title: "Selasa", isCorrect: false),
+                    Answer(title: "Rabu", isCorrect: false),
+                    Answer(title: "Kamis", isCorrect: false),
                 ]
             ),
             Question(
                 text: "Jam berapa file harus dikirim?",
                 answers: [
-                    Answer(title: "", isCorrect: true),
-                    Answer(title: "", isCorrect: false),
-                    Answer(title: "", isCorrect: false),
-                    Answer(title: "", isCorrect: false),
+                    Answer(title: "Besok Sore", isCorrect: false),
+                    Answer(title: "Jam 7 Malam", isCorrect: false),
+                    Answer(title: "Sebelum Pukul 5 Sore", isCorrect: false),
+                    Answer(title: "Sebelum Pukul 6 Sore", isCorrect: true),
                 ]
             ),
             Question(
                 text: "Mengapa banyak yang belum mengetahui perubahan jadwal?",
                 answers: [
-                    Answer(title: "", isCorrect: true),
-                    Answer(title: "", isCorrect: false),
-                    Answer(title: "", isCorrect: false),
-                    Answer(title: "", isCorrect: false),
+                    
+                    Answer(title: "Karena informasi melewati SMS", isCorrect: false),
+                    Answer(title: "Informasi via mulut ke mulut", isCorrect: false),
+                    Answer(title: "Email baru dikirim siang ini", isCorrect: true),
+                    Answer(title: "Diumumkan di resepsionis", isCorrect: false),
                 ]
             ),
             Question(
                 text: "Vendor apa yang harus dihubungi hari ini?",
                 answers: [
-                    Answer(title: "", isCorrect: true),
-                    Answer(title: "", isCorrect: false),
-                    Answer(title: "", isCorrect: false),
-                    Answer(title: "", isCorrect: false),
+                    Answer(title: "Cathering", isCorrect: true),
+                    Answer(title: "Dekorasi", isCorrect: false),
+                    Answer(title: "Make Up", isCorrect: false),
+                    Answer(title: "Keamanan", isCorrect: false),
                 ]
             ),
             Question(
                 text: "Apa fokus utama tim minggu ini?",
                 answers: [
-                    Answer(title: "", isCorrect: true),
-                    Answer(title: "", isCorrect: false),
-                    Answer(title: "", isCorrect: false),
-                    Answer(title: "", isCorrect: false),
+                    Answer(title: "Memastikan sistem pendingin stabil", isCorrect: true),
+                    Answer(title: "Menguji kapasitas mesin di suhu tinggi", isCorrect: false),
+                    Answer(title: "Memanggil teknisi berpengalaman", isCorrect: false),
+                    Answer(title: "Servis mesin lama", isCorrect: false),
                 ]
             ),
         ],

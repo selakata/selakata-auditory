@@ -39,6 +39,15 @@ class ModuleDetailViewModel: ObservableObject {
                 moduleId: module.id
             )
         ]
+        
+        print("aisDebug: \(module.id)")
+        if module.id == "competing_speaker" {
+            levels.remove(at: 0)
+            levels[0].name = "Medium"
+            levels[0].id = 1
+            levels[1].name = "Hard"
+            levels[1].id = 2
+        }
     }
     
     func isLevelUnlocked(_ level: LevelData) -> Bool {
@@ -62,8 +71,8 @@ class ModuleDetailViewModel: ObservableObject {
 
 // MARK: - LevelData Model
 struct LevelData: Identifiable {
-    let id: Int
-    let name: String
+    var id: Int
+    var name: String
     let description: String
     let difficulty: LevelDifficulty
     var progress: Double
