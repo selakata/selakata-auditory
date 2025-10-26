@@ -5,13 +5,11 @@
 //  Created by Anisa Amalia on 18/10/25.
 //
 
-import SwiftUI
 import SwiftData
+import SwiftUI
 
 struct ModulesView: View {
     @StateObject private var viewModel = ModulesViewModel()
-    
-    @Query(sort: \Module.orderIndex) private var allModules: [Module]
 
     var body: some View {
         NavigationStack {
@@ -20,18 +18,14 @@ struct ModulesView: View {
                     Text("Exercise")
                         .font(.largeTitle.weight(.bold))
                         .padding([.horizontal, .top])
-                    
-                    ForEach(allModules) { module in
-                        let isUnlocked = viewModel.isModuleUnlocked(module, in: allModules)
-                        
-                        NavigationLink(destination: ModuleDetailView(module: module)) {
-                                ModuleCard(module: module, showProgressBar: false)
-                                    .overlay(
-                                        isUnlocked ? nil : LockOverlay()
-                                    )
-                            }
-                            .buttonStyle(.plain)
-                            .disabled(!isUnlocked)
+
+                    ForEach(viewModel.modules) { module in
+                        NavigationLink(
+                            destination: ModuleDetailView(module: module)
+                        ) {
+                            ModuleCard(module: module, showProgressBar: true)
+                        }
+                        .buttonStyle(.plain)
                     }
                     .padding(.horizontal, 24)
                 }
@@ -46,7 +40,7 @@ struct LockOverlay: View {
     var body: some View {
         ZStack {
             Color.black.opacity(0.5)
-            
+
             Image(systemName: "lock.fill")
                 .font(.largeTitle)
                 .foregroundColor(.white)
