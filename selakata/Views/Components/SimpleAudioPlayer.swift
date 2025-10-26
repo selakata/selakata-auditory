@@ -4,8 +4,17 @@ import AVFoundation
 struct SimpleAudioPlayer: View {
     let title: String
     let fileName: String
+    let onAudioCompleted: (() -> Void)?
     @StateObject private var audioPlayer = AudioPlayerService()
     @State private var hasAudio = false
+    @State private var hasCompletedOnce = false
+    @State private var timer: Timer?
+    
+    init(title: String, fileName: String, onAudioCompleted: (() -> Void)? = nil) {
+        self.title = title
+        self.fileName = fileName
+        self.onAudioCompleted = onAudioCompleted
+    }
     
     var body: some View {
         VStack(spacing: 16) {
@@ -44,18 +53,33 @@ struct SimpleAudioPlayer: View {
                             .foregroundColor(.blue)
                     }
                     
+//                    Button(action: {
+//                        let rates: [Float] = [0.5, 1.0, 1.5, 2.0]
+//                        if let currentIndex = rates.firstIndex(of: audioPlayer.playbackRate) {
+//                            let nextIndex = (currentIndex + 1) % rates.count
+//                            audioPlayer.setPlaybackRate(rates[nextIndex])
+//                        }
+//                    }) {
+//                        Text("\(String(format: "%.1f", audioPlayer.playbackRate))x")
+//                            .font(.caption)
+//                            .padding(.horizontal, 8)
+//                            .padding(.vertical, 4)
+//                            .background(Color.blue.opacity(0.2))
+//                            .cornerRadius(4)
+//                    }
+                    
+                    // Debug button for testing completion
                     Button(action: {
-                        let rates: [Float] = [0.5, 1.0, 1.5, 2.0]
-                        if let currentIndex = rates.firstIndex(of: audioPlayer.playbackRate) {
-                            let nextIndex = (currentIndex + 1) % rates.count
-                            audioPlayer.setPlaybackRate(rates[nextIndex])
-                        }
+                        print("🧪 Manual completion trigger")
+                        hasCompletedOnce = true
+                        onAudioCompleted?()
                     }) {
-                        Text("\(String(format: "%.1f", audioPlayer.playbackRate))x")
+                        Text("Done")
                             .font(.caption)
                             .padding(.horizontal, 8)
                             .padding(.vertical, 4)
-                            .background(Color.blue.opacity(0.2))
+                            .background(Color.green.opacity(0.2))
+                            .foregroundColor(.green)
                             .cornerRadius(4)
                     }
                 }
@@ -81,10 +105,24 @@ struct SimpleAudioPlayer: View {
         .onAppear {
             loadAudio()
         }
+        .onDisappear {
+            stopTimer()
+        }
         .onChange(of: fileName) { oldValue, newValue in
             print("🔄 Audio file changed from '\(oldValue)' to '\(newValue)'")
             audioPlayer.stop() // Stop current audio
+            hasCompletedOnce = false // Reset completion flag
+            stopTimer()
             loadAudio() // Load new audio
+        }
+        .onChange(of: audioPlayer.isPlaying) { oldValue, newValue in
+            if newValue {
+                // Audio started playing, start monitoring
+                startCompletionTimer()
+            } else {
+                // Audio stopped, stop monitoring
+                stopTimer()
+            }
         }
     }
     
@@ -148,9 +186,41 @@ struct SimpleAudioPlayer: View {
         let seconds = Int(time) % 60
         return String(format: "%d:%02d", minutes, seconds)
     }
+    
+    private func startCompletionTimer() {
+        stopTimer() // Stop any existing timer
+        
+        timer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) { _ in
+            // Check if audio has completed
+            if audioPlayer.duration > 0 && 
+               audioPlayer.currentTime >= audioPlayer.duration - 0.5 && 
+               !hasCompletedOnce {
+                
+                print("🎵 Audio completed! Duration: \(audioPlayer.duration), Current: \(audioPlayer.currentTime)")
+                hasCompletedOnce = true
+                stopTimer()
+                
+                // Call completion callback
+                DispatchQueue.main.async {
+                    onAudioCompleted?()
+                }
+            }
+        }
+    }
+    
+    private func stopTimer() {
+        timer?.invalidate()
+        timer = nil
+    }
 }
 
 #Preview {
-    SimpleAudioPlayer(title: "Dengarkan Audio Ini", fileName: "identification1")
-        .padding()
+    SimpleAudioPlayer(
+        title: "Dengarkan Audio Ini", 
+        fileName: "identification1",
+        onAudioCompleted: {
+            print("Audio completed in preview")
+        }
+    )
+    .padding()
 }
