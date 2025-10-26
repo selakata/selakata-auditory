@@ -35,6 +35,11 @@ struct HomeView: View {
                         .padding(.horizontal, 24)
                     
                     progressCardSection
+                    
+                    NavigationLink(destination: HearingTestOnboardingView()){
+                        HearingTestCard()
+                    }
+                    .padding(.horizontal, 24)
                 }
                 .padding(.vertical)
             }
