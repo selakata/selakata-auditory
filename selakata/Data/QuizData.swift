@@ -529,10 +529,22 @@ struct QuizData {
             Question(
                 text: "Kegiatan apa yang sering pembaca lakukan di pagi hari?",
                 answers: [
-                    Answer(title: "Memeriksa email dan membuat daftar tugas", isCorrect: true),
-                    Answer(title: "Memperbaiki pekerjaan hari kemarin", isCorrect: false),
-                    Answer(title: "Membuat email untuk mengirim tugas", isCorrect: false),
-                    Answer(title: "Membuat daftar tugas untuk laporan", isCorrect: false),
+                    Answer(
+                        title: "Memeriksa email dan membuat daftar tugas",
+                        isCorrect: true
+                    ),
+                    Answer(
+                        title: "Memperbaiki pekerjaan hari kemarin",
+                        isCorrect: false
+                    ),
+                    Answer(
+                        title: "Membuat email untuk mengirim tugas",
+                        isCorrect: false
+                    ),
+                    Answer(
+                        title: "Membuat daftar tugas untuk laporan",
+                        isCorrect: false
+                    ),
                 ]
             ),
             Question(
@@ -576,10 +588,19 @@ struct QuizData {
             Question(
                 text: "Mengapa banyak yang belum mengetahui perubahan jadwal?",
                 answers: [
-                    
-                    Answer(title: "Karena informasi melewati SMS", isCorrect: false),
-                    Answer(title: "Informasi via mulut ke mulut", isCorrect: false),
-                    Answer(title: "Email baru dikirim siang ini", isCorrect: true),
+
+                    Answer(
+                        title: "Karena informasi melewati SMS",
+                        isCorrect: false
+                    ),
+                    Answer(
+                        title: "Informasi via mulut ke mulut",
+                        isCorrect: false
+                    ),
+                    Answer(
+                        title: "Email baru dikirim siang ini",
+                        isCorrect: true
+                    ),
                     Answer(title: "Diumumkan di resepsionis", isCorrect: false),
                 ]
             ),
@@ -595,9 +616,18 @@ struct QuizData {
             Question(
                 text: "Apa fokus utama tim minggu ini?",
                 answers: [
-                    Answer(title: "Memastikan sistem pendingin stabil", isCorrect: true),
-                    Answer(title: "Menguji kapasitas mesin di suhu tinggi", isCorrect: false),
-                    Answer(title: "Memanggil teknisi berpengalaman", isCorrect: false),
+                    Answer(
+                        title: "Memastikan sistem pendingin stabil",
+                        isCorrect: true
+                    ),
+                    Answer(
+                        title: "Menguji kapasitas mesin di suhu tinggi",
+                        isCorrect: false
+                    ),
+                    Answer(
+                        title: "Memanggil teknisi berpengalaman",
+                        isCorrect: false
+                    ),
                     Answer(title: "Servis mesin lama", isCorrect: false),
                 ]
             ),
