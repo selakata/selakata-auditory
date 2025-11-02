@@ -32,8 +32,7 @@ struct HearingTestResultsView: View {
                             ResultSummaryCard(
                                 pta: left.pta,
                                 snr: left.snr,
-                                ear: .left,
-                                description: viewModel.getHearingLossDescription(for: left.pta)
+                                ear: .left
                             )
                         }
                         
@@ -41,8 +40,7 @@ struct HearingTestResultsView: View {
                             ResultSummaryCard(
                                 pta: right.pta,
                                 snr: right.snr,
-                                ear: .right,
-                                description: viewModel.getHearingLossDescription(for: right.pta)
+                                ear: .right
                             )
                         }
                     }
@@ -80,14 +78,13 @@ struct ResultSummaryCard: View {
     let pta: Float
     let snr: Float
     let ear: Ear
-    let description: String
     
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
-            Text(String(format: "%.0f", pta))
+            Text(String(format: "%.0f%%", pta))
                 .font(.largeTitle.weight(.bold))
             
-            Text("dBFS (PTA)")
+            Text("Est. Hearing Level (dBFS)")
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
             
@@ -98,14 +95,7 @@ struct ResultSummaryCard: View {
             Text("dB (Est. SNR)")
                 .font(.caption)
                 .foregroundStyle(.secondary)
-            
-            Spacer()
-            
-            Text(ear.title)
-                .font(.subheadline.weight(.semibold))
-            Text(description)
-                .font(.caption)
-                .foregroundStyle(.secondary)
+        
         }
         .padding()
         .frame(maxWidth: .infinity, minHeight: 160, alignment: .leading)
@@ -155,12 +145,12 @@ struct InfoDetailCard: View {
 #Preview {
     let repository = HearingTestRepository()
     let leftData = HearingTestResult(
-        thresholds: [500: 45, 1000: 45, 2000: 50],
+        thresholds: [500: 45, 1000: 45, 2000: 50, 4000: 45],
         pta: -70,
         snr: 5
     )
     let rightData = HearingTestResult(
-        thresholds: [500: 50, 1000: 45, 2000: 50],
+        thresholds: [500: 50, 1000: 45, 2000: 50, 4000: 20],
         pta: -30,
         snr: 17
     )

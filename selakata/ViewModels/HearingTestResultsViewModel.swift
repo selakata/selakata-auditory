@@ -14,6 +14,9 @@ class HearingTestResultsViewModel: ObservableObject {
     
     private let repository: HearingTestRepository
     
+    private let minDBFS: Float = -80
+    private let maxDBFS: Float = -6
+    
     init(repository: HearingTestRepository) {
         self.repository = repository
     }
@@ -23,18 +26,13 @@ class HearingTestResultsViewModel: ObservableObject {
         self.rightResult = repository.loadResult(for: .right)
     }
     
-    func getHearingLossDescription(for pta: Float) -> String {
-        switch pta {
-        case ..<(-60):
-            return "Normal"
-        case ..<(-40):
-            return "Mild loss"
-        case ..<(-25):
-            return "Moderate loss"
-        case ..<(-10):
-            return "Severe loss"
-        default:
-            return "Profound Loss"
-        }
+    func convertDBFSToPercentage(dbfs: Float) -> Float {
+        let clampedDBFS = min(max(dbfs, minDBFS), maxDBFS)
+        let hearingRange = abs(minDBFS - maxDBFS)
+        let distanceFromWorstHearing = abs(clampedDBFS - maxDBFS)
+        
+        let percentage = (distanceFromWorstHearing / hearingRange) * 100
+        
+        return percentage
     }
 }
