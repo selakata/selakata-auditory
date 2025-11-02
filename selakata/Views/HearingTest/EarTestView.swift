@@ -61,7 +61,7 @@ struct EarTestView: View {
                     repository: repository
                 )
             } else {
-                HearingTestResultsView(repository: repository)
+                SNRGuideView(repository: repository)
             }
         }
     }
