@@ -141,9 +141,9 @@ class EarTestViewModel: ObservableObject {
         let pta500 = currentThresholds[500] ?? 0
         let pta1000 = currentThresholds[1000] ?? 0
         let pta2000 = currentThresholds[2000] ?? 0
+        let pta4000 = currentThresholds[4000] ?? 0
         
-        // calculationsnya pake PTA3 krn itu yg level yg umum buat conversational
-        let pta = (pta500 + pta1000 + pta2000) / 3.0
+        let pta = (pta500 + pta1000 + pta2000 + pta4000) / 4.0
         let snr = 0.22 * pta + 2.0 // masi pake raw dbfs jadi masi kurang sesuai dengan aslinya
         
         print("Ear Test Finished: \(currentEar.title)")
