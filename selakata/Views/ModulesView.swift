@@ -19,11 +19,11 @@ struct ModulesView: View {
                         .font(.largeTitle.weight(.bold))
                         .padding([.horizontal, .top])
 
-                    ForEach(viewModel.modules) { module in
+                    ForEach(viewModel.modules.indices, id: \.self) { index in
                         NavigationLink(
-                            destination: ModuleDetailView(module: module)
+                            destination: ModuleDetailView(module: QuizData.dummyModule[index])
                         ) {
-                            ModuleCard(module: module, showProgressBar: true)
+                            ModuleCard(module: viewModel.modules[index], showProgressBar: true)
                         }
                         .buttonStyle(.plain)
                     }
