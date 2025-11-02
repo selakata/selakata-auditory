@@ -144,20 +144,11 @@ class EarTestViewModel: ObservableObject {
         let pta4000 = currentThresholds[4000] ?? 0
         
         let pta = (pta500 + pta1000 + pta2000 + pta4000) / 4.0
-        let snr = 0.22 * pta + 2.0 // masi pake raw dbfs jadi masi kurang sesuai dengan aslinya
         
         print("Ear Test Finished: \(currentEar.title)")
         print("Thresholds found: \(currentThresholds)")
         print("Calculated PTA: \(pta)")
-        print("Calculated SNR: \(snr)")
-        
-        let result = HearingTestResult(
-            thresholds: currentThresholds,
-            pta: pta,
-            snr: snr
-        )
-        
-        repository.saveResult(for: currentEar, result: result)
+        repository.savePTA(for: currentEar, pta: pta)
         
         isTestComplete = true
     }
