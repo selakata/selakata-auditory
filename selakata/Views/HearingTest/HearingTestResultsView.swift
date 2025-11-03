@@ -11,155 +11,107 @@ import Charts
 struct HearingTestResultsView: View {
     
     @StateObject private var viewModel: HearingTestResultsViewModel
+    @Binding var isStartingTest: Bool
     @ScaledMetric var horizontalPadding: CGFloat = 24
     
-    init(repository: HearingTestRepository) {
+    init(isStartingTest: Binding<Bool>, repository: HearingTestRepository) {
+        self._isStartingTest = isStartingTest
         _viewModel = StateObject(wrappedValue: HearingTestResultsViewModel(repository: repository))
     }
 
     var body: some View {
-        VStack {
-            ScrollView {
-                VStack(spacing: 24) {
-                    HearingTestChartView(
-                        leftResult: viewModel.leftResult,
-                        rightResult: viewModel.rightResult
-                    )
-                    .padding(.top, 16)
-                    
-                    HStack(spacing: 16) {
-                        if let left = viewModel.leftResult {
-                            ResultSummaryCard(
-                                pta: left.pta,
-                                snr: left.snr,
-                                ear: .left
-                            )
-                        }
-                        
-                        if let right = viewModel.rightResult {
-                            ResultSummaryCard(
-                                pta: right.pta,
-                                snr: right.snr,
-                                ear: .right
-                            )
-                        }
-                    }
-                    
-                    InfoDetailCard()
-                    
-                    Spacer()
-                    
-                    NavigationLink(destination: HomeView()){
-                        Text("Continu")
-                            .font(.headline)
-                            .fontWeight(.semibold)
-                            .frame(maxWidth: .infinity)
-                            .padding()
-                            .background(Color.accentColor)
-                            .foregroundStyle(.white)
-                            .clipShape(Capsule())
-                    }
-                    .padding(.horizontal, horizontalPadding)
+        VStack(spacing: 15) {
+            VStack(spacing: 4) {
+                Text("Signal to Noise Ratio")
+                    .font(.headline)
+                    .foregroundStyle(.primary)
+                
+                if let snr = viewModel.snr {
+                    Text(String(format: "%.1f", Float(snr)))
+                        .font(.system(size: 40, weight: .bold))
+                    + Text("db")
+                        .font(.body)
+                        .foregroundStyle(.primary)
+                } else {
+                    Text("N/A")
+                        .font(.system(size: 60, weight: .bold))
                 }
-                .padding(.horizontal, horizontalPadding)
             }
+            .padding()
+            .frame(maxWidth: .infinity)
+            .background(.thinMaterial)
+            .cornerRadius(16)
+            
+            HearingTestChartView(
+                leftThresholds: viewModel.leftThresholds,
+                rightThresholds: viewModel.rightThresholds
+            )
+        
+            HStack(alignment: .top, spacing: 16) {
+                Image(systemName: "bell")
+                    .font(.system(size: 32, weight: .regular))
+                    .foregroundStyle(.secondary)
+                
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("Recommended Actions")
+                        .font(.subheadline.weight(.semibold))
+                    Text("Try to avoid loud environments and consider using hearing protection or training tools.")
+                        .font(.footnote)
+                        .foregroundStyle(.secondary)
+                        .frame(maxWidth: 250, alignment: .leading)
+                }
+            }
+            .padding()
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .background(.thinMaterial)
+            .cornerRadius(16)
+            
+            Spacer()
+            
+            Button(action: {
+                isStartingTest = false
+            }) {
+                Text("Continue")
+                    .font(.headline)
+                    .fontWeight(.semibold)
+                    .frame(maxWidth: .infinity)
+                    .padding()
+                    .background(Color.accentColor)
+                    .foregroundStyle(.white)
+                    .clipShape(Capsule())
+            }
+            .padding(.horizontal, horizontalPadding)
+            .padding(.bottom)
+            
         }
-        .background(Color(.systemGroupedBackground))
-        .navigationTitle("Hearing Test Result")
-        .navigationBarTitleDisplayMode(.inline)
-        .navigationBarBackButtonHidden()
+        .padding(.horizontal, horizontalPadding)
+        .padding(.top)
+        .navigationTitle("Result")
+        .navigationBarTitleDisplayMode(.large)
+        .navigationBarBackButtonHidden(true)
         .onAppear {
             viewModel.loadResults()
         }
     }
 }
 
-struct ResultSummaryCard: View {
-    let pta: Float
-    let snr: Float
-    let ear: Ear
-    
-    var body: some View {
-        VStack(alignment: .leading, spacing: 4) {
-            Text(String(format: "%.0f%%", pta))
-                .font(.largeTitle.weight(.bold))
-            
-            Text("Est. Hearing Level (dBFS)")
-                .font(.subheadline)
-                .foregroundStyle(.secondary)
-            
-            Divider().padding(.vertical, 4)
-            
-            Text(String(format: "%.1f", snr))
-                .font(.title2.weight(.medium))
-            Text("dB (Est. SNR)")
-                .font(.caption)
-                .foregroundStyle(.secondary)
-        
-        }
-        .padding()
-        .frame(maxWidth: .infinity, minHeight: 160, alignment: .leading)
-        .background(.gray.opacity(0.1))
-        .cornerRadius(16)
-    }
-}
-
-struct InfoDetailCard: View {
-    var body: some View {
-        VStack(spacing: 24) {
-            HStack(alignment: .top, spacing: 16) {
-                Image(systemName: "ear.trianglebadge.exclamationmark")
-                    .font(.system(size: 32))
-                    .foregroundStyle(.secondary)
-                
-                VStack(alignment: .leading) {
-                    Text("Hearing Ability Overview")
-                        .font(.headline.weight(.semibold))
-                    Text("Your test indicates your baseline hearing ability.")
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
-                }
-            }
-            
-            HStack(alignment: .top, spacing: 16) {
-                Image(systemName: "bell")
-                    .font(.system(size: 32))
-                    .foregroundStyle(.secondary)
-                
-                VStack(alignment: .leading) {
-                    Text("Recommended Actions")
-                        .font(.headline.weight(.semibold))
-                    Text("Try to avoid loud environments and consider using hearing protection or training tools.")
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
-                }
-            }
-        }
-        .padding()
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .background(.gray.opacity(0.1))
-        .cornerRadius(16)
-    }
-}
-
 #Preview {
     let repository = HearingTestRepository()
-    let leftData = HearingTestResult(
-        thresholds: [500: 45, 1000: 45, 2000: 50, 4000: 45],
-        pta: -70,
-        snr: 5
-    )
-    let rightData = HearingTestResult(
-        thresholds: [500: 50, 1000: 45, 2000: 50, 4000: 20],
-        pta: -30,
-        snr: 17
-    )
-
-    repository.saveResult(for: .left, result: leftData)
-    repository.saveResult(for: .right, result: rightData)
+    
+    let dataLeftThresholds: [Double: Float] = [
+        500: -50, 1000: -55, 2000: -45, 4000: -40
+    ]
+    let dataRightThresholds: [Double: Float] = [
+        500: -30, 1000: -35, 2000: -30, 4000: -25
+    ]
+    
+    repository.saveThresholds(for: .left, thresholds: dataLeftThresholds)
+    repository.saveThresholds(for: .right, thresholds: dataRightThresholds)
+    repository.saveSNR(10)
     
     return NavigationStack {
-        HearingTestResultsView(repository: repository)
+        HearingTestResultsView(
+            isStartingTest: .constant(true),
+            repository: repository)
     }
 }
-
