@@ -10,34 +10,39 @@ struct ModuleDetailView: View {
     ]
     var moduleImage: String {
         switch module.label {
-        case "Identification":
-            return moduleImages[0]
-        case "Discrimination":
-            return moduleImages[1]
-        case "Comprehension":
-            return moduleImages[2]
-        default:
-            return moduleImages[3]
+        case "Identification": return moduleImages[0]
+        case "Discrimination": return moduleImages[1]
+        case "Comprehension": return moduleImages[2]
+        default: return moduleImages[3]
         }
     }
 
     var body: some View {
-        ScrollView {
-            VStack(spacing: 16) {
-                // Header
-                headerView
-
-                Spacer().frame(height: 8)
-                // Module Info
-                moduleInfoView
-                
-                // Levels
-                levelsView
-
-                Spacer(minLength: 50)
+        ZStack(alignment: .top) {
+            ScrollView {
+                VStack(spacing: 0) {
+                    headerView
+                    VStack(spacing: 24) {
+                        moduleInfoView
+                        levelsView
+                    }
+                    .padding(22)
+                    .frame(maxWidth: .infinity, alignment: .top)
+                    .background(
+                        Color.white
+                            .cornerRadius(24, corners: [.topLeft, .topRight])
+                    )
+                    .offset(y: -20)
+                }
             }
-            .padding()
         }
+        .background(
+            VStack {
+                Color(hex: 0xEFECFC)
+                    .ignoresSafeArea()
+                Color.white
+            }
+        )
         .navigationBarBackButtonHidden(true)
         .toolbar {
             ToolbarItem(placement: .navigationBarLeading) {
@@ -54,8 +59,7 @@ struct ModuleDetailView: View {
 
     // MARK: - Header View
     private var headerView: some View {
-        VStack(spacing: 16) {
-            // Module Icon
+        VStack{
             Image(systemName: moduleImage)
                 .font(.system(size: 60))
                 .foregroundColor(.blue)
@@ -63,39 +67,46 @@ struct ModuleDetailView: View {
                 .background(Color.blue.opacity(0.1))
                 .cornerRadius(20)
         }
+        .frame(maxWidth: .infinity, minHeight: 220)
     }
 
     // MARK: - Module Info View
     private var moduleInfoView: some View {
-        VStack(alignment: HorizontalAlignment.leading) {
-            // Description
+        VStack(alignment: .leading, spacing: 4) {
             Text(module.label)
-                .font(.title)
+                .font(.app(.headline))
                 .fontWeight(.bold)
-                .multilineTextAlignment(.leading)
             Text(module.desc)
-                .font(.body)
+                .font(.app(.subhead))
                 .foregroundColor(.secondary)
-                .lineLimit(nil)
-                .multilineTextAlignment(.leading)
-            Color.white.frame(height: 0)
         }
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
 
     // MARK: - Levels View
     private var levelsView: some View {
         VStack(alignment: .leading, spacing: 16) {
-            Text("Exercises")
-                .font(.title2)
-                .fontWeight(.bold)
+            HStack {
+                Text("Exercises")
+                    .font(.app(.headline))
+                    .fontWeight(.bold)
+                Spacer()
+                HStack {
+                    Image(systemName: "folder")
+                    Text("3 Levels")
+                        .font(.app(.body))
+                }
+                .foregroundStyle(Color.green)
+            }
 
             ForEach(module.levelList, id: \.id) { level in
                 LevelRowView(
                     level: level,
-                    module: module,
+                    moduleLabel: module.label
                 )
             }
         }
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
 }
 

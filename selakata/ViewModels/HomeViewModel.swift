@@ -13,9 +13,19 @@ class HomeViewModel: ObservableObject {
     @Published var mostRecentModule: Module?
     @Published var firstAvailableModule: Module?
     
-    let userName: String = "Learner"
+    private let authService: AuthenticationService
+    
+    var userName: String {
+        return authService.userName
+    }
+    
+    var isAuthenticated: Bool {
+        return authService.isAuthenticated
+    }
 
-    init(modelContext: ModelContext? = nil) {}
+    init(modelContext: ModelContext? = nil, authService: AuthenticationService? = nil) {
+        self.authService = authService ?? AuthenticationService()
+    }
     
     func processModules(_ modules: [Module]) {
         let sortedModules = modules.sorted(by: { $0.orderIndex < $1.orderIndex })
@@ -24,3 +34,4 @@ class HomeViewModel: ObservableObject {
         self.firstAvailableModule = sortedModules.first
     }
 }
+

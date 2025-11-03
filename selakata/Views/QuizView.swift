@@ -1,7 +1,6 @@
 import SwiftUI
 
 struct QuizView: View {
-    let module: Module
     let level: Level
     let questionCategory: QuestionCategory
     @Environment(\.dismiss) private var dismiss
@@ -21,8 +20,7 @@ struct QuizView: View {
         }
     }
 
-    init(module: Module, level: Level, questionCategory: QuestionCategory) {
-        self.module = module
+    init(level: Level, questionCategory: QuestionCategory) {
         self.level = level
         self.questionCategory = questionCategory
         _viewModel = StateObject(
@@ -207,7 +205,6 @@ struct QuizView: View {
 #Preview {
     NavigationStack { 
         QuizView(
-            module: QuizData.dummyModule[0],
             level: QuizData.dummyModule[0].levelList[0],
             questionCategory: .identification
         ) 
