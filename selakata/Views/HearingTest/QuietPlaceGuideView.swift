@@ -11,6 +11,8 @@ struct QuietPlaceGuideView: View {
     @ScaledMetric var iconSize: CGFloat = 200
     @ScaledMetric var horizontalPadding: CGFloat = 32
 
+    @Binding var isStartingTest: Bool
+    
     let audioService: AudioService
     let repository: HearingTestRepository
     
@@ -36,6 +38,7 @@ struct QuietPlaceGuideView: View {
             Spacer()
             
             NavigationLink(destination: EarTestView(
+                isStartingTest: $isStartingTest,
                 ear: .left,
                 audioService: audioService,
                 repository: repository
@@ -58,6 +61,7 @@ struct QuietPlaceGuideView: View {
 #Preview {
     NavigationStack {
         QuietPlaceGuideView(
+            isStartingTest: .constant(true),
             audioService: AudioService(),
             repository: HearingTestRepository()
         )

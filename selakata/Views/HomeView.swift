@@ -10,6 +10,7 @@ import SwiftData
 
 struct HomeView: View {
     @StateObject private var viewModel = HomeViewModel()
+    @State private var isStartingTest = false
     
     @Query(sort: \Module.orderIndex) private var allModules: [Module]
 
@@ -36,15 +37,21 @@ struct HomeView: View {
                     
                     progressCardSection
                     
-                    NavigationLink(destination: HearingTestOnboardingView()){
+                    Button(action: {
+                        isStartingTest = true
+                    }) {
                         HearingTestCard()
                     }
+                    .buttonStyle(.plain)
                     .padding(.horizontal, 24)
                 }
                 .padding(.vertical)
             }
             .navigationTitle("Home")
             .navigationBarHidden(true)
+            .navigationDestination(isPresented: $isStartingTest) {
+                HearingTestOnboardingView(isStartingTest: $isStartingTest)
+            }
         }
         .onChange(of: allModules) {
             viewModel.processModules(allModules)

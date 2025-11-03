@@ -8,13 +8,15 @@
 import SwiftUI
 
 struct SNRTestView: View {
+    @Binding var isStartingTest: Bool
     @StateObject private var viewModel: SNRTestViewModel
     @ObservedObject private var audioPlayerService: AudioPlayerService
     
     @ScaledMetric var horizontalPadding: CGFloat = 32
     @ScaledMetric var iconSize: CGFloat = 100
     
-    init(repository: HearingTestRepository, audioPlayerService: AudioPlayerService) {
+    init(isStartingTest: Binding<Bool>, repository: HearingTestRepository, audioPlayerService: AudioPlayerService) {
+        self._isStartingTest = isStartingTest
         let vm = SNRTestViewModel(
             repository: repository,
             audioPlayerService: audioPlayerService
@@ -63,7 +65,10 @@ struct SNRTestView: View {
         .navigationBarTitleDisplayMode(.inline)
         .navigationBarBackButtonHidden()
         .navigationDestination(isPresented: $viewModel.isTestFinished) {
-            HearingTestResultsView(repository: viewModel.repository)
+            HearingTestResultsView(
+                isStartingTest: $isStartingTest,
+                repository: viewModel.repository
+            )
         }
     }
 }
@@ -86,6 +91,7 @@ struct ChoiceButton: View {
 #Preview {
     NavigationStack {
         SNRTestView(
+            isStartingTest: .constant(true),
             repository: HearingTestRepository(),
             audioPlayerService: AudioPlayerService()
         )

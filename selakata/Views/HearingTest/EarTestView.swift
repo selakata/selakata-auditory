@@ -8,12 +8,14 @@
 import SwiftUI
 
 struct EarTestView: View {
+    @Binding var isStartingTest: Bool
     @StateObject private var viewModel: EarTestViewModel
     
     private let audioService: AudioService
     private let repository: HearingTestRepository
     
-    init(ear: Ear, audioService: AudioService, repository: HearingTestRepository) {
+    init(isStartingTest: Binding<Bool>, ear: Ear, audioService: AudioService, repository: HearingTestRepository) {
+        self._isStartingTest = isStartingTest
         _viewModel = StateObject(wrappedValue: EarTestViewModel(
             initialEar: ear,
             audioService: audioService,
@@ -56,12 +58,16 @@ struct EarTestView: View {
         .navigationDestination(isPresented: $viewModel.isTestComplete) {
             if viewModel.currentEar == .left {
                 EarTestView(
+                    isStartingTest: $isStartingTest,
                     ear: .right,
                     audioService: audioService,
                     repository: repository
                 )
             } else {
-                SNRGuideView(repository: repository)
+                SNRGuideView(
+                    isStartingTest: $isStartingTest,
+                    repository: repository
+                )
             }
         }
     }

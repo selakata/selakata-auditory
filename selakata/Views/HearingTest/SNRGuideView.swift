@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct SNRGuideView: View {
+    @Binding var isStartingTest: Bool
     let repository: HearingTestRepository
     @State private var audioPlayerService = AudioPlayerService()
     
@@ -33,7 +34,11 @@ struct SNRGuideView: View {
             
             Spacer()
             
-            NavigationLink(destination: SNRTestView(repository: repository, audioPlayerService: audioPlayerService)) {
+            NavigationLink(destination: SNRTestView(
+                isStartingTest: $isStartingTest,
+                repository: repository,
+                audioPlayerService: audioPlayerService
+            )) {
                 Text("Get Started")
                     .font(.headline)
                     .fontWeight(.semibold)
@@ -53,6 +58,8 @@ struct SNRGuideView: View {
 
 #Preview {
     NavigationStack {
-        SNRGuideView(repository: HearingTestRepository())
+        SNRGuideView(
+            isStartingTest: .constant(true),
+            repository: HearingTestRepository())
     }
 }
