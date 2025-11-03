@@ -9,10 +9,11 @@ import Foundation
 
 @MainActor
 class HearingTestResultsViewModel: ObservableObject {
-    @Published var leftResult: HearingTestResult?
-    @Published var rightResult: HearingTestResult?
+    @Published var leftThresholds: [Double: Float]?
+    @Published var rightThresholds: [Double: Float]?
+    @Published var snr: Int?
     
-    private let repository: HearingTestRepository
+    let repository: HearingTestRepository
     
     private let minDBFS: Float = -80
     private let maxDBFS: Float = -6
@@ -22,17 +23,16 @@ class HearingTestResultsViewModel: ObservableObject {
     }
     
     func loadResults() {
-        self.leftResult = repository.loadResult(for: .left)
-        self.rightResult = repository.loadResult(for: .right)
+        self.leftThresholds = repository.loadLeftThresholds()
+        self.rightThresholds = repository.loadRightThresholds()
+        self.snr = repository.loadSNR()
     }
     
-    func convertDBFSToPercentage(dbfs: Float) -> Float {
-        let clampedDBFS = min(max(dbfs, minDBFS), maxDBFS)
-        let hearingRange = abs(minDBFS - maxDBFS)
-        let distanceFromWorstHearing = abs(clampedDBFS - maxDBFS)
-        
-        let percentage = (distanceFromWorstHearing / hearingRange) * 100
-        
-        return percentage
+    func calculatePTA(from thresholds: [Double: Float]?) -> Float? {
+        return HearingTestCalculator.calculatePTA(from: thresholds)
+    }
+    
+    func convertDBFSToPercentage(dbfs: Float?) -> Float {
+        return HearingTestCalculator.convertDBFSToPercentage(dbfs: dbfs)
     }
 }

@@ -67,8 +67,11 @@ class SNRTestViewModel: ObservableObject {
     }
     
     private func getAudioRange() -> String {
-        let leftPTA = repository.loadLeftPTA() ?? -25
-        let rightPTA = repository.loadRightPTA() ?? -25
+        let leftThresholds = repository.loadLeftThresholds()
+        let rightThresholds = repository.loadRightThresholds()
+        
+        let leftPTA = calculatePTA(from: leftThresholds) ?? -20
+        let rightPTA = calculatePTA(from: rightThresholds) ?? -20
         
         let avgPTA = (leftPTA + rightPTA) / 2.0
         
@@ -87,6 +90,10 @@ class SNRTestViewModel: ObservableObject {
             print("PTA \(avgPTA) out of range. Defaulting to range 2.")
             return "range-2"
         }
+    }
+    
+    private func calculatePTA(from thresholds: [Double: Float]?) -> Float? {
+        return HearingTestCalculator.calculatePTA(from: thresholds)
     }
     
     func stopAudio() {

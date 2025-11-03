@@ -9,27 +9,54 @@ import Foundation
 
 class HearingTestRepository {
     private let userDefaults = UserDefaults.standard
-    private let ptaLeftKey = "hearingTestPTA_Left"
-    private let ptaRightKey = "hearingTestPTA_Right"
+    private let thresholdsLeftKey = "hearingTestThresholds_Left"
+    private let thresholdsRightKey = "hearingTestThresholds_Right"
     private let snrKey = "hearingTestSNR"
     
-    func savePTA(for ear: Ear, pta: Float) {
-            let key = (ear == .left) ? ptaLeftKey : ptaRightKey
-            userDefaults.setValue(pta, forKey: key)
-        }
-    
-    func loadLeftPTA() -> Float? {
-        guard userDefaults.object(forKey: ptaLeftKey) != nil else {
-            return nil
-        }
-        return userDefaults.float(forKey: ptaLeftKey)
+    func saveThresholds(for ear: Ear, thresholds: [Double: Float]) {
+        let key = (ear == .left) ? thresholdsLeftKey : thresholdsRightKey
+        
+        let stringKeyedThresholds = Dictionary(uniqueKeysWithValues:
+            thresholds.map { (doubleKey, value) in
+                (String(doubleKey), value)
+            }
+        )
+        
+        userDefaults.setValue(stringKeyedThresholds, forKey: key)
     }
     
-    func loadRightPTA() -> Float? {
-        guard userDefaults.object(forKey: ptaRightKey) != nil else {
+    func loadLeftThresholds() -> [Double: Float]? {
+        guard let loadedDict = userDefaults.dictionary(forKey: thresholdsLeftKey) as? [String: Float] else {
             return nil
         }
-        return userDefaults.float(forKey: ptaRightKey)
+        
+        let doubleKeyedThresholds = Dictionary(uniqueKeysWithValues:
+            loadedDict.compactMap { (stringKey, value) -> (Double, Float)? in
+                guard let doubleKey = Double(stringKey) else {
+                    print("Error decoding threshold key: \(stringKey)")
+                    return nil
+                }
+                return (doubleKey, value)
+            }
+        )
+        return doubleKeyedThresholds
+    }
+    
+    func loadRightThresholds() -> [Double: Float]? {
+        guard let loadedDict = userDefaults.dictionary(forKey: thresholdsRightKey) as? [String: Float] else {
+            return nil
+        }
+        
+        let doubleKeyedThresholds = Dictionary(uniqueKeysWithValues:
+            loadedDict.compactMap { (stringKey, value) -> (Double, Float)? in
+                guard let doubleKey = Double(stringKey) else {
+                    print("Error decoding threshold key: \(stringKey)")
+                    return nil
+                }
+                return (doubleKey, value)
+            }
+        )
+        return doubleKeyedThresholds
     }
     
     func saveSNR(_ snr: Int) {

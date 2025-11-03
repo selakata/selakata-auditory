@@ -138,26 +138,23 @@ class EarTestViewModel: ObservableObject {
         noResponseTimer = nil
         audioService.stopTone()
         
-        let pta500 = currentThresholds[500] ?? 0
-        let pta1000 = currentThresholds[1000] ?? 0
-        let pta2000 = currentThresholds[2000] ?? 0
-        let pta4000 = currentThresholds[4000] ?? 0
-        
-        let pta = (pta500 + pta1000 + pta2000 + pta4000) / 4.0
-        
         print("Ear Test Finished: \(currentEar.title)")
         print("Thresholds found: \(currentThresholds)")
-        print("Calculated PTA: \(pta)")
-        repository.savePTA(for: currentEar, pta: pta)
+        repository.saveThresholds(for: currentEar, thresholds: currentThresholds)
         
         isTestComplete = true
     }
     
     deinit {
         // Invalidate timer
+        print("EarTestViewModel is being destroyed. Shutting down audio.")
         noResponseTimer?.invalidate()
+
+        let service = self.audioService
+        
         Task { @MainActor in
-            audioService.stopEngine()
+            print("Deinit: Telling AudioService to stop engine.")
+            service.stopEngine()
         }
     }
 }
