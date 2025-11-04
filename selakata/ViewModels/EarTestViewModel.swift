@@ -138,35 +138,23 @@ class EarTestViewModel: ObservableObject {
         noResponseTimer = nil
         audioService.stopTone()
         
-        let pta500 = currentThresholds[500] ?? 0
-        let pta1000 = currentThresholds[1000] ?? 0
-        let pta2000 = currentThresholds[2000] ?? 0
-        
-        // calculationsnya pake PTA3 krn itu yg level yg umum buat conversational
-        let pta = (pta500 + pta1000 + pta2000) / 3.0
-        let snr = 0.22 * pta + 2.0 // masi pake raw dbfs jadi masi kurang sesuai dengan aslinya
-        
         print("Ear Test Finished: \(currentEar.title)")
         print("Thresholds found: \(currentThresholds)")
-        print("Calculated PTA: \(pta)")
-        print("Calculated SNR: \(snr)")
-        
-        let result = HearingTestResult(
-            thresholds: currentThresholds,
-            pta: pta,
-            snr: snr
-        )
-        
-        repository.saveResult(for: currentEar, result: result)
+        repository.saveThresholds(for: currentEar, thresholds: currentThresholds)
         
         isTestComplete = true
     }
     
     deinit {
         // Invalidate timer
+        print("EarTestViewModel is being destroyed. Shutting down audio.")
         noResponseTimer?.invalidate()
+
+        let service = self.audioService
+        
         Task { @MainActor in
-            audioService.stopEngine()
+            print("Deinit: Telling AudioService to stop engine.")
+            service.stopEngine()
         }
     }
 }
