@@ -17,11 +17,11 @@ class ModulesViewModel: ObservableObject {
 
     private func loadModules() {
         // Convert Module from QuizData to Module for UI compatibility
-        let moduleImages = [
+        _ = [
             "ear.fill", "waveform.path.ecg", "brain.head.profile",
             "person.2.wave.2",
         ]
-        let moduleIds = [
+        _ = [
             "identification", "discrimination", "comprehension",
             "competing_speaker",
         ]

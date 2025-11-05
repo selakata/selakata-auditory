@@ -29,9 +29,9 @@ struct AppleSignInButton: View {
             }
             .foregroundColor(.white)
             .frame(maxWidth: .infinity)
-            .frame(height: 50)
-            .background(Color.black)
-            .cornerRadius(12)
+            .frame(height: 44)
+            .background(Color.slColor)
+            .cornerRadius(20)
         }
         .disabled(isLoading)
     }
