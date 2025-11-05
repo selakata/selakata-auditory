@@ -8,6 +8,8 @@
 import SwiftUI
 
 struct HearingTestOnboardingView: View {
+    @Binding var isStartingTest: Bool
+    
     @State private var audioService = AudioService()
     @State private var repository = HearingTestRepository()
     
@@ -54,6 +56,7 @@ struct HearingTestOnboardingView: View {
             }
             
             NavigationLink(destination: HearingTestGuideView(
+                isStartingTest: $isStartingTest,
                 audioService: audioService,
                 repository: repository
             )) {
@@ -93,5 +96,5 @@ struct GuideRowView: View {
 }
 
 #Preview {
-    HearingTestOnboardingView()
+    HearingTestOnboardingView(isStartingTest: .constant(true))
 }

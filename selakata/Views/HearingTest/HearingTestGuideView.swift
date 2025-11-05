@@ -11,6 +11,7 @@ struct HearingTestGuideView: View {
     @ScaledMetric var iconSize: CGFloat = 200
     @ScaledMetric var horizontalPadding: CGFloat = 32
     
+    @Binding var isStartingTest: Bool
     let audioService: AudioService
     let repository: HearingTestRepository
 
@@ -36,6 +37,7 @@ struct HearingTestGuideView: View {
             Spacer()
             
             NavigationLink(destination: QuietPlaceGuideView(
+                isStartingTest: $isStartingTest,
                 audioService: audioService,
                 repository: repository
             )) {
@@ -58,8 +60,9 @@ struct HearingTestGuideView: View {
 #Preview {
     NavigationStack {
         HearingTestGuideView(
-            audioService: AudioService(),
-            repository: HearingTestRepository()
+            isStartingTest: .constant(true),
+             audioService: AudioService(),
+             repository: HearingTestRepository()
         )
     }
 }
