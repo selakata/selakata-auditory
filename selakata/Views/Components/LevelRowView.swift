@@ -29,15 +29,15 @@ struct LevelRowView: View {
             HStack {
                 ZStack {
                     Rectangle()
-                        .fill(AppColor.gray)
+                        .fill(.gray)
                         .frame(width: 2, height: 32)
                         .offset(y: -32)
                     Rectangle()
-                        .fill(AppColor.gray)
+                        .fill(.gray)
                         .frame(width: 2, height: 32)
                         .offset(y: 32)
                     Circle()
-                        .fill(AppColor.primary)
+                        .fill(.primary)
                         .frame(width: 18, height: 18).padding(16)
                     Circle()
                         .fill(Color.white)
@@ -54,7 +54,7 @@ struct LevelRowView: View {
 
                         if level.isActive {
                             Image(systemName: "play.fill")
-                                .foregroundColor(AppColor.primary)
+                                .foregroundColor(.primary)
                         } else {
                             Image(systemName: "lock.fill")
                                 .font(.title3)
@@ -74,7 +74,7 @@ struct LevelRowView: View {
                 .padding(.vertical, 14)
                 .background(
                     RoundedRectangle(cornerRadius: 12)
-                        .fill(AppColor.primary)
+                        .fill(.primary)
                 )
             }
 

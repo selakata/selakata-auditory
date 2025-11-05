@@ -94,6 +94,15 @@ extension AuthenticationService: ASAuthorizationControllerDelegate {
                 }
             }
             
+//            if let credential = authorization.credential as? ASAuthorizationAppleIDCredential {
+//                print("User ID:", credential.user)
+//                print("Email:", credential.email ?? "N/A")
+//                print("Full name:", credential.fullName?.givenName ?? "N/A")
+//                print("Identity token:", credential.identityToken != nil ? "✅ available" : "❌ missing")
+//                print("Authorization code:", credential.authorizationCode != nil ? "✅ available" : "❌ missing")
+//                print("Real user status:", credential.realUserStatus.rawValue)
+//            }
+            
             self.isAuthenticated = true
         }
     }
