@@ -10,9 +10,22 @@
 		95C9C45A2E9CA463005DF758 /* selakata.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = selakata.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		499DD4222EBB8911008CEDF0 /* Exceptions for "selakata" folder in "selakata" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 95C9C4592E9CA463005DF758 /* selakata */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		95C9C45C2E9CA463005DF758 /* selakata */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				499DD4222EBB8911008CEDF0 /* Exceptions for "selakata" folder in "selakata" target */,
+			);
 			path = selakata;
 			sourceTree = "<group>";
 		};
@@ -249,10 +262,11 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = selakata/selakata.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"selakata/Preview Content\"";
-				DEVELOPMENT_TEAM = PKX77B99UQ;
+				DEVELOPMENT_TEAM = XQCBGC387U;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -278,10 +292,11 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = selakata/selakata.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"selakata/Preview Content\"";
-				DEVELOPMENT_TEAM = PKX77B99UQ;
+				DEVELOPMENT_TEAM = XQCBGC387U;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;

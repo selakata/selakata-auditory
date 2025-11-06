@@ -4,8 +4,631 @@
 //
 //  Created by ais on 23/10/25.
 //
+import Foundation
+
+struct QuestionDummy {
+    let id = UUID()
+    let text: String
+    let answers: [AnswerDummy]
+}
+
+struct AnswerDummy: Identifiable {
+    let id = UUID()
+    let title: String
+    let isCorrect: Bool
+    
+    init(title: String, isCorrect: Bool = false) {
+        self.title = title
+        self.isCorrect = isCorrect
+    }
+}
 
 struct QuizData {
+    //dummy for Module - Complete with all quiz data
+    static let dummyModule: [Module] = [
+        // Audio Identification Module
+        Module(
+            id: UUID(),
+            label: "Identification",
+            desc: "Test kemampuan identifikasi suara dan kata",
+            isActive: true,
+            createdAt: "2024-11-02",
+            updatedAt: "2024-11-02",
+            updatedBy: "system",
+            levelList: [
+                // Easy Level
+                Level(
+                    id: UUID(),
+                    label: "Easy",
+                    value: 1,
+                    isActive: true,
+                    createdAt: "2024-11-02",
+                    updatedAt: "2024-11-02",
+                    updatedBy: "system",
+                    question: identificationQuestions[0].enumerated().map { index, question in
+                        Question(
+                            id: UUID(),
+                            text: question.text,
+                            urutan: index + 1,
+                            mainVolume: 80,
+                            noiseVolume: 20,
+                            createdAt: "2024-11-02",
+                            updatedAt: "2024-11-02",
+                            updatedBy: "system",
+                            audioFile: AudioFile(
+                                id: UUID(),
+                                fileName: "\(audioIdentification[0][index]).mp3",
+                                fileURL: audioIdentification[0][index],
+                                size: 1024,
+                                duration: 3,
+                                snr: 8,
+                                voiceId: "voice001",
+                                voiceName: "Default Voice",
+                                similiarityBoost: 0.75,
+                                speed: 1.0,
+                                stability: 0.8,
+                                useSpeakerBoost: false,
+                                type: 1,
+                                createdAt: "2024-11-02",
+                                updatedAt: "2024-11-02",
+                                updatedBy: "system"
+                            ),
+                            answer: question.answers.enumerated().map { answerIndex, answer in
+                                Answer(
+                                    id: UUID(),
+                                    text: answer.title,
+                                    urutan: answerIndex + 1,
+                                    isCorrect: answer.isCorrect,
+                                    createdAt: "2024-11-02",
+                                    updatedAt: "2024-11-02"
+                                )
+                            }
+                        )
+                    }
+                ),
+                // Medium Level
+                Level(
+                    id: UUID(),
+                    label: "Medium",
+                    value: 2,
+                    isActive: true,
+                    createdAt: "2024-11-02",
+                    updatedAt: "2024-11-02",
+                    updatedBy: "system",
+                    question: identificationQuestions[1].enumerated().map { index, question in
+                        Question(
+                            id: UUID(),
+                            text: question.text,
+                            urutan: index + 1,
+                            mainVolume: 75,
+                            noiseVolume: 25,
+                            createdAt: "2024-11-02",
+                            updatedAt: "2024-11-02",
+                            updatedBy: "system",
+                            audioFile: AudioFile(
+                                id: UUID(),
+                                fileName: "\(audioIdentification[1][index]).mp3",
+                                fileURL: audioIdentification[1][index],
+                                size: 1024,
+                                duration: 3,
+                                snr: 5,
+                                voiceId: "voice001",
+                                voiceName: "Default Voice",
+                                similiarityBoost: 0.75,
+                                speed: 1.0,
+                                stability: 0.8,
+                                useSpeakerBoost: false,
+                                type: 1,
+                                createdAt: "2024-11-02",
+                                updatedAt: "2024-11-02",
+                                updatedBy: "system"
+                            ),
+                            answer: question.answers.enumerated().map { answerIndex, answer in
+                                Answer(
+                                    id: UUID(),
+                                    text: answer.title,
+                                    urutan: answerIndex + 1,
+                                    isCorrect: answer.isCorrect,
+                                    createdAt: "2024-11-02",
+                                    updatedAt: "2024-11-02"
+                                )
+                            }
+                        )
+                    }
+                ),
+                // Hard Level
+                Level(
+                    id: UUID(),
+                    label: "Hard",
+                    value: 3,
+                    isActive: true,
+                    createdAt: "2024-11-02",
+                    updatedAt: "2024-11-02",
+                    updatedBy: "system",
+                    question: identificationQuestions[2].enumerated().map { index, question in
+                        Question(
+                            id: UUID(),
+                            text: question.text,
+                            urutan: index + 1,
+                            mainVolume: 70,
+                            noiseVolume: 30,
+                            createdAt: "2024-11-02",
+                            updatedAt: "2024-11-02",
+                            updatedBy: "system",
+                            audioFile: AudioFile(
+                                id: UUID(),
+                                fileName: "\(audioIdentification[2][index]).mp3",
+                                fileURL: audioIdentification[2][index],
+                                size: 1024,
+                                duration: 3,
+                                snr: 3,
+                                voiceId: "voice001",
+                                voiceName: "Default Voice",
+                                similiarityBoost: 0.75,
+                                speed: 1.0,
+                                stability: 0.8,
+                                useSpeakerBoost: false,
+                                type: 1,
+                                createdAt: "2024-11-02",
+                                updatedAt: "2024-11-02",
+                                updatedBy: "system"
+                            ),
+                            answer: question.answers.enumerated().map { answerIndex, answer in
+                                Answer(
+                                    id: UUID(),
+                                    text: answer.title,
+                                    urutan: answerIndex + 1,
+                                    isCorrect: answer.isCorrect,
+                                    createdAt: "2024-11-02",
+                                    updatedAt: "2024-11-02"
+                                )
+                            }
+                        )
+                    }
+                )
+            ]
+        ),
+        
+        // Audio Discrimination Module
+        Module(
+            id: UUID(),
+            label: "Discrimination",
+            desc: "Test kemampuan diskriminasi suara",
+            isActive: true,
+            createdAt: "2024-11-02",
+            updatedAt: "2024-11-02",
+            updatedBy: "system",
+            levelList: [
+                // Easy Level
+                Level(
+                    id: UUID(),
+                    label: "Easy",
+                    value: 1,
+                    isActive: true,
+                    createdAt: "2024-11-02",
+                    updatedAt: "2024-11-02",
+                    updatedBy: "system",
+                    question: discriminationQuestions[0].enumerated().map { index, question in
+                        Question(
+                            id: UUID(),
+                            text: question.text,
+                            urutan: index + 1,
+                            mainVolume: 80,
+                            noiseVolume: 20,
+                            createdAt: "2024-11-02",
+                            updatedAt: "2024-11-02",
+                            updatedBy: "system",
+                            audioFile: AudioFile(
+                                id: UUID(),
+                                fileName: "\(audioDiscrimintion[0][index]).mp3",
+                                fileURL: audioDiscrimintion[0][index],
+                                size: 1024,
+                                duration: 3,
+                                snr: 8,
+                                voiceId: "voice001",
+                                voiceName: "Default Voice",
+                                similiarityBoost: 0.75,
+                                speed: 1.0,
+                                stability: 0.8,
+                                useSpeakerBoost: false,
+                                type: 2,
+                                createdAt: "2024-11-02",
+                                updatedAt: "2024-11-02",
+                                updatedBy: "system"
+                            ),
+                            answer: question.answers.enumerated().map { answerIndex, answer in
+                                Answer(
+                                    id: UUID(),
+                                    text: answer.title,
+                                    urutan: answerIndex + 1,
+                                    isCorrect: answer.isCorrect,
+                                    createdAt: "2024-11-02",
+                                    updatedAt: "2024-11-02"
+                                )
+                            }
+                        )
+                    }
+                ),
+                // Medium Level
+                Level(
+                    id: UUID(),
+                    label: "Medium",
+                    value: 2,
+                    isActive: true,
+                    createdAt: "2024-11-02",
+                    updatedAt: "2024-11-02",
+                    updatedBy: "system",
+                    question: discriminationQuestions[1].enumerated().map { index, question in
+                        Question(
+                            id: UUID(),
+                            text: question.text,
+                            urutan: index + 1,
+                            mainVolume: 75,
+                            noiseVolume: 25,
+                            createdAt: "2024-11-02",
+                            updatedAt: "2024-11-02",
+                            updatedBy: "system",
+                            audioFile: AudioFile(
+                                id: UUID(),
+                                fileName: "\(audioDiscrimintion[1][index]).mp3",
+                                fileURL: audioDiscrimintion[1][index],
+                                size: 1024,
+                                duration: 3,
+                                snr: 5,
+                                voiceId: "voice001",
+                                voiceName: "Default Voice",
+                                similiarityBoost: 0.75,
+                                speed: 1.0,
+                                stability: 0.8,
+                                useSpeakerBoost: false,
+                                type: 2,
+                                createdAt: "2024-11-02",
+                                updatedAt: "2024-11-02",
+                                updatedBy: "system"
+                            ),
+                            answer: question.answers.enumerated().map { answerIndex, answer in
+                                Answer(
+                                    id: UUID(),
+                                    text: answer.title,
+                                    urutan: answerIndex + 1,
+                                    isCorrect: answer.isCorrect,
+                                    createdAt: "2024-11-02",
+                                    updatedAt: "2024-11-02"
+                                )
+                            }
+                        )
+                    }
+                ),
+                // Hard Level
+                Level(
+                    id: UUID(),
+                    label: "Hard",
+                    value: 3,
+                    isActive: true,
+                    createdAt: "2024-11-02",
+                    updatedAt: "2024-11-02",
+                    updatedBy: "system",
+                    question: discriminationQuestions[2].enumerated().map { index, question in
+                        Question(
+                            id: UUID(),
+                            text: question.text,
+                            urutan: index + 1,
+                            mainVolume: 70,
+                            noiseVolume: 30,
+                            createdAt: "2024-11-02",
+                            updatedAt: "2024-11-02",
+                            updatedBy: "system",
+                            audioFile: AudioFile(
+                                id: UUID(),
+                                fileName: "\(audioDiscrimintion[2][index]).mp3",
+                                fileURL: audioDiscrimintion[2][index],
+                                size: 1024,
+                                duration: 3,
+                                snr: 3,
+                                voiceId: "voice001",
+                                voiceName: "Default Voice",
+                                similiarityBoost: 0.75,
+                                speed: 1.0,
+                                stability: 0.8,
+                                useSpeakerBoost: false,
+                                type: 2,
+                                createdAt: "2024-11-02",
+                                updatedAt: "2024-11-02",
+                                updatedBy: "system"
+                            ),
+                            answer: question.answers.enumerated().map { answerIndex, answer in
+                                Answer(
+                                    id: UUID(),
+                                    text: answer.title,
+                                    urutan: answerIndex + 1,
+                                    isCorrect: answer.isCorrect,
+                                    createdAt: "2024-11-02",
+                                    updatedAt: "2024-11-02"
+                                )
+                            }
+                        )
+                    }
+                )
+            ]
+        ),
+        
+        // Audio Comprehension Module
+        Module(
+            id: UUID(),
+            label: "Comprehension",
+            desc: "Test kemampuan pemahaman audio",
+            isActive: true,
+            createdAt: "2024-11-02",
+            updatedAt: "2024-11-02",
+            updatedBy: "system",
+            levelList: [
+                // Easy Level
+                Level(
+                    id: UUID(),
+                    label: "Easy",
+                    value: 1,
+                    isActive: true,
+                    createdAt: "2024-11-02",
+                    updatedAt: "2024-11-02",
+                    updatedBy: "system",
+                    question: comprehensionQuestions[0].enumerated().map { index, question in
+                        Question(
+                            id: UUID(),
+                            text: question.text,
+                            urutan: index + 1,
+                            mainVolume: 80,
+                            noiseVolume: 20,
+                            createdAt: "2024-11-02",
+                            updatedAt: "2024-11-02",
+                            updatedBy: "system",
+                            audioFile: AudioFile(
+                                id: UUID(),
+                                fileName: "\(audioComprehension[0][index]).mp3",
+                                fileURL: audioComprehension[0][index],
+                                size: 1024,
+                                duration: 5,
+                                snr: 8,
+                                voiceId: "voice001",
+                                voiceName: "Default Voice",
+                                similiarityBoost: 0.75,
+                                speed: 1.0,
+                                stability: 0.8,
+                                useSpeakerBoost: false,
+                                type: 3,
+                                createdAt: "2024-11-02",
+                                updatedAt: "2024-11-02",
+                                updatedBy: "system"
+                            ),
+                            answer: question.answers.enumerated().map { answerIndex, answer in
+                                Answer(
+                                    id: UUID(),
+                                    text: answer.title,
+                                    urutan: answerIndex + 1,
+                                    isCorrect: answer.isCorrect,
+                                    createdAt: "2024-11-02",
+                                    updatedAt: "2024-11-02"
+                                )
+                            }
+                        )
+                    }
+                ),
+                // Medium Level
+                Level(
+                    id: UUID(),
+                    label: "Medium",
+                    value: 2,
+                    isActive: true,
+                    createdAt: "2024-11-02",
+                    updatedAt: "2024-11-02",
+                    updatedBy: "system",
+                    question: comprehensionQuestions[1].enumerated().map { index, question in
+                        Question(
+                            id: UUID(),
+                            text: question.text,
+                            urutan: index + 1,
+                            mainVolume: 75,
+                            noiseVolume: 25,
+                            createdAt: "2024-11-02",
+                            updatedAt: "2024-11-02",
+                            updatedBy: "system",
+                            audioFile: AudioFile(
+                                id: UUID(),
+                                fileName: "\(audioComprehension[1][index]).mp3",
+                                fileURL: audioComprehension[1][index],
+                                size: 1024,
+                                duration: 5,
+                                snr: 5,
+                                voiceId: "voice001",
+                                voiceName: "Default Voice",
+                                similiarityBoost: 0.75,
+                                speed: 1.0,
+                                stability: 0.8,
+                                useSpeakerBoost: false,
+                                type: 3,
+                                createdAt: "2024-11-02",
+                                updatedAt: "2024-11-02",
+                                updatedBy: "system"
+                            ),
+                            answer: question.answers.enumerated().map { answerIndex, answer in
+                                Answer(
+                                    id: UUID(),
+                                    text: answer.title,
+                                    urutan: answerIndex + 1,
+                                    isCorrect: answer.isCorrect,
+                                    createdAt: "2024-11-02",
+                                    updatedAt: "2024-11-02"
+                                )
+                            }
+                        )
+                    }
+                ),
+                // Hard Level
+                Level(
+                    id: UUID(),
+                    label: "Hard",
+                    value: 3,
+                    isActive: true,
+                    createdAt: "2024-11-02",
+                    updatedAt: "2024-11-02",
+                    updatedBy: "system",
+                    question: comprehensionQuestions[2].enumerated().map { index, question in
+                        Question(
+                            id: UUID(),
+                            text: question.text,
+                            urutan: index + 1,
+                            mainVolume: 70,
+                            noiseVolume: 30,
+                            createdAt: "2024-11-02",
+                            updatedAt: "2024-11-02",
+                            updatedBy: "system",
+                            audioFile: AudioFile(
+                                id: UUID(),
+                                fileName: "\(audioComprehension[2][index]).mp3",
+                                fileURL: audioComprehension[2][index],
+                                size: 1024,
+                                duration: 5,
+                                snr: 3,
+                                voiceId: "voice001",
+                                voiceName: "Default Voice",
+                                similiarityBoost: 0.75,
+                                speed: 1.0,
+                                stability: 0.8,
+                                useSpeakerBoost: false,
+                                type: 3,
+                                createdAt: "2024-11-02",
+                                updatedAt: "2024-11-02",
+                                updatedBy: "system"
+                            ),
+                            answer: question.answers.enumerated().map { answerIndex, answer in
+                                Answer(
+                                    id: UUID(),
+                                    text: answer.title,
+                                    urutan: answerIndex + 1,
+                                    isCorrect: answer.isCorrect,
+                                    createdAt: "2024-11-02",
+                                    updatedAt: "2024-11-02"
+                                )
+                            }
+                        )
+                    }
+                )
+            ]
+        ),
+        
+        // Competing Speaker Module
+        Module(
+            id: UUID(),
+            label: "Competing Speaker",
+            desc: "Test kemampuan mendengar dalam lingkungan bising",
+            isActive: true,
+            createdAt: "2024-11-02",
+            updatedAt: "2024-11-02",
+            updatedBy: "system",
+            levelList: [
+                // Level II
+                Level(
+                    id: UUID(),
+                    label: "Level II",
+                    value: 2,
+                    isActive: true,
+                    createdAt: "2024-11-02",
+                    updatedAt: "2024-11-02",
+                    updatedBy: "system",
+                    question: computationSpeakerQuestions[0].enumerated().map { index, question in
+                        Question(
+                            id: UUID(),
+                            text: question.text,
+                            urutan: index + 1,
+                            mainVolume: 70,
+                            noiseVolume: 30,
+                            createdAt: "2024-11-02",
+                            updatedAt: "2024-11-02",
+                            updatedBy: "system",
+                            audioFile: AudioFile(
+                                id: UUID(),
+                                fileName: "\(audioCompetingSpeaker[0][index]).mp3",
+                                fileURL: audioCompetingSpeaker[0][index],
+                                size: 2048,
+                                duration: 8,
+                                snr: [8, 5, 5, 3, 0][index],
+                                voiceId: "voice001",
+                                voiceName: "Default Voice",
+                                similiarityBoost: 0.75,
+                                speed: 1.0,
+                                stability: 0.8,
+                                useSpeakerBoost: true,
+                                type: 4,
+                                createdAt: "2024-11-02",
+                                updatedAt: "2024-11-02",
+                                updatedBy: "system"
+                            ),
+                            answer: question.answers.enumerated().map { answerIndex, answer in
+                                Answer(
+                                    id: UUID(),
+                                    text: answer.title,
+                                    urutan: answerIndex + 1,
+                                    isCorrect: answer.isCorrect,
+                                    createdAt: "2024-11-02",
+                                    updatedAt: "2024-11-02"
+                                )
+                            }
+                        )
+                    }
+                ),
+                // Level III
+                Level(
+                    id: UUID(),
+                    label: "Level III",
+                    value: 3,
+                    isActive: true,
+                    createdAt: "2024-11-02",
+                    updatedAt: "2024-11-02",
+                    updatedBy: "system",
+                    question: computationSpeakerQuestions[1].enumerated().map { index, question in
+                        Question(
+                            id: UUID(),
+                            text: question.text,
+                            urutan: index + 1,
+                            mainVolume: 65,
+                            noiseVolume: 35,
+                            createdAt: "2024-11-02",
+                            updatedAt: "2024-11-02",
+                            updatedBy: "system",
+                            audioFile: AudioFile(
+                                id: UUID(),
+                                fileName: "\(audioCompetingSpeaker[1][index]).mp3",
+                                fileURL: audioCompetingSpeaker[1][index],
+                                size: 2048,
+                                duration: 8,
+                                snr: [8, 5, 5, 3, 0][index],
+                                voiceId: "voice001",
+                                voiceName: "Default Voice",
+                                similiarityBoost: 0.75,
+                                speed: 1.0,
+                                stability: 0.8,
+                                useSpeakerBoost: true,
+                                type: 4,
+                                createdAt: "2024-11-02",
+                                updatedAt: "2024-11-02",
+                                updatedBy: "system"
+                            ),
+                            answer: question.answers.enumerated().map { answerIndex, answer in
+                                Answer(
+                                    id: UUID(),
+                                    text: answer.title,
+                                    urutan: answerIndex + 1,
+                                    isCorrect: answer.isCorrect,
+                                    createdAt: "2024-11-02",
+                                    updatedAt: "2024-11-02"
+                                )
+                            }
+                        )
+                    }
+                )
+            ]
+        )
+    ] 
+    
     static let audioIdentification = [
         [
             "identification-easy-1",
@@ -77,7 +700,7 @@ struct QuizData {
         ],
     ]
 
-    static let audioComputingSpeaker: [[String]] = [
+    static let audioCompetingSpeaker: [[String]] = [
         [
             "CS-II-1-SNR-(8dB)",
             "CS-II-2-SNR-(5dB)",
@@ -97,143 +720,143 @@ struct QuizData {
 
     static let identificationQuestions = [
         [
-            Question(
+            QuestionDummy(
                 text: "Apa kata yang diucapkan?",
                 answers: [
-                    Answer(title: "Pipi", isCorrect: false),
-                    Answer(title: "Tepi", isCorrect: false),
-                    Answer(title: "Topi", isCorrect: true),
-                    Answer(title: "Sapi", isCorrect: false),
+                    AnswerDummy(title: "Pipi", isCorrect: false),
+                    AnswerDummy(title: "Tepi", isCorrect: false),
+                    AnswerDummy(title: "Topi", isCorrect: true),
+                    AnswerDummy(title: "Sapi", isCorrect: false),
                 ]
             ),
-            Question(
+            QuestionDummy(
                 text: "Apa kata yang diucapkan?",
                 answers: [
-                    Answer(title: "Duku", isCorrect: false),
-                    Answer(title: "Buku", isCorrect: true),
-                    Answer(title: "Suku", isCorrect: false),
-                    Answer(title: "Lugu", isCorrect: false),
+                    AnswerDummy(title: "Duku", isCorrect: false),
+                    AnswerDummy(title: "Buku", isCorrect: true),
+                    AnswerDummy(title: "Suku", isCorrect: false),
+                    AnswerDummy(title: "Lugu", isCorrect: false),
                 ]
             ),
-            Question(
+            QuestionDummy(
                 text: "Apa kata yang diucapkan?",
                 answers: [
-                    Answer(title: "Rapu", isCorrect: false),
-                    Answer(title: "Saku", isCorrect: true),
-                    Answer(title: "Satu", isCorrect: false),
-                    Answer(title: "Sapu", isCorrect: false),
+                    AnswerDummy(title: "Rapu", isCorrect: false),
+                    AnswerDummy(title: "Saku", isCorrect: true),
+                    AnswerDummy(title: "Satu", isCorrect: false),
+                    AnswerDummy(title: "Sapu", isCorrect: false),
                 ]
             ),
-            Question(
+            QuestionDummy(
                 text: "Apa kata yang diucapkan?",
                 answers: [
-                    Answer(title: "Kuta", isCorrect: false),
-                    Answer(title: "Rupa", isCorrect: false),
-                    Answer(title: "Supa", isCorrect: false),
-                    Answer(title: "Kuda", isCorrect: true),
+                    AnswerDummy(title: "Kuta", isCorrect: false),
+                    AnswerDummy(title: "Rupa", isCorrect: false),
+                    AnswerDummy(title: "Supa", isCorrect: false),
+                    AnswerDummy(title: "Kuda", isCorrect: true),
                 ]
             ),
-            Question(
+            QuestionDummy(
                 text: "Apa kata yang diucapkan?",
                 answers: [
-                    Answer(title: "Kaki", isCorrect: true),
-                    Answer(title: "Sari", isCorrect: false),
-                    Answer(title: "Dari", isCorrect: false),
-                    Answer(title: "Maki", isCorrect: false),
-                ]
-            ),
-        ],
-        [
-            Question(
-                text: "Apa kata yang diucapkan?",
-                answers: [
-                    Answer(title: "Gatal", isCorrect: false),
-                    Answer(title: "Kapal", isCorrect: true),
-                    Answer(title: "Kapan", isCorrect: false),
-                    Answer(title: "Kapas", isCorrect: false),
-                ]
-            ),
-            Question(
-                text: "Apa kata yang diucapkan?",
-                answers: [
-                    Answer(title: "Menggigil", isCorrect: false),
-                    Answer(title: "Memanggil", isCorrect: true),
-                    Answer(title: "Menggunting", isCorrect: false),
-                    Answer(title: "Menggigit", isCorrect: false),
-                ]
-            ),
-            Question(
-                text: "Apa kata yang diucapkan?",
-                answers: [
-                    Answer(title: "Jendara", isCorrect: false),
-                    Answer(title: "Jendral", isCorrect: false),
-                    Answer(title: "Jendela", isCorrect: true),
-                    Answer(title: "Jembala", isCorrect: false),
-                ]
-            ),
-            Question(
-                text: "Apa kata yang diucapkan?",
-                answers: [
-                    Answer(title: "Lembaran", isCorrect: true),
-                    Answer(title: "Lebaran", isCorrect: false),
-                    Answer(title: "Jembaran", isCorrect: false),
-                    Answer(title: "Jembatan", isCorrect: false),
-                ]
-            ),
-            Question(
-                text: "Apa kata yang diucapkan?",
-                answers: [
-                    Answer(title: "Belajar", isCorrect: true),
-                    Answer(title: "Pelajar", isCorrect: false),
-                    Answer(title: "Selancar", isCorrect: false),
-                    Answer(title: "Derajat", isCorrect: false),
+                    AnswerDummy(title: "Kaki", isCorrect: true),
+                    AnswerDummy(title: "Sari", isCorrect: false),
+                    AnswerDummy(title: "Dari", isCorrect: false),
+                    AnswerDummy(title: "Maki", isCorrect: false),
                 ]
             ),
         ],
         [
-            Question(
+            QuestionDummy(
                 text: "Apa kata yang diucapkan?",
                 answers: [
-                    Answer(title: "Komuter", isCorrect: false),
-                    Answer(title: "Komputer", isCorrect: true),
-                    Answer(title: "Komputel", isCorrect: false),
-                    Answer(title: "Komputes", isCorrect: false),
+                    AnswerDummy(title: "Gatal", isCorrect: false),
+                    AnswerDummy(title: "Kapal", isCorrect: true),
+                    AnswerDummy(title: "Kapan", isCorrect: false),
+                    AnswerDummy(title: "Kapas", isCorrect: false),
                 ]
             ),
-            Question(
+            QuestionDummy(
                 text: "Apa kata yang diucapkan?",
                 answers: [
-                    Answer(title: "Menari", isCorrect: true),
-                    Answer(title: "Menarik", isCorrect: false),
-                    Answer(title: "Menaruh", isCorrect: false),
-                    Answer(title: "Memercik", isCorrect: false),
+                    AnswerDummy(title: "Menggigil", isCorrect: false),
+                    AnswerDummy(title: "Memanggil", isCorrect: true),
+                    AnswerDummy(title: "Menggunting", isCorrect: false),
+                    AnswerDummy(title: "Menggigit", isCorrect: false),
                 ]
             ),
-            Question(
+            QuestionDummy(
                 text: "Apa kata yang diucapkan?",
                 answers: [
-                    Answer(title: "Kegaduhan", isCorrect: false),
-                    Answer(title: "Kerapuhan", isCorrect: false),
-                    Answer(title: "Kepatuhan", isCorrect: true),
-                    Answer(title: "Keputusan", isCorrect: false),
+                    AnswerDummy(title: "Jendara", isCorrect: false),
+                    AnswerDummy(title: "Jendral", isCorrect: false),
+                    AnswerDummy(title: "Jendela", isCorrect: true),
+                    AnswerDummy(title: "Jembala", isCorrect: false),
                 ]
             ),
-            Question(
+            QuestionDummy(
                 text: "Apa kata yang diucapkan?",
                 answers: [
-                    Answer(title: "Kecipratan", isCorrect: false),
-                    Answer(title: "Kepintaran", isCorrect: false),
-                    Answer(title: "Kecintaan", isCorrect: true),
-                    Answer(title: "Keciptaan", isCorrect: false),
+                    AnswerDummy(title: "Lembaran", isCorrect: true),
+                    AnswerDummy(title: "Lebaran", isCorrect: false),
+                    AnswerDummy(title: "Jembaran", isCorrect: false),
+                    AnswerDummy(title: "Jembatan", isCorrect: false),
                 ]
             ),
-            Question(
+            QuestionDummy(
                 text: "Apa kata yang diucapkan?",
                 answers: [
-                    Answer(title: "Keseringan", isCorrect: false),
-                    Answer(title: "Kesenian", isCorrect: true),
-                    Answer(title: "Keserian", isCorrect: false),
-                    Answer(title: "Kesekian", isCorrect: false),
+                    AnswerDummy(title: "Belajar", isCorrect: true),
+                    AnswerDummy(title: "Pelajar", isCorrect: false),
+                    AnswerDummy(title: "Selancar", isCorrect: false),
+                    AnswerDummy(title: "Derajat", isCorrect: false),
+                ]
+            ),
+        ],
+        [
+            QuestionDummy(
+                text: "Apa kata yang diucapkan?",
+                answers: [
+                    AnswerDummy(title: "Komuter", isCorrect: false),
+                    AnswerDummy(title: "Komputer", isCorrect: true),
+                    AnswerDummy(title: "Komputel", isCorrect: false),
+                    AnswerDummy(title: "Komputes", isCorrect: false),
+                ]
+            ),
+            QuestionDummy(
+                text: "Apa kata yang diucapkan?",
+                answers: [
+                    AnswerDummy(title: "Menari", isCorrect: true),
+                    AnswerDummy(title: "Menarik", isCorrect: false),
+                    AnswerDummy(title: "Menaruh", isCorrect: false),
+                    AnswerDummy(title: "Memercik", isCorrect: false),
+                ]
+            ),
+            QuestionDummy(
+                text: "Apa kata yang diucapkan?",
+                answers: [
+                    AnswerDummy(title: "Kegaduhan", isCorrect: false),
+                    AnswerDummy(title: "Kerapuhan", isCorrect: false),
+                    AnswerDummy(title: "Kepatuhan", isCorrect: true),
+                    AnswerDummy(title: "Keputusan", isCorrect: false),
+                ]
+            ),
+            QuestionDummy(
+                text: "Apa kata yang diucapkan?",
+                answers: [
+                    AnswerDummy(title: "Kecipratan", isCorrect: false),
+                    AnswerDummy(title: "Kepintaran", isCorrect: false),
+                    AnswerDummy(title: "Kecintaan", isCorrect: true),
+                    AnswerDummy(title: "Keciptaan", isCorrect: false),
+                ]
+            ),
+            QuestionDummy(
+                text: "Apa kata yang diucapkan?",
+                answers: [
+                    AnswerDummy(title: "Keseringan", isCorrect: false),
+                    AnswerDummy(title: "Kesenian", isCorrect: true),
+                    AnswerDummy(title: "Keserian", isCorrect: false),
+                    AnswerDummy(title: "Kesekian", isCorrect: false),
                 ]
             ),
         ],
@@ -241,113 +864,113 @@ struct QuizData {
 
     static let discriminationQuestions = [
         [
-            Question(
+            QuestionDummy(
                 text: "Yang manakah suaranya?",
                 answers: [
-                    Answer(title: "Botol", isCorrect: false),
-                    Answer(title: "Bosan", isCorrect: true),
+                    AnswerDummy(title: "Botol", isCorrect: false),
+                    AnswerDummy(title: "Bosan", isCorrect: true),
                 ]
             ),
-            Question(
+            QuestionDummy(
                 text: "Yang manakah suaranya?",
                 answers: [
-                    Answer(title: "Dara", isCorrect: false),
-                    Answer(title: "Dasi", isCorrect: true),
+                    AnswerDummy(title: "Dara", isCorrect: false),
+                    AnswerDummy(title: "Dasi", isCorrect: true),
                 ]
             ),
-            Question(
+            QuestionDummy(
                 text: "Yang manakah suaranya?",
                 answers: [
-                    Answer(title: "Layu", isCorrect: true),
-                    Answer(title: "Layar", isCorrect: false),
+                    AnswerDummy(title: "Layu", isCorrect: true),
+                    AnswerDummy(title: "Layar", isCorrect: false),
                 ]
             ),
-            Question(
+            QuestionDummy(
                 text: "Yang manakah suaranya?",
                 answers: [
-                    Answer(title: "Makan", isCorrect: true),
-                    Answer(title: "Mandi", isCorrect: false),
+                    AnswerDummy(title: "Makan", isCorrect: true),
+                    AnswerDummy(title: "Mandi", isCorrect: false),
                 ]
             ),
-            Question(
+            QuestionDummy(
                 text: "Yang manakah suaranya?",
                 answers: [
-                    Answer(title: "Panjang", isCorrect: true),
-                    Answer(title: "Ranjang", isCorrect: false),
-                ]
-            ),
-        ],
-        [
-            Question(
-                text: "Yang manakah suaranya?",
-                answers: [
-                    Answer(title: "Anting", isCorrect: true),
-                    Answer(title: "Anjing", isCorrect: false),
-                ]
-            ),
-            Question(
-                text: "Yang manakah suaranya?",
-                answers: [
-                    Answer(title: "Gayung", isCorrect: false),
-                    Answer(title: "Dayung", isCorrect: true),
-                ]
-            ),
-            Question(
-                text: "Yang manakah suaranya?",
-                answers: [
-                    Answer(title: "Gusur", isCorrect: true),
-                    Answer(title: "Gugur", isCorrect: false),
-                ]
-            ),
-            Question(
-                text: "Yang manakah suaranya?",
-                answers: [
-                    Answer(title: "Kasir", isCorrect: false),
-                    Answer(title: "Pasir", isCorrect: true),
-                ]
-            ),
-            Question(
-                text: "Yang manakah suaranya?",
-                answers: [
-                    Answer(title: "Risau", isCorrect: false),
-                    Answer(title: "Pisau", isCorrect: true),
+                    AnswerDummy(title: "Panjang", isCorrect: true),
+                    AnswerDummy(title: "Ranjang", isCorrect: false),
                 ]
             ),
         ],
         [
-            Question(
+            QuestionDummy(
                 text: "Yang manakah suaranya?",
                 answers: [
-                    Answer(title: "Ingin", isCorrect: false),
-                    Answer(title: "Dingin", isCorrect: true),
+                    AnswerDummy(title: "Anting", isCorrect: true),
+                    AnswerDummy(title: "Anjing", isCorrect: false),
                 ]
             ),
-            Question(
+            QuestionDummy(
                 text: "Yang manakah suaranya?",
                 answers: [
-                    Answer(title: "Persiapan", isCorrect: true),
-                    Answer(title: "Perpisahan", isCorrect: false),
+                    AnswerDummy(title: "Gayung", isCorrect: false),
+                    AnswerDummy(title: "Dayung", isCorrect: true),
                 ]
             ),
-            Question(
+            QuestionDummy(
                 text: "Yang manakah suaranya?",
                 answers: [
-                    Answer(title: "Pintu Kata", isCorrect: true),
-                    Answer(title: "Pintu Kaca", isCorrect: false),
+                    AnswerDummy(title: "Gusur", isCorrect: true),
+                    AnswerDummy(title: "Gugur", isCorrect: false),
                 ]
             ),
-            Question(
+            QuestionDummy(
                 text: "Yang manakah suaranya?",
                 answers: [
-                    Answer(title: "Obat", isCorrect: false),
-                    Answer(title: "Sempat", isCorrect: true),
+                    AnswerDummy(title: "Kasir", isCorrect: false),
+                    AnswerDummy(title: "Pasir", isCorrect: true),
                 ]
             ),
-            Question(
+            QuestionDummy(
                 text: "Yang manakah suaranya?",
                 answers: [
-                    Answer(title: "Sifat Buruk", isCorrect: true),
-                    Answer(title: "Sikap Buruk", isCorrect: false),
+                    AnswerDummy(title: "Risau", isCorrect: false),
+                    AnswerDummy(title: "Pisau", isCorrect: true),
+                ]
+            ),
+        ],
+        [
+            QuestionDummy(
+                text: "Yang manakah suaranya?",
+                answers: [
+                    AnswerDummy(title: "Ingin", isCorrect: false),
+                    AnswerDummy(title: "Dingin", isCorrect: true),
+                ]
+            ),
+            QuestionDummy(
+                text: "Yang manakah suaranya?",
+                answers: [
+                    AnswerDummy(title: "Persiapan", isCorrect: true),
+                    AnswerDummy(title: "Perpisahan", isCorrect: false),
+                ]
+            ),
+            QuestionDummy(
+                text: "Yang manakah suaranya?",
+                answers: [
+                    AnswerDummy(title: "Pintu Kata", isCorrect: true),
+                    AnswerDummy(title: "Pintu Kaca", isCorrect: false),
+                ]
+            ),
+            QuestionDummy(
+                text: "Yang manakah suaranya?",
+                answers: [
+                    AnswerDummy(title: "Obat", isCorrect: false),
+                    AnswerDummy(title: "Sempat", isCorrect: true),
+                ]
+            ),
+            QuestionDummy(
+                text: "Yang manakah suaranya?",
+                answers: [
+                    AnswerDummy(title: "Sifat Buruk", isCorrect: true),
+                    AnswerDummy(title: "Sikap Buruk", isCorrect: false),
                 ]
             ),
         ],
@@ -355,152 +978,152 @@ struct QuizData {
 
     static let comprehensionQuestions = [
         [
-            Question(
+            QuestionDummy(
                 text: "Apa yang Rina Minum?",
                 answers: [
-                    Answer(title: "Es", isCorrect: false),
-                    Answer(title: "Jus", isCorrect: true),
-                    Answer(title: "Kopi", isCorrect: false),
-                    Answer(title: "Teh", isCorrect: false),
+                    AnswerDummy(title: "Es", isCorrect: false),
+                    AnswerDummy(title: "Jus", isCorrect: true),
+                    AnswerDummy(title: "Kopi", isCorrect: false),
+                    AnswerDummy(title: "Teh", isCorrect: false),
                 ]
             ),
-            Question(
+            QuestionDummy(
                 text: "Kata sebelum \"dengan\" adalah?",
                 answers: [
-                    Answer(title: "Tahun", isCorrect: true),
-                    Answer(title: "Memotong", isCorrect: false),
-                    Answer(title: "Adik", isCorrect: false),
-                    Answer(title: "Pisau", isCorrect: false),
+                    AnswerDummy(title: "Tahun", isCorrect: true),
+                    AnswerDummy(title: "Memotong", isCorrect: false),
+                    AnswerDummy(title: "Adik", isCorrect: false),
+                    AnswerDummy(title: "Pisau", isCorrect: false),
                 ]
             ),
-            Question(
+            QuestionDummy(
                 text: "Apa yang ayah perbaiki?",
                 answers: [
-                    Answer(title: "Motor", isCorrect: false),
-                    Answer(title: "Sepeda", isCorrect: false),
-                    Answer(title: "Mobil", isCorrect: true),
-                    Answer(title: "Gerobak", isCorrect: false),
+                    AnswerDummy(title: "Motor", isCorrect: false),
+                    AnswerDummy(title: "Sepeda", isCorrect: false),
+                    AnswerDummy(title: "Mobil", isCorrect: true),
+                    AnswerDummy(title: "Gerobak", isCorrect: false),
                 ]
             ),
-            Question(
+            QuestionDummy(
                 text: "Kata sebelum \"sambil\" adalah?",
                 answers: [
-                    Answer(title: "Taman", isCorrect: true),
-                    Answer(title: "Santai", isCorrect: false),
-                    Answer(title: "Berjalan", isCorrect: false),
-                    Answer(title: "Tongkat", isCorrect: false),
+                    AnswerDummy(title: "Taman", isCorrect: true),
+                    AnswerDummy(title: "Santai", isCorrect: false),
+                    AnswerDummy(title: "Berjalan", isCorrect: false),
+                    AnswerDummy(title: "Tongkat", isCorrect: false),
                 ]
             ),
-            Question(
+            QuestionDummy(
                 text: "Kata sebelum \"makan\" adalah?",
                 answers: [
-                    Answer(title: "Piring", isCorrect: false),
-                    Answer(title: "Untuk", isCorrect: false),
-                    Answer(title: "Setelah", isCorrect: true),
-                    Answer(title: "Ibunya", isCorrect: false),
+                    AnswerDummy(title: "Piring", isCorrect: false),
+                    AnswerDummy(title: "Untuk", isCorrect: false),
+                    AnswerDummy(title: "Setelah", isCorrect: true),
+                    AnswerDummy(title: "Ibunya", isCorrect: false),
                 ]
             ),
         ],
         [
-            Question(
+            QuestionDummy(
                 text: "Kenapa Budi berhenti di perjalanan?",
                 answers: [
-                    Answer(title: "Ban motor bocor", isCorrect: false),
-                    Answer(title: "Ada ujian Mendadak", isCorrect: false),
-                    Answer(title: "Karena hujan", isCorrect: true),
-                    Answer(title: "Sekolahnya tutup", isCorrect: false),
+                    AnswerDummy(title: "Ban motor bocor", isCorrect: false),
+                    AnswerDummy(title: "Ada ujian Mendadak", isCorrect: false),
+                    AnswerDummy(title: "Karena hujan", isCorrect: true),
+                    AnswerDummy(title: "Sekolahnya tutup", isCorrect: false),
                 ]
             ),
-            Question(
+            QuestionDummy(
                 text: "Apa yang Dina lupakan?",
                 answers: [
-                    Answer(title: "Bucket", isCorrect: false),
-                    Answer(title: "Totebag", isCorrect: false),
-                    Answer(title: "Dompet", isCorrect: true),
-                    Answer(title: "Songket", isCorrect: false),
+                    AnswerDummy(title: "Bucket", isCorrect: false),
+                    AnswerDummy(title: "Totebag", isCorrect: false),
+                    AnswerDummy(title: "Dompet", isCorrect: true),
+                    AnswerDummy(title: "Songket", isCorrect: false),
                 ]
             ),
-            Question(
+            QuestionDummy(
                 text: "Mengapa Andi meminta adiknya mengecilkan suara TV?",
                 answers: [
-                    Answer(
+                    AnswerDummy(
                         title: "Karena Andi sedang rekaman",
                         isCorrect: false
                     ),
-                    Answer(title: "Karena Andi sedang sakit", isCorrect: false),
-                    Answer(
+                    AnswerDummy(title: "Karena Andi sedang sakit", isCorrect: false),
+                    AnswerDummy(
                         title: "Karena Andi sedang belajar",
                         isCorrect: true
                     ),
-                    Answer(title: "Karena Andi kebisingan", isCorrect: false),
+                    AnswerDummy(title: "Karena Andi kebisingan", isCorrect: false),
                 ]
             ),
-            Question(
+            QuestionDummy(
                 text: "Apa yang dilakukan Raka saat koneksinya terputus??",
                 answers: [
-                    Answer(title: "Merestart Wi-Fi", isCorrect: false),
-                    Answer(title: "Menyalakan hotspot", isCorrect: true),
-                    Answer(title: "Membeli paket data", isCorrect: false),
-                    Answer(
+                    AnswerDummy(title: "Merestart Wi-Fi", isCorrect: false),
+                    AnswerDummy(title: "Menyalakan hotspot", isCorrect: true),
+                    AnswerDummy(title: "Membeli paket data", isCorrect: false),
+                    AnswerDummy(
                         title: "Menghubungi service provider",
                         isCorrect: false
                     ),
                 ]
             ),
-            Question(
+            QuestionDummy(
                 text: "Kenapa Sinta mengganti menu makan malamnya?",
                 answers: [
-                    Answer(title: "Karena gas habis", isCorrect: false),
-                    Answer(title: "Karena saus tomat habis", isCorrect: true),
-                    Answer(title: "Karena moodnya habis", isCorrect: false),
-                    Answer(title: "Karena pastanya habis", isCorrect: false),
+                    AnswerDummy(title: "Karena gas habis", isCorrect: false),
+                    AnswerDummy(title: "Karena saus tomat habis", isCorrect: true),
+                    AnswerDummy(title: "Karena moodnya habis", isCorrect: false),
+                    AnswerDummy(title: "Karena pastanya habis", isCorrect: false),
                 ]
             ),
         ],
         [
-            Question(
+            QuestionDummy(
                 text: "Apa yang sebenarnya Mia pesan?",
                 answers: [
-                    Answer(title: "Salad dan jus mangga", isCorrect: false),
-                    Answer(title: "Salad dan jus jeruk", isCorrect: true),
-                    Answer(title: "Salad dan martabak telur", isCorrect: false),
-                    Answer(title: "Salad dan alpukat", isCorrect: false),
+                    AnswerDummy(title: "Salad dan jus mangga", isCorrect: false),
+                    AnswerDummy(title: "Salad dan jus jeruk", isCorrect: true),
+                    AnswerDummy(title: "Salad dan martabak telur", isCorrect: false),
+                    AnswerDummy(title: "Salad dan alpukat", isCorrect: false),
                 ]
             ),
-            Question(
+            QuestionDummy(
                 text: "Pukul berapa seharusnya kereta berangkat?",
                 answers: [
-                    Answer(title: "Pukul setengah tiga sore", isCorrect: false),
-                    Answer(title: "Pukul lima sore", isCorrect: false),
-                    Answer(title: "Pukul tiga sore", isCorrect: true),
-                    Answer(title: "Pukul setengah lima sore", isCorrect: false),
+                    AnswerDummy(title: "Pukul setengah tiga sore", isCorrect: false),
+                    AnswerDummy(title: "Pukul lima sore", isCorrect: false),
+                    AnswerDummy(title: "Pukul tiga sore", isCorrect: true),
+                    AnswerDummy(title: "Pukul setengah lima sore", isCorrect: false),
                 ]
             ),
-            Question(
+            QuestionDummy(
                 text: "Pukul berapa ujian dimulai?",
                 answers: [
-                    Answer(title: "Pukul 1 siang", isCorrect: false),
-                    Answer(title: "Pukul 9", isCorrect: false),
-                    Answer(title: "Pukul 9.30", isCorrect: true),
-                    Answer(title: "Pukul 8.30", isCorrect: false),
+                    AnswerDummy(title: "Pukul 1 siang", isCorrect: false),
+                    AnswerDummy(title: "Pukul 9", isCorrect: false),
+                    AnswerDummy(title: "Pukul 9.30", isCorrect: true),
+                    AnswerDummy(title: "Pukul 8.30", isCorrect: false),
                 ]
             ),
-            Question(
+            QuestionDummy(
                 text: "Makanan apa yang dirasa Rani kurang asin?",
                 answers: [
-                    Answer(title: "Sop", isCorrect: true),
-                    Answer(title: "Pastry", isCorrect: false),
-                    Answer(title: "Sayur", isCorrect: false),
-                    Answer(title: "Lodeh", isCorrect: false),
+                    AnswerDummy(title: "Sop", isCorrect: true),
+                    AnswerDummy(title: "Pastry", isCorrect: false),
+                    AnswerDummy(title: "Sayur", isCorrect: false),
+                    AnswerDummy(title: "Lodeh", isCorrect: false),
                 ]
             ),
-            Question(
+            QuestionDummy(
                 text: "Apa yang seharusnya dipesan oleh Dafa?",
                 answers: [
-                    Answer(title: "Pasta", isCorrect: false),
-                    Answer(title: "Pastry", isCorrect: true),
-                    Answer(title: "Spagetthi", isCorrect: false),
-                    Answer(title: "Sandwich", isCorrect: false),
+                    AnswerDummy(title: "Pasta", isCorrect: false),
+                    AnswerDummy(title: "Pastry", isCorrect: true),
+                    AnswerDummy(title: "Spagetthi", isCorrect: false),
+                    AnswerDummy(title: "Sandwich", isCorrect: false),
                 ]
             ),
         ],
@@ -508,97 +1131,96 @@ struct QuizData {
 
     static let computationSpeakerQuestions = [
         [
-            Question(
+            QuestionDummy(
                 text: "Kenapa Nathan tidak ikut main basket hari ini?",
                 answers: [
-                    Answer(title: "Karena sedang berlibur", isCorrect: false),
-                    Answer(title: "Karena sedang sakit", isCorrect: true),
-                    Answer(title: "Karena ada tugas dadakan", isCorrect: false),
-                    Answer(title: "Karena besok ulangan", isCorrect: false),
+                    AnswerDummy(title: "Karena sedang berlibur", isCorrect: false),
+                    AnswerDummy(title: "Karena sedang sakit", isCorrect: true),
+                    AnswerDummy(title: "Karena ada tugas dadakan", isCorrect: false),
+                    AnswerDummy(title: "Karena besok ulangan", isCorrect: false),
                 ]
             ),
-            Question(
+            QuestionDummy(
                 text: "Apa minuman yang diminum pembicara utama hari ini?",
                 answers: [
-                    Answer(title: "Americano", isCorrect: false),
-                    Answer(title: "Coffe Latte", isCorrect: false),
-                    Answer(title: "Cappucino", isCorrect: true),
-                    Answer(title: "Espresso", isCorrect: false),
+                    AnswerDummy(title: "Americano", isCorrect: false),
+                    AnswerDummy(title: "Coffe Latte", isCorrect: false),
+                    AnswerDummy(title: "Cappucino", isCorrect: true),
+                    AnswerDummy(title: "Espresso", isCorrect: false),
                 ]
             ),
-            Question(
+            QuestionDummy(
                 text: "Kegiatan apa yang sering pembaca lakukan di pagi hari?",
                 answers: [
-                    Answer(title: "Memeriksa email dan membuat daftar tugas", isCorrect: true),
-                    Answer(title: "Memperbaiki pekerjaan hari kemarin", isCorrect: false),
-                    Answer(title: "Membuat email untuk mengirim tugas", isCorrect: false),
-                    Answer(title: "Membuat daftar tugas untuk laporan", isCorrect: false),
+                    AnswerDummy(title: "Memeriksa email dan membuat daftar tugas", isCorrect: true),
+                    AnswerDummy(title: "Memperbaiki pekerjaan hari kemarin", isCorrect: false),
+                    AnswerDummy(title: "Membuat email untuk mengirim tugas", isCorrect: false),
+                    AnswerDummy(title: "Membuat daftar tugas untuk laporan", isCorrect: false),
                 ]
             ),
-            Question(
+            QuestionDummy(
                 text: "Kapan laporan di tim harus dikumpulkan?",
                 answers: [
-                    Answer(title: "Hari Selasa", isCorrect: true),
-                    Answer(title: "Hari Senin", isCorrect: false),
-                    Answer(title: "Hari Rabu", isCorrect: false),
-                    Answer(title: "Hari Jum'at", isCorrect: false),
+                    AnswerDummy(title: "Hari Selasa", isCorrect: true),
+                    AnswerDummy(title: "Hari Senin", isCorrect: false),
+                    AnswerDummy(title: "Hari Rabu", isCorrect: false),
+                    AnswerDummy(title: "Hari Jum'at", isCorrect: false),
                 ]
             ),
-            Question(
+            QuestionDummy(
                 text: "Jalur berapa yang harus dipilih untuk ke Blok M?",
                 answers: [
-                    Answer(title: "Jalur Satu", isCorrect: false),
-                    Answer(title: "Jalur Dua", isCorrect: true),
-                    Answer(title: "Jalur Empat", isCorrect: false),
-                    Answer(title: "Jalur Lima", isCorrect: false),
+                    AnswerDummy(title: "Jalur Satu", isCorrect: false),
+                    AnswerDummy(title: "Jalur Dua", isCorrect: true),
+                    AnswerDummy(title: "Jalur Empat", isCorrect: false),
+                    AnswerDummy(title: "Jalur Lima", isCorrect: false),
                 ]
             ),
         ],
         [
-            Question(
+            QuestionDummy(
                 text: "Diskon diadakan di hari apa?",
                 answers: [
-                    Answer(title: "Senin", isCorrect: true),
-                    Answer(title: "Selasa", isCorrect: false),
-                    Answer(title: "Rabu", isCorrect: false),
-                    Answer(title: "Kamis", isCorrect: false),
+                    AnswerDummy(title: "Senin", isCorrect: true),
+                    AnswerDummy(title: "Selasa", isCorrect: false),
+                    AnswerDummy(title: "Rabu", isCorrect: false),
+                    AnswerDummy(title: "Kamis", isCorrect: false),
                 ]
             ),
-            Question(
+            QuestionDummy(
                 text: "Jam berapa file harus dikirim?",
                 answers: [
-                    Answer(title: "Besok Sore", isCorrect: false),
-                    Answer(title: "Jam 7 Malam", isCorrect: false),
-                    Answer(title: "Sebelum Pukul 5 Sore", isCorrect: false),
-                    Answer(title: "Sebelum Pukul 6 Sore", isCorrect: true),
+                    AnswerDummy(title: "Besok Sore", isCorrect: false),
+                    AnswerDummy(title: "Jam 7 Malam", isCorrect: false),
+                    AnswerDummy(title: "Sebelum Pukul 5 Sore", isCorrect: false),
+                    AnswerDummy(title: "Sebelum Pukul 6 Sore", isCorrect: true),
                 ]
             ),
-            Question(
+            QuestionDummy(
                 text: "Mengapa banyak yang belum mengetahui perubahan jadwal?",
                 answers: [
-                    
-                    Answer(title: "Karena informasi melewati SMS", isCorrect: false),
-                    Answer(title: "Informasi via mulut ke mulut", isCorrect: false),
-                    Answer(title: "Email baru dikirim siang ini", isCorrect: true),
-                    Answer(title: "Diumumkan di resepsionis", isCorrect: false),
+                    AnswerDummy(title: "Karena informasi melewati SMS", isCorrect: false),
+                    AnswerDummy(title: "Informasi via mulut ke mulut", isCorrect: false),
+                    AnswerDummy(title: "Email baru dikirim siang ini", isCorrect: true),
+                    AnswerDummy(title: "Diumumkan di resepsionis", isCorrect: false),
                 ]
             ),
-            Question(
+            QuestionDummy(
                 text: "Vendor apa yang harus dihubungi hari ini?",
                 answers: [
-                    Answer(title: "Cathering", isCorrect: true),
-                    Answer(title: "Dekorasi", isCorrect: false),
-                    Answer(title: "Make Up", isCorrect: false),
-                    Answer(title: "Keamanan", isCorrect: false),
+                    AnswerDummy(title: "Cathering", isCorrect: true),
+                    AnswerDummy(title: "Dekorasi", isCorrect: false),
+                    AnswerDummy(title: "Make Up", isCorrect: false),
+                    AnswerDummy(title: "Keamanan", isCorrect: false),
                 ]
             ),
-            Question(
+            QuestionDummy(
                 text: "Apa fokus utama tim minggu ini?",
                 answers: [
-                    Answer(title: "Memastikan sistem pendingin stabil", isCorrect: true),
-                    Answer(title: "Menguji kapasitas mesin di suhu tinggi", isCorrect: false),
-                    Answer(title: "Memanggil teknisi berpengalaman", isCorrect: false),
-                    Answer(title: "Servis mesin lama", isCorrect: false),
+                    AnswerDummy(title: "Memastikan sistem pendingin stabil", isCorrect: true),
+                    AnswerDummy(title: "Menguji kapasitas mesin di suhu tinggi", isCorrect: false),
+                    AnswerDummy(title: "Memanggil teknisi berpengalaman", isCorrect: false),
+                    AnswerDummy(title: "Servis mesin lama", isCorrect: false),
                 ]
             ),
         ],

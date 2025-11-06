@@ -6,47 +6,39 @@ class ModuleDetailViewModel: ObservableObject {
     @Published var levels: [LevelData] = []
     
     func loadLevels(for module: Module) {
-        // Create 3 levels for each module
-        levels = [
-            LevelData(
-                id: 1,
-                name: "Level 1",
-                description: "Basic \(module.name.lowercased()) exercises",
-                difficulty: .easy,
-                progress: 0.0,
-                isUnlocked: true,
-                questionCount: 5,
-                moduleId: module.id,
-            ),
-            LevelData(
-                id: 2,
-                name: "Level 2", 
-                description: "Intermediate \(module.name.lowercased()) challenges",
-                difficulty: .medium,
-                progress: 0.0,
-                isUnlocked: true,
-                questionCount: 5,
-                moduleId: module.id
-            ),
-            LevelData(
-                id: 3,
-                name: "Level 3",
-                description: "Advanced \(module.name.lowercased()) mastery",
-                difficulty: .hard,
-                progress: 0.0,
-                isUnlocked: true,
-                questionCount: 5,
-                moduleId: module.id
-            )
-        ]
+        // Find corresponding Module from QuizData
+        let moduleIds = ["identification", "discrimination", "comprehension", "competing_speaker"]
+        guard let moduleIndex = moduleIds.firstIndex(of: module.label.lowercased()),
+              moduleIndex < QuizData.dummyModule.count else {
+            return
+        }
         
-        print("aisDebug: \(module.id)")
-        if module.id == "competing_speaker" {
-            levels.remove(at: 0)
-            levels[0].name = "Medium"
-            levels[0].id = 1
-            levels[1].name = "Hard"
-            levels[1].id = 2
+        let module = QuizData.dummyModule[moduleIndex]
+        
+        // Convert Level to LevelData
+        levels = module.levelList.enumerated().map { index, level in
+            let difficulty: LevelDifficulty
+            switch level.value {
+            case 1:
+                difficulty = .easy
+            case 2:
+                difficulty = .medium
+            case 3:
+                difficulty = .hard
+            default:
+                difficulty = .medium
+            }
+            
+            return LevelData(
+                id: level.value,
+                name: level.label,
+                description: "\(level.label) \(module.label.lowercased()) exercises",
+                difficulty: difficulty,
+                progress: 0.0,
+                isUnlocked: level.isActive,
+                questionCount: level.question.count,
+                moduleId: module.label
+            )
         }
     }
     

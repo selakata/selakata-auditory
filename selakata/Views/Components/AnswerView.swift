@@ -12,78 +12,55 @@ struct AnswerView: View {
     let layout: AnswerLayout
     let onSelect: (Answer) -> Void
     
+    var sortedAnswers: [Answer] {
+        question.answer.sorted { $0.urutan < $1.urutan }
+    }
+    
     var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            if question.text.isEmpty == false {
-                Text(question.text)
-                    .font(.subheadline)
-                    .multilineTextAlignment(.center)
-                    .foregroundStyle(.primary)
-                    .padding(.horizontal, 24)
-                    .padding(.top, 4)
-                    .frame(maxWidth: .infinity)
-            }
-            Spacer().frame(height: 8)
+        VStack(spacing: 16) {
+            // Question Text
+            Text(question.text)
+                .font(.title2)
+                .fontWeight(.semibold)
+                .multilineTextAlignment(.center)
+                .padding(.horizontal)
+            
+            // Answers
             switch layout {
-            case .list:
-                VStack(spacing: 10) {
-                    ForEach(question.answers) { answer in
-                        AnswerRow(
+            case .grid(let columns):
+                LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 12), count: columns), spacing: 12) {
+                    ForEach(sortedAnswers, id: \.id) { answer in
+                        AnswerButton(
                             answer: answer,
                             isSelected: selectedAnswer?.id == answer.id,
-                            hasAnswered: hasAnswered,
-                            action: { onSelect(answer) }
+                            isCorrect: hasAnswered ? answer.isCorrect : nil,
+                            isWrong: hasAnswered && selectedAnswer?.id == answer.id && !answer.isCorrect,
+                            onTap: {
+                                if !hasAnswered {
+                                    onSelect(answer)
+                                }
+                            }
                         )
                     }
                 }
                 
-            case .grid(let columns):
-                let gridItems = Array(repeating: GridItem(.flexible(), spacing: 10), count: columns)
-                LazyVGrid(columns: gridItems, spacing: 10) {
-                    ForEach(question.answers) { answer in
-                        AnswerRow(
+            case .list:
+                VStack(spacing: 12) {
+                    ForEach(sortedAnswers, id: \.id) { answer in
+                        AnswerButton(
                             answer: answer,
                             isSelected: selectedAnswer?.id == answer.id,
-                            hasAnswered: hasAnswered,
-                            action: { onSelect(answer) }
+                            isCorrect: hasAnswered ? answer.isCorrect : nil,
+                            isWrong: hasAnswered && selectedAnswer?.id == answer.id && !answer.isCorrect,
+                            onTap: {
+                                if !hasAnswered {
+                                    onSelect(answer)
+                                }
+                            }
                         )
                     }
                 }
             }
         }
-        .padding()
     }
-}
-
-#Preview {
-    let question = Question(
-        text: "Apa alasan kamu tidak masuk?",
-        answers: [
-            Answer(title: "Sakit"),
-            Answer(title: "Melayat"),
-            Answer(title: "Cuti"),
-            Answer(title: "Urusan keluarga")
-        ]
-    )
-    
-    VStack(spacing: 30) {
-        // Versi List (column)
-        AnswerView(
-            question: question,
-            selectedAnswer: nil,
-            hasAnswered: false,
-            layout: .list,
-            onSelect: { _ in }
-        )
-        
-        // Versi Grid (2 kolom)
-        AnswerView(
-            question: question,
-            selectedAnswer: nil,
-            hasAnswered: false,
-            layout: .grid(columns: 2),
-            onSelect: { _ in }
-        )
-    }
-    .padding()
 }

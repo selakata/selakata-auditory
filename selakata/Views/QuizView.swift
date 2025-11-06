@@ -1,15 +1,8 @@
-//
-//  Quiz.swift
-//  selakata
-//
-//  Created by ais on 20/10/25.
-//
-
 import SwiftUI
 
 struct QuizView: View {
+    let level: Level
     let questionCategory: QuestionCategory
-    let level: Int
     @Environment(\.dismiss) private var dismiss
 
     @StateObject private var viewModel: QuizViewModel
@@ -27,11 +20,11 @@ struct QuizView: View {
         }
     }
 
-    init(questionCategory: QuestionCategory, level: Int) {
-        self.questionCategory = questionCategory
+    init(level: Level, questionCategory: QuestionCategory) {
         self.level = level
+        self.questionCategory = questionCategory
         _viewModel = StateObject(
-            wrappedValue: QuizViewModel(category: questionCategory, level: level)
+            wrappedValue: QuizViewModel(level: level)
         )
     }
 
@@ -65,10 +58,6 @@ struct QuizView: View {
                         .font(.caption)
                         .foregroundColor(.secondary)
                     Spacer()
-//                    Text("Audio: \(audioCompleted ? "✅" : "⏳")")
-//                        .font(.caption)
-//                        .foregroundColor(audioCompleted ? .green : .orange)
-//                    Spacer()
                     Text(viewModel.scoreText)
                         .font(.caption)
                         .foregroundColor(.secondary)
@@ -214,5 +203,10 @@ struct QuizView: View {
 }
 
 #Preview {
-    NavigationStack { QuizView(questionCategory: .identification, level: 1) }
+    NavigationStack { 
+        QuizView(
+            level: QuizData.dummyModule[0].levelList[0],
+            questionCategory: .identification
+        ) 
+    }
 }

@@ -24,14 +24,6 @@ struct HomeView: View {
                         .foregroundStyle(.purple)
                         .padding(.top)
 
-                    // greetings
-                    VStack {
-                        Text("Welcome back, \(viewModel.userName)!")
-                            .font(.title3.weight(.bold))
-                    }
-                    .multilineTextAlignment(.center)
-                    .padding(.horizontal)
-
                     ReminderCard()
                         .padding(.horizontal, 24)
                     
@@ -81,4 +73,9 @@ struct HomeView: View {
             }
         }
     }
+}
+
+
+#Preview {
+    HomeView()
 }

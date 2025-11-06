@@ -2,25 +2,47 @@ import SwiftUI
 
 struct ModuleDetailView: View {
     let module: Module
-    @StateObject private var viewModel = ModuleDetailViewModel()
     @Environment(\.dismiss) private var dismiss
-    
-    var body: some View {
-        ScrollView {
-            VStack(spacing: 24) {
-                // Header
-                headerView
-                
-                // Module Info
-                moduleInfoView
-                
-                // Levels
-                levelsView
-                
-                Spacer(minLength: 50)
-            }
-            .padding()
+
+    let moduleImages = [
+        "ear.fill", "waveform.path.ecg", "brain.head.profile",
+        "person.2.wave.2",
+    ]
+    var moduleImage: String {
+        switch module.label {
+        case "Identification": return moduleImages[0]
+        case "Discrimination": return moduleImages[1]
+        case "Comprehension": return moduleImages[2]
+        default: return moduleImages[3]
         }
+    }
+
+    var body: some View {
+        ZStack(alignment: .top) {
+            ScrollView {
+                VStack(spacing: 0) {
+                    headerView
+                    VStack(spacing: 24) {
+                        moduleInfoView
+                        levelsView
+                    }
+                    .padding(22)
+                    .frame(maxWidth: .infinity, alignment: .top)
+                    .background(
+                        Color.white
+                            .cornerRadius(24, corners: [.topLeft, .topRight])
+                    )
+                    .offset(y: -20)
+                }
+            }
+        }
+        .background(
+            VStack {
+                Color(hex: 0xEFECFC)
+                    .ignoresSafeArea()
+                Color.white
+            }
+        )
         .navigationBarBackButtonHidden(true)
         .toolbar {
             ToolbarItem(placement: .navigationBarLeading) {
@@ -33,100 +55,65 @@ struct ModuleDetailView: View {
                 }
             }
         }
-        .onAppear {
-            viewModel.loadLevels(for: module)
-        }
     }
-    
+
     // MARK: - Header View
     private var headerView: some View {
-        VStack(spacing: 16) {
-            // Module Icon
-            Image(systemName: module.image)
+        VStack{
+            Image(systemName: moduleImage)
                 .font(.system(size: 60))
                 .foregroundColor(.blue)
                 .frame(width: 100, height: 100)
                 .background(Color.blue.opacity(0.1))
                 .cornerRadius(20)
-            
-            // Module Title
-            Text(module.name)
-                .font(.largeTitle)
-                .fontWeight(.bold)
-                .multilineTextAlignment(.center)
         }
+        .frame(maxWidth: .infinity, minHeight: 220)
     }
-    
+
     // MARK: - Module Info View
     private var moduleInfoView: some View {
-        VStack(spacing: 16) {
-            // Description
-            Text(module.details)
-                .font(.body)
+        VStack(alignment: .leading, spacing: 4) {
+            Text(module.label)
+                .font(.app(.headline))
+                .fontWeight(.bold)
+            Text(module.desc)
+                .font(.app(.subhead))
                 .foregroundColor(.secondary)
-                .multilineTextAlignment(.center)
-                .lineLimit(nil)
-            
-            // Progress
-            if module.progress > 0 {
-                VStack(spacing: 8) {
-                    HStack {
-                        Text("Overall Progress")
-                            .font(.subheadline)
-                            .fontWeight(.medium)
-                        
-                        Spacer()
-                        
-                        Text("\(Int(module.progress))%")
-                            .font(.subheadline)
-                            .fontWeight(.semibold)
-                            .foregroundColor(.blue)
-                    }
-                    
-                    ProgressView(value: module.progress / 100.0)
-                        .progressViewStyle(LinearProgressViewStyle(tint: .blue))
-                        .frame(height: 8)
-                        .background(Color.gray.opacity(0.2))
-                        .cornerRadius(4)
-                }
-                .padding()
-                .background(Color(.systemGray6))
-                .cornerRadius(12)
-            }
         }
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
-    
+
     // MARK: - Levels View
     private var levelsView: some View {
         VStack(alignment: .leading, spacing: 16) {
-            Text("Levels")
-                .font(.title2)
-                .fontWeight(.bold)
-            
-            VStack(spacing: 12) {
-                ForEach(viewModel.levels) { level in
-                    LevelRowView(
-                        level: level,
-                        module: module,
-                        isUnlocked: viewModel.isLevelUnlocked(level)
-                    )
+            HStack {
+                Text("Exercises")
+                    .font(.app(.headline))
+                    .fontWeight(.bold)
+                Spacer()
+                HStack {
+                    Image(systemName: "folder")
+                    Text("3 Levels")
+                        .font(.app(.body))
                 }
+                .foregroundStyle(Color.green)
+            }
+
+            ForEach(module.levelList, id: \.id) { level in
+                LevelRowView(
+                    level: level,
+                    moduleLabel: module.label
+                )
             }
         }
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
 }
 
 #Preview {
     NavigationView {
         ModuleDetailView(
-            module: Module(
-                id: "identification",
-                name: "Identification",
-                details: "Learn to identify and recognize key sounds and speech patterns in various environments.",
-                progress: 45.0,
-                image: "ear.fill",
-                orderIndex: 0
-            )
+            module: QuizData.dummyModule[0]
         )
     }
 }

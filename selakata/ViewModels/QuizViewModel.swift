@@ -12,9 +12,7 @@ class QuizViewModel: ObservableObject {
 
     // MARK: - Private Properties
     private let questions: [Question]
-    private let repository: QuizRepositoryProtocol
-    private let questionCategory: QuestionCategory
-    private let level: Int
+    private let level: Level
 
     // MARK: - Computed Properties
     var currentQuestion: Question {
@@ -25,12 +23,8 @@ class QuizViewModel: ObservableObject {
         Double(currentQuestionIndex + 1) / Double(questions.count)
     }
 
-    var allAudioFileNames: [String] {
-        repository.getAudioName(category: questionCategory, level: level)
-    }
-
     var audioFileName: String {
-        allAudioFileNames[currentQuestionIndex]
+        currentQuestion.audioFile.fileURL
     }
 
     var isLastQuestion: Bool {
@@ -54,9 +48,6 @@ class QuizViewModel: ObservableObject {
     }
 
     var audioTitle: String {
-        //        let difficultyLevel = getDifficultyLevel(for: currentQuestionIndex)
-        //        let levelNumber = getLevelNumber(for: currentQuestionIndex)
-        //        return "Audio \(difficultyLevel) Level \(levelNumber)"
         return ""
     }
 
@@ -65,14 +56,9 @@ class QuizViewModel: ObservableObject {
     }
 
     // MARK: - Initialization
-    init(
-        repository: QuizRepositoryProtocol = QuizRepository.shared,
-        category: QuestionCategory, level: Int
-    ) {
-        self.repository = repository
-        self.questionCategory = category
+    init(level: Level) {
         self.level = level
-        self.questions = repository.getQuestionsByCategory(category: category, level: level)
+        self.questions = level.question.sorted { $0.urutan < $1.urutan }
     }
 
     // MARK: - Public Methods
