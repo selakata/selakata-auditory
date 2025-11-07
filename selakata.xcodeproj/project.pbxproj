@@ -6,12 +6,18 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		499DDA752EBC409D008CEDF0 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 499DD9DD2EBC409D008CEDF0 /* Assets.xcassets */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
+		499DD9DD2EBC409D008CEDF0 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		499DD9DF2EBC409D008CEDF0 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		95C9C45A2E9CA463005DF758 /* selakata.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = selakata.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		95C9C45C2E9CA463005DF758 /* selakata */ = {
+		499DDB392EBC48CF008CEDF0 /* selakata */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = selakata;
 			sourceTree = "<group>";
@@ -32,8 +38,10 @@
 		95C9C4512E9CA462005DF758 = {
 			isa = PBXGroup;
 			children = (
-				95C9C45C2E9CA463005DF758 /* selakata */,
+				499DD9DF2EBC409D008CEDF0 /* Info.plist */,
+				499DD9DD2EBC409D008CEDF0 /* Assets.xcassets */,
 				95C9C45B2E9CA463005DF758 /* Products */,
+				499DDB392EBC48CF008CEDF0 /* selakata */,
 			);
 			sourceTree = "<group>";
 		};
@@ -61,7 +69,7 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
-				95C9C45C2E9CA463005DF758 /* selakata */,
+				499DDB392EBC48CF008CEDF0 /* selakata */,
 			);
 			name = selakata;
 			packageProductDependencies = (
@@ -109,6 +117,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				499DDA752EBC409D008CEDF0 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -158,6 +167,7 @@
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_ENTITLEMENTS = selakata/selakata.entitlements;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -221,6 +231,7 @@
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_ENTITLEMENTS = selakata/selakata.entitlements;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
@@ -249,10 +260,11 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = selakata/selakata.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"selakata/Preview Content\"";
-				DEVELOPMENT_TEAM = PKX77B99UQ;
+				DEVELOPMENT_TEAM = XQCBGC387U;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -278,10 +290,11 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = selakata/selakata.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"selakata/Preview Content\"";
-				DEVELOPMENT_TEAM = PKX77B99UQ;
+				DEVELOPMENT_TEAM = XQCBGC387U;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
