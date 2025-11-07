@@ -24,7 +24,7 @@ struct selakataApp: App {
                         Label("Modules", systemImage: "ear.fill")
                     }
 
-                ProfileView()
+                Text("Profile Page")
                     .tabItem {
                         Label("Profile", systemImage: "person.fill")
                     }

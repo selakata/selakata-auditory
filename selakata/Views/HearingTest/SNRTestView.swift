@@ -66,7 +66,6 @@ struct SNRTestView: View {
         .navigationBarBackButtonHidden()
         .navigationDestination(isPresented: $viewModel.isTestFinished) {
             HearingTestResultsView(
-                isFromProfile: false,
                 isStartingTest: $isStartingTest,
                 repository: viewModel.repository
             )
