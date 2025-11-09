@@ -7,6 +7,7 @@
 
 import Foundation
 import SwiftData
+import SwiftUI
 
 @MainActor
 class VoiceRecordingViewModel: ObservableObject {
@@ -14,8 +15,7 @@ class VoiceRecordingViewModel: ObservableObject {
     enum RecordingState { case idle, recording, review }
     @Published var recordingState: RecordingState = .idle
     @Published var voiceName: String = ""
-    @Published var showAlert = false
-    @Published var alertMessage = ""
+    @Published var validationError: String? = nil
     @Published var recordingTimeDisplay: String = "00:00"
 
     private let useCase: PersonalVoiceUseCase
@@ -25,12 +25,22 @@ class VoiceRecordingViewModel: ObservableObject {
     var promptText: String { useCase.promptText }
     var isPlaying: Bool { useCase.isPlaying }
 
+    var formattedDuration: String {
+        guard let duration = useCase.lastRecordingResult?.duration else {
+            return "00:00"
+        }
+        let minutes = Int(duration) / 60
+        let seconds = Int(duration) % 60
+        return String(format: "%02d:%02d", minutes, seconds)
+    }
+    
     init(useCase: PersonalVoiceUseCase, modelContext: ModelContext) {
         self.useCase = useCase
         self.modelContext = modelContext
     }
     
     func startRecording() {
+        validationError = nil
         do {
             try useCase.startRecording()
             recordingState = .recording
@@ -42,11 +52,9 @@ class VoiceRecordingViewModel: ObservableObject {
                 }
             }
         } catch RecordingError.permissionDenied {
-            alertMessage = "Microphone permission is required."
-            showAlert = true
+            self.validationError = "Microphone permission is required. Please enable it in Settings."
         } catch {
-            alertMessage = "Failed to start recording: \(error.localizedDescription)"
-            showAlert = true
+            self.validationError = "Failed to start recording: \(error.localizedDescription)"
         }
     }
     
@@ -58,10 +66,14 @@ class VoiceRecordingViewModel: ObservableObject {
         
         switch result {
         case .success:
+            validationError = nil
             recordingState = .review
         case .failure(let error):
-            alertMessage = error.localizedDescription
-            showAlert = true
+            if let recError = error as? RecordingError, case .recorderError(let msg) = recError {
+                validationError = msg
+            } else {
+                validationError = error.localizedDescription
+            }
             recordingState = .idle
         }
     }
@@ -75,6 +87,7 @@ class VoiceRecordingViewModel: ObservableObject {
     
     func retakeRecording() {
         useCase.retakeRecording()
+        validationError = nil
         recordingState = .idle
     }
     
@@ -83,6 +96,8 @@ class VoiceRecordingViewModel: ObservableObject {
     }
     
     func saveRecording() -> Bool {
+        validationError = nil
+        
         let result = useCase.saveRecording(
             name: voiceName,
             context: modelContext
@@ -93,10 +108,10 @@ class VoiceRecordingViewModel: ObservableObject {
             return true
         case .failure(let error):
             if case RecordingError.recorderError(let msg) = error, msg == "Name is empty." {
+                validationError = "Please enter a name for your voice."
                 return false
             }
-            alertMessage = error.localizedDescription
-            showAlert = true
+            validationError = error.localizedDescription
             return false
         }
     }

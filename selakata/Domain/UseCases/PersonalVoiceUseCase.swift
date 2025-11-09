@@ -15,7 +15,7 @@ class PersonalVoiceUseCase {
     private let player: AudioPlayerService
     private let repository: PersonalVoiceRepository
     
-    private var lastRecordingResult: RecordingResult?
+    var lastRecordingResult: RecordingResult?
     let promptText = "I like morning walks. The birds always sound happy"
 
     init(repository: PersonalVoiceRepository) {

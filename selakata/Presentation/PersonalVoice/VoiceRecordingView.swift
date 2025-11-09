@@ -34,6 +34,10 @@ struct VoiceRecordingView: View {
             .padding()
             .modifier(WiggleEffect(wiggleCount: $wiggleCount))
 
+            if let error = viewModel.validationError {
+                ErrorCardView(message: error)
+            }
+            
             switch viewModel.recordingState {
             case .idle:
                 IdleView(viewModel: viewModel)
@@ -45,9 +49,6 @@ struct VoiceRecordingView: View {
                     onDone: handleDone
                 )
             }
-        }
-        .alert(isPresented: $viewModel.showAlert) {
-            Alert(title: Text("Error"), message: Text(viewModel.alertMessage), dismissButton: .default(Text("OK")))
         }
     }
     
@@ -135,6 +136,10 @@ private struct ReviewView: View {
     
     var onDone: () -> Void
     
+    private var isPlaying: Bool {
+        viewModel.isPlaying
+    }
+    
     var body: some View {
         Spacer()
         Image(systemName: "waveform") // placeholder dulu
@@ -142,8 +147,8 @@ private struct ReviewView: View {
             .foregroundStyle(.secondary)
             .frame(height: 100)
         
-        Text("Recording is done")
-            .font(.footnote)
+        Text(viewModel.formattedDuration)
+            .font(.footnote.monospaced())
         
         Text(viewModel.promptText)
             .font(.title2)
@@ -157,7 +162,7 @@ private struct ReviewView: View {
         Button(action: {
             viewModel.playRecording()
         }) {
-            Image(systemName: viewModel.isPlaying ? "pause.circle.fill" : "play.circle.fill")
+            Image(systemName: isPlaying ? "pause.circle.fill" : "play.circle.fill")
                 .font(.system(size: 80))
                 .foregroundStyle(.red)
         }
@@ -175,11 +180,29 @@ private struct ReviewView: View {
             Button("Done", action: onDone)
                 .buttonStyle(.borderedProminent)
                 .controlSize(.large)
+                .disabled(viewModel.validationError != nil)
         }
         .padding()
     }
 }
 
+private struct ErrorCardView: View {
+    let message: String
+    
+    var body: some View {
+        HStack(spacing: 8) {
+            Image(systemName: "exclamationmark.triangle.fill")
+                .foregroundStyle(.red)
+            Text(message)
+                .font(.footnote)
+                .foregroundStyle(.red.opacity(0.8))
+        }
+        .padding(12)
+        .background(Color.red.opacity(0.1))
+        .cornerRadius(10)
+        .padding(.horizontal)
+    }
+}
 
 #Preview {
     let container = try! ModelContainer(

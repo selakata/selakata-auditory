@@ -1,18 +1,17 @@
 //
-//  VoiceRecordingGuideView.swift
+//  RecordingDurationGuideView.swift
 //  selakata
 //
-//  Created by Anisa Amalia on 05/11/25.
+//  Created by Anisa Amalia on 09/11/25.
 //
 
 import SwiftUI
 
-struct VoiceRecordingGuideView: View {
+struct RecordingDurationGuideView: View {
     @Binding var isPresented: Bool
     let useCase: PersonalVoiceUseCase
-    @Environment(\.modelContext) private var modelContext
-    @Environment(\.dismiss) private var dismiss
     
+    @Environment(\.modelContext) private var modelContext
     @ScaledMetric var iconSize: CGFloat = 120
     @ScaledMetric var horizontalPadding: CGFloat = 32
 
@@ -20,16 +19,16 @@ struct VoiceRecordingGuideView: View {
         VStack(spacing: 24) {
             Spacer()
             
-            Image(systemName: "dot.radiowaves.left.and.right")
+            Image(systemName: "person.wave.2")
                 .font(.system(size: iconSize))
                 .foregroundStyle(.secondary)
             
             VStack(spacing: 12) {
-                Text("You'll be asked to say a sentence.")
+                Text("Please say the given sentence")
                     .font(.title.weight(.bold))
                     .multilineTextAlignment(.center)
                 
-                Text("Make sure you're in a **quiet place** for the best result.")
+                Text("for at least **10 seconds**, but no more than **30 seconds**.")
                     .font(.body)
                     .foregroundStyle(.secondary)
                     .multilineTextAlignment(.center)
@@ -37,9 +36,10 @@ struct VoiceRecordingGuideView: View {
             
             Spacer()
             
-            NavigationLink(destination: RecordingDurationGuideView(
+            NavigationLink(destination: VoiceRecordingView(
                 isPresented: $isPresented,
-                useCase: useCase
+                useCase: useCase,
+                modelContext: modelContext
             )) {
                 Text("Next")
                     .font(.headline)
@@ -55,12 +55,10 @@ struct VoiceRecordingGuideView: View {
         .padding(.bottom)
         .navigationTitle("Personalized Voice")
         .navigationBarTitleDisplayMode(.inline)
-    }
-}
-
-#Preview {
-    NavigationStack {
-        VoiceRecordingGuideView(isPresented: .constant(true), useCase: PersonalVoiceUseCase(repository: PersonalVoiceRepositoryImpl()))
-            .modelContainer(for: AudioFile.self, inMemory: true)
+        .toolbar {
+            ToolbarItem(placement: .cancellationAction) {
+                Button("Cancel") { isPresented = false }
+            }
+        }
     }
 }
