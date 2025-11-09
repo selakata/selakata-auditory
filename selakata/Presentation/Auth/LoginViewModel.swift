@@ -71,9 +71,8 @@ final class LoginViewModel: ObservableObject {
         .sink { [weak self] (userId, email, fullName) in
             guard let self = self else { return }
             
-            // Jalankan use case setelah semua data tersedia
             self.authUseCase.execute(
-                username: fullName,
+                username: userId,
                 appleId: userId,
                 email: email,
                 name: fullName
