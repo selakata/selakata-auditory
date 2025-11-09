@@ -16,9 +16,22 @@
 		95C9C45A2E9CA463005DF758 /* selakata.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = selakata.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		4961AAAA2EBCE0EF0093C039 /* Exceptions for "selakata" folder in "selakata" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 95C9C4592E9CA463005DF758 /* selakata */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		499DDB392EBC48CF008CEDF0 /* selakata */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				4961AAAA2EBCE0EF0093C039 /* Exceptions for "selakata" folder in "selakata" target */,
+			);
 			path = selakata;
 			sourceTree = "<group>";
 		};
@@ -267,6 +280,7 @@
 				DEVELOPMENT_TEAM = XQCBGC387U;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = selakata/Info.plist;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -297,6 +311,7 @@
 				DEVELOPMENT_TEAM = XQCBGC387U;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = selakata/Info.plist;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
