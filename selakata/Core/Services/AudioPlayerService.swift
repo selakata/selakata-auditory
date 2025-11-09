@@ -3,6 +3,7 @@ import Foundation
 
 class AudioPlayerService: NSObject, ObservableObject {
     private var audioPlayer: AVAudioPlayer?
+    private var isSessionSetup = false
     
     @Published var isPlaying = false
     @Published var currentTime: TimeInterval = 0
@@ -13,7 +14,12 @@ class AudioPlayerService: NSObject, ObservableObject {
     
     override init() {
         super.init()
+    }
+    
+    func setupPlayer() {
+        guard !isSessionSetup else { return }
         setupAudioSession()
+        isSessionSetup = true
     }
     
     private func setupAudioSession() {
@@ -26,6 +32,7 @@ class AudioPlayerService: NSObject, ObservableObject {
     }
     
     func loadAudio(fileName: String, fileExtension: String = "mp3") {
+        setupPlayer()
         guard let url = Bundle.main.url(forResource: fileName, withExtension: fileExtension) else {
             print("Could not find audio file: \(fileName).\(fileExtension)")
             // Set dummy duration untuk testing jika file tidak ada
@@ -48,6 +55,7 @@ class AudioPlayerService: NSObject, ObservableObject {
     }
     
     func loadAudioFromPath(fileName: String, subdirectory: String? = nil, fileExtension: String = "mp3") {
+        setupPlayer()
         guard let url = Bundle.main.url(forResource: fileName, withExtension: fileExtension, subdirectory: subdirectory) else {
             print("Could not find audio file: \(fileName).\(fileExtension) in subdirectory: \(subdirectory ?? "root")")
             // Set dummy duration untuk testing jika file tidak ada
@@ -69,10 +77,53 @@ class AudioPlayerService: NSObject, ObservableObject {
         }
     }
     
+    func loadAudioFromURL(_ url: URL) {
+        do {
+            audioPlayer = try AVAudioPlayer(contentsOf: url)
+            audioPlayer?.delegate = self
+            audioPlayer?.prepareToPlay()
+            audioPlayer?.enableRate = true
+            duration = audioPlayer?.duration ?? 0
+            currentTime = 0
+        } catch {
+            print("Error loading audio from URL: \(error)")
+            duration = 30.0
+        }
+    }
+    
+    func loadAudioFromDocuments(fileName: String) {
+        setupPlayer()
+        
+        let fileManager = FileManager.default
+        guard let documentsDirectory = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first else {
+            print("Could not find Documents directory")
+            duration = 30.0
+            return
+        }
+        
+        let url = documentsDirectory.appendingPathComponent(fileName)
+        
+        do {
+            audioPlayer = try AVAudioPlayer(contentsOf: url)
+            audioPlayer?.delegate = self
+            audioPlayer?.prepareToPlay()
+            audioPlayer?.enableRate = true
+            duration = audioPlayer?.duration ?? 0
+            currentTime = 0
+        } catch {
+            print("Error loading audio from Documents: \(error)")
+            duration = 30.0
+        }
+    }
+    
     func play() {
-        audioPlayer?.play()
-        isPlaying = true
-        startTimer()
+        setupPlayer()
+        if audioPlayer?.play() == true {
+            isPlaying = true
+            startTimer()
+        } else {
+            print("AudioPlayerService: play() failed. Player not ready or file not loaded.")
+        }
     }
     
     func pause() {
