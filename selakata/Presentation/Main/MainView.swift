@@ -20,7 +20,7 @@ struct MainView: View {
                     Label("Modules", systemImage: "ear.fill")
                 }
             
-            Text("Profile Page")
+            ProfileView()
                 .tabItem {
                     Label("Profile", systemImage: "person.fill")
                 }

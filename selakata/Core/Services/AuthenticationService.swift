@@ -10,7 +10,7 @@ import AuthenticationServices
 import SwiftUI
 
 @MainActor
-class AuthenticationService: NSObject, ObservableObject {
+class AuthenticationService: NSObject, ObservableObject, ProfileRepositoryProtocol {
     @Published var isAuthenticated = false
     @Published var userName = "Learner"
     @Published var userEmail: String?
@@ -74,6 +74,10 @@ class AuthenticationService: NSObject, ObservableObject {
         } else {
             print("❌ Tidak ada Apple ID tersimpan di Keychain, tampilkan LoginView")
         }
+    }
+    
+    func getUserName() -> String {
+        return self.userName
     }
 }
 

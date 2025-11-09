@@ -13,12 +13,12 @@ class HearingTestResultsViewModel: ObservableObject {
     @Published var rightThresholds: [Double: Float]?
     @Published var snr: Int?
     
-    let repository: HearingTestRepository
+    let repository: HearingTestRepositoryProtocol
     
     private let minDBFS: Float = -80
     private let maxDBFS: Float = -6
     
-    init(repository: HearingTestRepository) {
+    init(repository: HearingTestRepositoryProtocol) {
         self.repository = repository
     }
     
