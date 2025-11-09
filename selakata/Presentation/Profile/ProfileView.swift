@@ -39,7 +39,7 @@ struct ProfileView: View {
                 
                 
                 Section("Details") {
-                    NavigationLink(destination: Text("Personal Voice")) {
+                    NavigationLink(destination: PersonalVoiceListView()) {
                         HStack {
                             Image(systemName: "mic"); Text("Personalized voice")
                             Spacer()

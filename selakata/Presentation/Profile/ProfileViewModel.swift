@@ -14,10 +14,10 @@ class ProfileViewModel: ObservableObject {
     @Published var hasHearingTestResult = false
     
     private let getProfileDataUseCase: GetProfileDataUseCase
-    let hearingTestRepository: HearingTestRepositoryProtocol
+    let hearingTestRepository: HearingTestRepository
     
     init() {
-        let hearingRepo = HearingTestRepository()
+        let hearingRepo = HearingTestRepositoryImpl()
         let profileRepo = AuthenticationService()
         
         self.getProfileDataUseCase = GetProfileDataUseCase(
