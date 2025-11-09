@@ -1,5 +1,5 @@
 //
-//  ProfileRepositoryProtocol.swift
+//  ProfileRepository.swift
 //  selakata
 //
 //  Created by Anisa Amalia on 07/11/25.
@@ -7,6 +7,6 @@
 
 import Foundation
 
-protocol ProfileRepositoryProtocol {
+protocol ProfileRepository {
     func getUserName() -> String
 }

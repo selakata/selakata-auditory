@@ -7,7 +7,7 @@
 
 import Foundation
 
-class HearingTestRepository: HearingTestRepositoryProtocol {
+class HearingTestRepositoryImpl: HearingTestRepository {    
     private let userDefaults = UserDefaults.standard
     private let thresholdsLeftKey = "hearingTestThresholds_Left"
     private let thresholdsRightKey = "hearingTestThresholds_Right"
@@ -59,7 +59,7 @@ class HearingTestRepository: HearingTestRepositoryProtocol {
         return doubleKeyedThresholds
     }
     
-    func getRepository() -> HearingTestRepositoryProtocol {
+    func getRepository() -> HearingTestRepository {
         return self
     }
     

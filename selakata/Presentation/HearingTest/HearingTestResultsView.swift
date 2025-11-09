@@ -21,7 +21,7 @@ struct HearingTestResultsView: View {
         _viewModel = StateObject(wrappedValue: HearingTestResultsViewModel(repository: repository))
     }
     
-    init(isFromProfile: Bool, repository: HearingTestRepositoryProtocol) {
+    init(isFromProfile: Bool, repository: HearingTestRepository) {
         self._isStartingTest = .constant(false)
         self.isFromProfile = isFromProfile
         _viewModel = StateObject(wrappedValue: HearingTestResultsViewModel(repository: repository))
@@ -109,7 +109,7 @@ struct HearingTestResultsView: View {
 }
 
 #Preview {
-    let repository = HearingTestRepository()
+    let repository = HearingTestRepositoryImpl()
     
     let dataLeftThresholds: [Double: Float] = [
         500: -50, 1000: -55, 2000: -45, 4000: -40

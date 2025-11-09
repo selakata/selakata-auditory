@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct MainView: View {
     var body: some View {
@@ -25,6 +26,7 @@ struct MainView: View {
                     Label("Profile", systemImage: "person.fill")
                 }
         }
+        .modelContainer(for: [AudioFile.self, Module.self, Level.self])
     }
 }
 

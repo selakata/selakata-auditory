@@ -8,12 +8,12 @@
 import Foundation
 
 class GetProfileDataUseCase {
-    private let hearingRepo: HearingTestRepositoryProtocol
-    private let profileRepo: ProfileRepositoryProtocol
+    private let hearingRepo: HearingTestRepository
+    private let profileRepo: ProfileRepository
     
     init(
-        hearingRepo: HearingTestRepositoryProtocol,
-        profileRepo: ProfileRepositoryProtocol
+        hearingRepo: HearingTestRepository,
+        profileRepo: ProfileRepository
     ) {
         self.hearingRepo = hearingRepo
         self.profileRepo = profileRepo
@@ -27,7 +27,7 @@ class GetProfileDataUseCase {
         return profileRepo.getUserName()
     }
     
-    func getHearingTestRepository() -> HearingTestRepositoryProtocol {
+    func getHearingTestRepository() -> HearingTestRepository {
         return hearingRepo.getRepository()
     }
 }

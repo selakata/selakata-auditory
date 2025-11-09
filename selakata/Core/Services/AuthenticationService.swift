@@ -10,7 +10,7 @@ import AuthenticationServices
 import SwiftUI
 
 @MainActor
-class AuthenticationService: NSObject, ObservableObject, ProfileRepositoryProtocol {
+class AuthenticationService: NSObject, ObservableObject, ProfileRepository {
     @Published var isAuthenticated = false
     @Published var userName = "Learner"
     @Published var userEmail: String?

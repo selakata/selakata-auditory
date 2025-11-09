@@ -1,5 +1,5 @@
 //
-//  HearingTestRepositoryProtocol.swift
+//  HearingTestRepository.swift
 //  selakata
 //
 //  Created by Anisa Amalia on 07/11/25.
@@ -7,10 +7,11 @@
 
 import Foundation
 
-protocol HearingTestRepositoryProtocol {
+protocol HearingTestRepository {
     func loadSNR() -> Int?
     func loadLeftThresholds() -> [Double: Float]?
     func loadRightThresholds() -> [Double: Float]?
-    
-    func getRepository() -> HearingTestRepositoryProtocol
+    func getRepository() -> HearingTestRepository
+    func saveSNR(_ snr: Int)
+    func saveThresholds(for ear: Ear, thresholds: [Double: Float])
 }

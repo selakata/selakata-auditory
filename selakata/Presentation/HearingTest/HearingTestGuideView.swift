@@ -62,7 +62,7 @@ struct HearingTestGuideView: View {
         HearingTestGuideView(
             isStartingTest: .constant(true),
              audioService: AudioService(),
-             repository: HearingTestRepository()
+             repository: HearingTestRepositoryImpl()
         )
     }
 }
