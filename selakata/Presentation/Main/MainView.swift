@@ -16,10 +16,10 @@ struct MainView: View {
         let apiConfiguration = ModuleAPIConfiguration(configuration: appConfiguration)
         let dataSource: ModuleDataSource = RemoteModuleDataSource(apiClient: apiClient, apiConfiguration: apiConfiguration)
         let repository = ModuleRepositoryImpl(dataSource: dataSource)
-        let fetchModuleUseCase = FetchModuleUseCase(repository: repository)
+        let moduleUseCase = ModuleUseCase(repository: repository)
         
         // Buat ViewModel sekali di init
-        _viewModel = StateObject(wrappedValue: ModulesViewModel(fetchModuleUseCase: fetchModuleUseCase))
+        _viewModel = StateObject(wrappedValue: ModulesViewModel(moduleUseCase: moduleUseCase))
     }
     
     var body: some View {

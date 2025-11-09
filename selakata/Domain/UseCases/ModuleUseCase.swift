@@ -1,18 +1,18 @@
 //
-//  FetchModuleUseCase.swift
+//  LevelModuleUseCase.swift
 //  ExampleMVVM
 //
 //  Created by MacBook Air M1 on 19/6/24.
 //
 
-public class FetchModuleUseCase {
+public class ModuleUseCase {
     private let repository: ModuleRepository
     
     public init(repository: ModuleRepository) {
         self.repository = repository
     }
     
-    public func execute(completion: @escaping (Result<ModuleResponse, Error>) -> Void) {
+    public func fetchModule(completion: @escaping (Result<ModuleResponse, Error>) -> Void) {
         repository.fetchModule(completion: completion)
     }
 }

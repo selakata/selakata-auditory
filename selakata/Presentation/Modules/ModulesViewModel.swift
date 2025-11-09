@@ -11,22 +11,22 @@ import Foundation
 class ModulesViewModel: ObservableObject {
     @Published var modules: [Module] = []
     
-    private let fetchModuleUseCase: FetchModuleUseCase
+    private let moduleUseCase : ModuleUseCase
     @Published var moduleResponse: ModuleResponse?
     @Published var errorMessage: String?
     
-    init(fetchModuleUseCase: FetchModuleUseCase) {
-        self.fetchModuleUseCase = fetchModuleUseCase
+    init(moduleUseCase: ModuleUseCase) {
+        self.moduleUseCase = moduleUseCase
         fetchModule()
     }
     
     public func fetchModule() {
-        fetchModuleUseCase.execute() { [weak self] result in
+        moduleUseCase.fetchModule { [weak self] result in
             switch result {
             case .success(let modulResponse):
                 DispatchQueue.main.async {
                     self?.moduleResponse = modulResponse
-                    print("AISDEBUG:> \(modulResponse.data.count)")
+                    print("AISDEBUG:MODULES:SUCCESS: \(modulResponse.data.count)")
                 }
             case .failure(let error):
                 DispatchQueue.main.async {
@@ -35,10 +35,6 @@ class ModulesViewModel: ObservableObject {
             }
         }
     }
-
-//    init() {
-//        //loadModules()
-//    }
 
     private func loadModules() {
         // Convert Module from QuizData to Module for UI compatibility

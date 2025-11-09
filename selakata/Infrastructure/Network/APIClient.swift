@@ -17,6 +17,10 @@ class APIClient: APIClientProtocol {
     func request<T: Decodable>(url: URL, method: HTTPMethod, completion: @escaping (Result<T, Error>) -> Void) {
         var request = URLRequest(url: url)
         request.httpMethod = method.rawValue
+        let token = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJSYWlzIFphaW51cmkiLCJyb2xlIjoiVVNFUiIsIm5hbWUiOiJSYWlzIFphaW51cmkiLCJpZCI6IjIxN2Y2NGM3LWE4MDUtNGQ5ZS04ZWE0LWJkMTU1MmEwNTQxYiIsImlhdCI6MTc2MjY5NDc5NH0.Qi9nNyAwoZnIjuoAzPAH8QkWZ2rhL317B0BtuShqjbHNKS03-9t3Tbs5Yoon0mErMgPdgN3a7Gud4eYgFlJ2NQ"
+        //if let token = tokenManager.getToken() {
+        request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+        //}
         
         let task = session.dataTask(with: request) { data, response, error in
             if let error = error {

@@ -81,12 +81,12 @@ final class LoginViewModel: ObservableObject {
                 case .success(let authResponse):
                     DispatchQueue.main.async {
                         self?.authResponse = authResponse
-                        print("✅ AUTH SUCCESS:", authResponse)
+                        print("AISDEBUG:AUTH:SUCCESS:", authResponse)
                     }
                 case .failure(let error):
                     DispatchQueue.main.async {
                         self?.errorMessage = error.localizedDescription
-                        print("❌ AUTH ERROR:", error.localizedDescription)
+                        print("AISDEBUG:AUTH:ERROR:", error.localizedDescription)
                     }
                 }
             }

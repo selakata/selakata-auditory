@@ -19,7 +19,7 @@ struct Category: Codable {
     let id: String
     let label: String
     let value: Int
-    let description: String?
+    var description: String = ""
     let isActive: Bool
     let createdAt: String
     let updatedAt: String

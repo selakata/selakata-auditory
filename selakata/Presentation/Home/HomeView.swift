@@ -60,9 +60,10 @@ struct HomeView: View {
                     .font(.headline)
                     .padding(.horizontal, 24)
 
-                NavigationLink(destination: Text("Question Page")) {
-                    ModuleCard(module: moduleToDisplay, showProgressBar: true)
-                }
+                //TO DO:DEBUGGING
+//                NavigationLink(destination: Text("Question Page")) {
+//                    ModuleCard(module: moduleToDisplay, showProgressBar: true)
+//                }
                 .buttonStyle(.plain)
                 .padding(.horizontal, 24)
             } else {

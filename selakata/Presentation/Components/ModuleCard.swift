@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct ModuleCard: View {
-    let module: Module
+    let module: Category
     let showProgressBar: Bool
     
     let moduleImages = [
@@ -38,7 +38,7 @@ struct ModuleCard: View {
                     .font(.headline)
                     .fontWeight(.bold)
                 
-                Text(module.desc)
+                Text(module.description)
                     .font(.subheadline)
                     .foregroundColor(.secondary)
                     .lineLimit(2)
