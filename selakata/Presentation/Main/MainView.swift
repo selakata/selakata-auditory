@@ -8,6 +8,20 @@
 import SwiftUI
 
 struct MainView: View {
+    @StateObject private var viewModel: ModulesViewModel
+    
+    init() {
+        let apiClient = APIClient()
+        let appConfiguration = AppConfiguration()
+        let apiConfiguration = ModuleAPIConfiguration(configuration: appConfiguration)
+        let dataSource: ModuleDataSource = RemoteModuleDataSource(apiClient: apiClient, apiConfiguration: apiConfiguration)
+        let repository = ModuleRepositoryImpl(dataSource: dataSource)
+        let fetchModuleUseCase = FetchModuleUseCase(repository: repository)
+        
+        // Buat ViewModel sekali di init
+        _viewModel = StateObject(wrappedValue: ModulesViewModel(fetchModuleUseCase: fetchModuleUseCase))
+    }
+    
     var body: some View {
         TabView {
             HomeView()
@@ -15,7 +29,7 @@ struct MainView: View {
                     Label("Home", systemImage: "house.fill")
                 }
             
-            ModulesView()
+            ModulesView(viewModel: viewModel)
                 .tabItem {
                     Label("Modules", systemImage: "ear.fill")
                 }

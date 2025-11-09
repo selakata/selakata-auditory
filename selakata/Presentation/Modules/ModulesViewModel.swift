@@ -10,10 +10,35 @@ import Foundation
 @MainActor
 class ModulesViewModel: ObservableObject {
     @Published var modules: [Module] = []
-
-    init() {
-        loadModules()
+    
+    private let fetchModuleUseCase: FetchModuleUseCase
+    @Published var moduleResponse: ModuleResponse?
+    @Published var errorMessage: String?
+    
+    init(fetchModuleUseCase: FetchModuleUseCase) {
+        self.fetchModuleUseCase = fetchModuleUseCase
+        fetchModule()
     }
+    
+    public func fetchModule() {
+        fetchModuleUseCase.execute() { [weak self] result in
+            switch result {
+            case .success(let modulResponse):
+                DispatchQueue.main.async {
+                    self?.moduleResponse = modulResponse
+                    print("AISDEBUG:> \(modulResponse.data.count)")
+                }
+            case .failure(let error):
+                DispatchQueue.main.async {
+                    self?.errorMessage = error.localizedDescription
+                }
+            }
+        }
+    }
+
+//    init() {
+//        //loadModules()
+//    }
 
     private func loadModules() {
         // Convert Module from QuizData to Module for UI compatibility

@@ -1,11 +1,9 @@
 //
-//  FetchWeatherUseCase.swift
+//  FetchModuleUseCase.swift
 //  ExampleMVVM
 //
 //  Created by MacBook Air M1 on 19/6/24.
 //
-
-import SwiftUI
 
 public class FetchModuleUseCase {
     private let repository: ModuleRepository
@@ -14,7 +12,7 @@ public class FetchModuleUseCase {
         self.repository = repository
     }
     
-    public func execute(city: String, completion: @escaping (Result<ModuleAPI, Error>) -> Void) {
+    public func execute(completion: @escaping (Result<ModuleResponse, Error>) -> Void) {
         repository.fetchModule(completion: completion)
     }
 }

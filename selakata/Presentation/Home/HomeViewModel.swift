@@ -16,7 +16,7 @@ class HomeViewModel: ObservableObject {
     private let authService: AuthenticationService
     
     var userName: String {
-        return authService.userName
+        return " (ID: \(authService.userAuthId ?? "N/A"))"
     }
     
     var isAuthenticated: Bool {

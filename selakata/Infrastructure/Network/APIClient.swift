@@ -29,12 +29,44 @@ class APIClient: APIClientProtocol {
                 return
             }
             
+            // 👇 Tambahkan debug log di sini
+            if let jsonString = String(data: data, encoding: .utf8) {
+                print("📦 [APIClient] Response JSON:")
+                print(jsonString)
+            } else {
+                print("⚠️ [APIClient] No readable JSON response.")
+            }
+            
             do {
                 let decodedResponse = try JSONDecoder().decode(T.self, from: data)
                 completion(.success(decodedResponse))
             } catch {
                 completion(.failure(error))
             }
+        }
+        task.resume()
+    }
+    
+    public func request(request: URLRequest, completion: @escaping (Result<Data, Error>) -> Void) {
+        let task = URLSession.shared.dataTask(with: request) { data, response, error in
+            if let error = error {
+                completion(.failure(error))
+                return
+            }
+            
+            guard let data = data else {
+                completion(.failure(URLError(.badServerResponse)))
+                return
+            }
+            
+            if let jsonString = String(data: data, encoding: .utf8) {
+                print("📦 [APIClient] Response JSON:")
+                print(jsonString)
+            } else {
+                print("⚠️ [APIClient] No readable JSON response.")
+            }
+            
+            completion(.success(data))
         }
         task.resume()
     }

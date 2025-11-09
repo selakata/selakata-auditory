@@ -9,7 +9,12 @@ import SwiftData
 import SwiftUI
 
 struct ModulesView: View {
-    @StateObject private var viewModel = ModulesViewModel()
+//    @StateObject private var viewModel = ModulesViewModel()
+    @StateObject private var viewModel: ModulesViewModel
+    
+    init(viewModel: ModulesViewModel) {
+        _viewModel = StateObject(wrappedValue: viewModel)
+    }
 
     var body: some View {
         NavigationStack {
