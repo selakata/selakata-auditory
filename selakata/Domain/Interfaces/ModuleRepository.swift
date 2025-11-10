@@ -1,12 +1,10 @@
 //
-//  WeatherRepository.swift
+//  ModuleRepository.swift
 //  ExampleMVVM
 //
 //  Created by MacBook Air M1 on 19/6/24.
 //
 
-import SwiftUI
-
 public protocol ModuleRepository {
-    func fetchModule(completion: @escaping (Result<ModuleAPI, Error>) -> Void)
+    func fetchModule(completion: @escaping (Result<ModuleResponse, Error>) -> Void)
 }

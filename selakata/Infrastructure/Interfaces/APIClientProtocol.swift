@@ -9,4 +9,5 @@ import Foundation
 
 public protocol APIClientProtocol {
     func request<T: Decodable>(url: URL, method: HTTPMethod, completion: @escaping (Result<T, Error>) -> Void)
+    func request(request: URLRequest, completion: @escaping (Result<Data, Error>) -> Void)
 }

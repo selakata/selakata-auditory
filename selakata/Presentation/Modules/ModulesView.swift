@@ -9,7 +9,11 @@ import SwiftData
 import SwiftUI
 
 struct ModulesView: View {
-    @StateObject private var viewModel = ModulesViewModel()
+    @StateObject private var viewModel: ModulesViewModel
+    
+    init(viewModel: ModulesViewModel) {
+        _viewModel = StateObject(wrappedValue: viewModel)
+    }
 
     var body: some View {
         NavigationStack {
@@ -19,11 +23,11 @@ struct ModulesView: View {
                         .font(.largeTitle.weight(.bold))
                         .padding([.horizontal, .top])
 
-                    ForEach(viewModel.modules.indices, id: \.self) { index in
+                    ForEach(viewModel.moduleResponse!.data.indices, id: \.self) { index in
                         NavigationLink(
                             destination: ModuleDetailView(module: QuizData.dummyModule[index])
                         ) {
-                            ModuleCard(module: viewModel.modules[index], showProgressBar: true)
+                            ModuleCard(module: viewModel.moduleResponse!.data[index], showProgressBar: true)
                         }
                         .buttonStyle(.plain)
                     }

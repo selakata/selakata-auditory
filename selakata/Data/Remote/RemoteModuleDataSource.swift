@@ -7,7 +7,7 @@
 
 import Foundation
 
-public class RemoteModelDataSource: ModuleDataSource {
+public class RemoteModuleDataSource: ModuleDataSource {
     private let apiClient: APIClientProtocol
     private let apiConfiguration: ModuleAPIConfiguration
     
@@ -16,7 +16,7 @@ public class RemoteModelDataSource: ModuleDataSource {
         self.apiConfiguration = apiConfiguration
     }
     
-    public func fetchModule(completion: @escaping (Result<ModuleAPI, Error>) -> Void) {
+    public func fetchModule(completion: @escaping (Result<ModuleResponse, Error>) -> Void) {
         guard let url = apiConfiguration.makeModuleURL() else {
             completion(.failure(NSError(domain: "", code: -1, userInfo: [NSLocalizedDescriptionKey: "Invalid URL"])))
             return
