@@ -1,34 +1,35 @@
 //
-//  HearingTestGuideView.swift
+//  VoiceRecordingGuideView.swift
 //  selakata
 //
-//  Created by Anisa Amalia on 23/10/25.
+//  Created by Anisa Amalia on 05/11/25.
 //
 
 import SwiftUI
 
-struct HearingTestGuideView: View {
-    @ScaledMetric var iconSize: CGFloat = 200
-    @ScaledMetric var horizontalPadding: CGFloat = 32
+struct VoiceRecordingGuideView: View {
+    @Binding var isPresented: Bool
+    let useCase: PersonalVoiceUseCase
+    @Environment(\.modelContext) private var modelContext
+    @Environment(\.dismiss) private var dismiss
     
-    @Binding var isStartingTest: Bool
-    let audioService: AudioService
-    let repository: HearingTestRepository
+    @ScaledMetric var iconSize: CGFloat = 120
+    @ScaledMetric var horizontalPadding: CGFloat = 32
 
     var body: some View {
         VStack(spacing: 24) {
             Spacer()
             
-            Image(systemName: "airpods.gen3")
+            Image(systemName: "dot.radiowaves.left.and.right")
                 .font(.system(size: iconSize))
                 .foregroundStyle(.secondary)
             
-            VStack(spacing: 20) {
-                Text("Wear your earphones comfortably")
+            VStack(spacing: 12) {
+                Text("You'll be asked to say a sentence.")
                     .font(.title.weight(.bold))
                     .multilineTextAlignment(.center)
                 
-                Text("Placing your earphones in the correct ear helps to get the most accurate results.")
+                Text("Make sure you're in a **quiet place** for the best result.")
                     .font(.body)
                     .foregroundStyle(.secondary)
                     .multilineTextAlignment(.center)
@@ -36,10 +37,9 @@ struct HearingTestGuideView: View {
             
             Spacer()
             
-            NavigationLink(destination: QuietPlaceGuideView(
-                isStartingTest: $isStartingTest,
-                audioService: audioService,
-                repository: repository
+            NavigationLink(destination: RecordingDurationGuideView(
+                isPresented: $isPresented,
+                useCase: useCase
             )) {
                 Text("Next")
                     .font(.headline)
@@ -49,20 +49,18 @@ struct HearingTestGuideView: View {
                     .background(Color.accentColor)
                     .foregroundStyle(.white)
                     .clipShape(Capsule())
-
             }
         }
         .padding(horizontalPadding)
+        .padding(.bottom)
+        .navigationTitle("Personalized Voice")
         .navigationBarTitleDisplayMode(.inline)
     }
 }
 
 #Preview {
     NavigationStack {
-        HearingTestGuideView(
-            isStartingTest: .constant(true),
-             audioService: AudioService(),
-             repository: HearingTestRepositoryImpl()
-        )
+        VoiceRecordingGuideView(isPresented: .constant(true), useCase: PersonalVoiceUseCase(repository: PersonalVoiceRepositoryImpl()))
+            .modelContainer(for: AudioFile.self, inMemory: true)
     }
 }

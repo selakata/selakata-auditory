@@ -60,6 +60,6 @@ struct SNRGuideView: View {
     NavigationStack {
         SNRGuideView(
             isStartingTest: .constant(true),
-            repository: HearingTestRepository())
+            repository: HearingTestRepositoryImpl())
     }
 }

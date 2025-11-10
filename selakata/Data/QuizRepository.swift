@@ -46,7 +46,7 @@ class QuizRepository: QuizRepositoryProtocol {
         }
         
         // Extract audio file URLs from Question
-        return level.question.map { $0.audioFile.fileURL }
+        return level.question.map { $0.audioFile.fileURL ?? "" }
     }
     
     // MARK: - Helper Methods

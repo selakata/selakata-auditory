@@ -7,7 +7,7 @@
 
 import Foundation
 
-class HearingTestRepository {
+class HearingTestRepositoryImpl: HearingTestRepository {    
     private let userDefaults = UserDefaults.standard
     private let thresholdsLeftKey = "hearingTestThresholds_Left"
     private let thresholdsRightKey = "hearingTestThresholds_Right"
@@ -57,6 +57,10 @@ class HearingTestRepository {
             }
         )
         return doubleKeyedThresholds
+    }
+    
+    func getRepository() -> HearingTestRepository {
+        return self
     }
     
     func saveSNR(_ snr: Int) {

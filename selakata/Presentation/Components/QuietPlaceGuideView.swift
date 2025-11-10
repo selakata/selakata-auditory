@@ -63,7 +63,7 @@ struct QuietPlaceGuideView: View {
         QuietPlaceGuideView(
             isStartingTest: .constant(true),
             audioService: AudioService(),
-            repository: HearingTestRepository()
+            repository: HearingTestRepositoryImpl()
         )
     }
 }
