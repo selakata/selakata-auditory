@@ -92,7 +92,7 @@ struct ChoiceButton: View {
     NavigationStack {
         SNRTestView(
             isStartingTest: .constant(true),
-            repository: HearingTestRepository(),
+            repository: HearingTestRepositoryImpl(),
             audioPlayerService: AudioPlayerService()
         )
     }

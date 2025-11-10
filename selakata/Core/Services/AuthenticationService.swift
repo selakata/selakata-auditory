@@ -102,6 +102,10 @@ final class AuthenticationService: NSObject, ObservableObject {
             }
         }
     }
+    
+    func getUserName() -> String {
+        return self.userName
+    }
 }
 
 // MARK: - ASAuthorizationControllerDelegate

@@ -11,7 +11,7 @@ struct HearingTestOnboardingView: View {
     @Binding var isStartingTest: Bool
     
     @State private var audioService = AudioService()
-    @State private var repository = HearingTestRepository()
+    @State private var repository = HearingTestRepositoryImpl()
     
     @ScaledMetric var mainLogoSize: CGFloat = 96
     @ScaledMetric var horizontalPadding: CGFloat = 32

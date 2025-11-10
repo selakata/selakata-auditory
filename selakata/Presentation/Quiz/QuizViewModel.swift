@@ -24,7 +24,7 @@ class QuizViewModel: ObservableObject {
     }
 
     var audioFileName: String {
-        currentQuestion.audioFile.fileURL
+        currentQuestion.audioFile.fileURL ?? ""
     }
 
     var isLastQuestion: Bool {

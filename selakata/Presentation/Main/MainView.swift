@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct MainView: View {
     @StateObject private var viewModel: ModulesViewModel
@@ -34,11 +35,12 @@ struct MainView: View {
                     Label("Modules", systemImage: "ear.fill")
                 }
             
-            Text("Profile Page")
+            ProfileView()
                 .tabItem {
                     Label("Profile", systemImage: "person.fill")
                 }
         }
+        .modelContainer(for: [AudioFile.self, Module.self, Level.self])
     }
 }
 
