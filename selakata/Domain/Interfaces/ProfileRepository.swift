@@ -8,5 +8,5 @@
 import Foundation
 
 protocol ProfileRepository {
-    func getUserName() -> String
+    func getUserFullName() -> String
 }

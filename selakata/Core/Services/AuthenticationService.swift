@@ -10,7 +10,7 @@ import Foundation
 import SwiftUI
 
 @MainActor
-final class AuthenticationService: NSObject, ObservableObject {
+final class AuthenticationService: NSObject, ObservableObject, ProfileRepository {
     // MARK: - Published states
     @Published var isAuthenticated = false
     @Published var userAuthId: String?
@@ -18,25 +18,25 @@ final class AuthenticationService: NSObject, ObservableObject {
     @Published var userEmail: String?
     @Published var isLoading = false
     @Published var errorMessage: String?
-
+    
     // MARK: - Keychain
     private let keychainService = "com.selakata.auth"
     private let keychainAccount = "appleUserId"
-
+    
     // MARK: - Init
     override init() {
         super.init()
         checkAuthenticationState()
     }
-
+    
     // MARK: - Sign In
     func signInWithApple() {
         isLoading = true
         errorMessage = nil
-
+        
         let request = ASAuthorizationAppleIDProvider().createRequest()
         request.requestedScopes = [.fullName, .email]
-
+        
         let controller = ASAuthorizationController(authorizationRequests: [
             request
         ])
@@ -44,14 +44,14 @@ final class AuthenticationService: NSObject, ObservableObject {
         controller.presentationContextProvider = self
         controller.performRequests()
     }
-
+    
     // MARK: - Sign Out
     func signOut() {
         isAuthenticated = false
         userAuthId = nil
-        userFullName = nil
+        userFullName = ""
         userEmail = nil
-
+        
         // Hapus data dari Keychain dan UserDefaults
         KeychainHelper.shared.delete(
             service: keychainService,
@@ -59,10 +59,10 @@ final class AuthenticationService: NSObject, ObservableObject {
         )
         UserDefaults.standard.removeObject(forKey: "user_name")
         UserDefaults.standard.removeObject(forKey: "user_email")
-
+        
         print("🚪 User signed out and data cleared.")
     }
-
+    
     // MARK: - Check state (auto login)
     private func checkAuthenticationState() {
         // Cek apakah userId tersimpan di Keychain
@@ -78,7 +78,7 @@ final class AuthenticationService: NSObject, ObservableObject {
             )
             return
         }
-
+        
         let provider = ASAuthorizationAppleIDProvider()
         provider.getCredentialState(forUserID: userId) {
             [weak self] (state, error) in
@@ -89,7 +89,7 @@ final class AuthenticationService: NSObject, ObservableObject {
                     self.isAuthenticated = true
                     self.userFullName = UserDefaults.standard.string(
                         forKey: "user_name"
-                    )
+                    ) ?? "Learner"
                     self.userEmail = UserDefaults.standard.string(
                         forKey: "user_email"
                     )
@@ -103,8 +103,8 @@ final class AuthenticationService: NSObject, ObservableObject {
         }
     }
     
-    func getUserName() -> String {
-        return self.userName
+    func getUserFullName() -> String {
+        return self.userFullName ?? "Learner"
     }
 }
 
@@ -115,7 +115,7 @@ extension AuthenticationService: ASAuthorizationControllerDelegate {
         didCompleteWithAuthorization authorization: ASAuthorization
     ) {
         isLoading = false
-
+        
         guard
             let credential = authorization.credential
                 as? ASAuthorizationAppleIDCredential
@@ -123,30 +123,30 @@ extension AuthenticationService: ASAuthorizationControllerDelegate {
             self.errorMessage = "Invalid Apple credential"
             return
         }
-
+        
         let authId = credential.user
         let fullName = credential.fullName
         let email = credential.email
-
+        
         print("🍏 Apple Sign In success:")
         print(" - userId:", authId)
         print(" - fullName:", fullName?.formatted() ?? "nil")
         print(" - email:", email ?? "nil")
-
+        
         let data = Data(authId.utf8)
         KeychainHelper.shared.save(
             data,
             service: keychainService,
             account: keychainAccount
         )
-
+        
         self.userAuthId = authId
-
+        
         if let email = email {
             UserDefaults.standard.set(email, forKey: "user_email")
             self.userEmail = email
         }
-
+        
         if let fullName = fullName {
             let displayName = PersonNameComponentsFormatter().string(
                 from: fullName
@@ -156,17 +156,17 @@ extension AuthenticationService: ASAuthorizationControllerDelegate {
                 self.userFullName = displayName
             }
         }
-
+        
         // Mark as authenticated
         self.isAuthenticated = true
     }
-
+    
     func authorizationController(
         controller: ASAuthorizationController,
         didCompleteWithError error: Error
     ) {
         isLoading = false
-
+        
         if let authError = error as? ASAuthorizationError {
             switch authError.code {
             case .canceled: errorMessage = "Sign in was canceled"
@@ -179,7 +179,7 @@ extension AuthenticationService: ASAuthorizationControllerDelegate {
         } else {
             errorMessage = error.localizedDescription
         }
-
+        
         print("❌ Apple Sign In error:", errorMessage ?? "unknown error")
     }
 }
@@ -189,7 +189,7 @@ extension AuthenticationService:
     ASAuthorizationControllerPresentationContextProviding
 {
     func presentationAnchor(for controller: ASAuthorizationController)
-        -> ASPresentationAnchor
+    -> ASPresentationAnchor
     {
         guard
             let windowScene = UIApplication.shared.connectedScenes.first

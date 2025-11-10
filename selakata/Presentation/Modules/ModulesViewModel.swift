@@ -10,10 +10,11 @@ import Foundation
 @MainActor
 class ModulesViewModel: ObservableObject {
     @Published var modules: [Module] = []
-    
-    private let moduleUseCase : ModuleUseCase
-    @Published var moduleResponse: ModuleResponse?
+    @Published var isLoading: Bool = false
     @Published var errorMessage: String?
+    
+    private let moduleUseCase: ModuleUseCase
+    @Published var moduleResponse: ModuleResponse?
     
     init(moduleUseCase: ModuleUseCase) {
         self.moduleUseCase = moduleUseCase
@@ -21,19 +22,27 @@ class ModulesViewModel: ObservableObject {
     }
     
     public func fetchModule() {
+        isLoading = true
+        errorMessage = nil
+        
         moduleUseCase.fetchModule { [weak self] result in
-            switch result {
-            case .success(let modulResponse):
-                DispatchQueue.main.async {
+            DispatchQueue.main.async {
+                self?.isLoading = false
+                
+                switch result {
+                case .success(let modulResponse):
                     self?.moduleResponse = modulResponse
                     print("AISDEBUG:MODULES:SUCCESS: \(modulResponse.data.count)")
-                }
-            case .failure(let error):
-                DispatchQueue.main.async {
+                case .failure(let error):
                     self?.errorMessage = error.localizedDescription
+                    print("AISDEBUG:MODULES:ERROR: \(error.localizedDescription)")
                 }
             }
         }
+    }
+    
+    public func refreshModules() {
+        fetchModule()
     }
 
     private func loadModules() {

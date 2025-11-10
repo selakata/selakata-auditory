@@ -23,8 +23,8 @@ class GetProfileDataUseCase {
         return hearingRepo.loadSNR() != nil
     }
     
-    func getUserName() -> String {
-        return profileRepo.getUserName()
+    func getUserFullName() -> String {
+        return profileRepo.getUserFullName()
     }
     
     func getHearingTestRepository() -> HearingTestRepository {

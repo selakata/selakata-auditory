@@ -29,7 +29,7 @@ class ProfileViewModel: ObservableObject {
     }
     
     func onAppear() {
-        self.userName = getProfileDataUseCase.getUserName()
+        self.userName = getProfileDataUseCase.getUserFullName()
         self.hasHearingTestResult = getProfileDataUseCase.hasCompletedHearingTest()
     }
 }
