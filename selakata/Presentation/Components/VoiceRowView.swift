@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct VoiceRowView: View {
-    let voice: AudioFile
+    let voice: LocalAudioFile
     @ObservedObject var audioPlayerService: AudioPlayerService
     @Binding var selectedVoiceID: String?
     @State private var isExpanded = false
@@ -91,7 +91,7 @@ struct VoiceRowView: View {
 }
 
 #Preview {
-    VoiceRowView(voice: AudioFile(voiceName: "Flavia", fileName: "WAWAWA", duration: 20), audioPlayerService: AudioPlayerService(),
+    VoiceRowView(voice: LocalAudioFile(voiceName: "Flavia", fileName: "WAWAWA", duration: 20), audioPlayerService: AudioPlayerService(),
         selectedVoiceID: .constant("")
     )
 }

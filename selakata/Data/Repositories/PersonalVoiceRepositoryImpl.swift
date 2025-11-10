@@ -30,7 +30,7 @@ class PersonalVoiceRepositoryImpl: PersonalVoiceRepository {
         } catch {
             throw error
         }
-        let newAudioFile = AudioFile(
+        let newAudioFile = LocalAudioFile(
             voiceName: name,
             fileName: permanentFileName,
             duration: Int(duration.rounded())

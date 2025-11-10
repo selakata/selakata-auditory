@@ -6,13 +6,13 @@ enum AnswerLayout {
 }
 
 struct AnswerView: View {
-    let question: Question
-    let selectedAnswer: Answer?
+    let question: LocalQuestion
+    let selectedAnswer: LocalAnswer?
     let hasAnswered: Bool
     let layout: AnswerLayout
-    let onSelect: (Answer) -> Void
+    let onSelect: (LocalAnswer) -> Void
     
-    var sortedAnswers: [Answer] {
+    var sortedAnswers: [LocalAnswer] {
         question.answer.sorted { $0.urutan < $1.urutan }
     }
     

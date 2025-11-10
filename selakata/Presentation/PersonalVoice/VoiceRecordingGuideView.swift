@@ -61,6 +61,6 @@ struct VoiceRecordingGuideView: View {
 #Preview {
     NavigationStack {
         VoiceRecordingGuideView(isPresented: .constant(true), useCase: PersonalVoiceUseCase(repository: PersonalVoiceRepositoryImpl()))
-            .modelContainer(for: AudioFile.self, inMemory: true)
+            .modelContainer(for: LocalAudioFile.self, inMemory: true)
     }
 }

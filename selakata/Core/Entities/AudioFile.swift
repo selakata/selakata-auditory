@@ -9,7 +9,7 @@ import Foundation
 import SwiftData
 
 @Model
-final class AudioFile{
+final class LocalAudioFile{
     @Attribute(.unique) var id: UUID
     var fileName: String
     var duration: Int

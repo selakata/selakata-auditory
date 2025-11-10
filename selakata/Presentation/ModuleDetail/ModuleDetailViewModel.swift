@@ -3,7 +3,35 @@ import SwiftUI
 
 @MainActor
 class ModuleDetailViewModel: ObservableObject {
-    @Published var levels: [LevelData] = []
+    @Published var levels: [LocalLevelData] = []
+    
+    @Published var levelResponse: LevelResponse?
+    
+    private let levelUseCase: LevelUseCase
+    private let moduleId: String
+    
+    init(levelUseCase: LevelUseCase, moduleId: String) {
+        self.levelUseCase = levelUseCase
+        self.moduleId = moduleId
+        fetchLevels()
+    }
+    
+    func fetchLevels() {
+        levelUseCase.fetchLevel(moduleId: moduleId) { [weak self] result in
+            DispatchQueue.main.async {
+//                self?.isLoading = false
+                
+                switch result {
+                case .success(let levelResponse):
+                    self?.levelResponse = levelResponse
+                    print("AISDEBUG:MODULES:SUCCESS: \(levelResponse.data)")
+                case .failure(let error):
+//                    self?.errorMessage = error.localizedDescription
+                    print("AISDEBUG:MODULES:ERROR: \(error.localizedDescription)")
+                }
+            }
+        }
+    }
     
     func loadLevels(for module: Module) {
         // Find corresponding Module from QuizData
@@ -29,7 +57,7 @@ class ModuleDetailViewModel: ObservableObject {
                 difficulty = .medium
             }
             
-            return LevelData(
+            return LocalLevelData(
                 id: level.value,
                 name: level.label,
                 description: "\(level.label) \(module.label.lowercased()) exercises",
@@ -42,7 +70,7 @@ class ModuleDetailViewModel: ObservableObject {
         }
     }
     
-    func isLevelUnlocked(_ level: LevelData) -> Bool {
+    func isLevelUnlocked(_ level: LocalLevelData) -> Bool {
         return true // All levels are unlocked
     }
     
@@ -62,7 +90,7 @@ class ModuleDetailViewModel: ObservableObject {
 }
 
 // MARK: - LevelData Model
-struct LevelData: Identifiable {
+struct LocalLevelData: Identifiable {
     var id: Int
     var name: String
     let description: String

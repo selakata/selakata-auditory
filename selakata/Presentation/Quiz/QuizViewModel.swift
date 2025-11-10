@@ -5,17 +5,17 @@ import SwiftUI
 class QuizViewModel: ObservableObject {
     // MARK: - Published Properties
     @Published var currentQuestionIndex: Int = 0
-    @Published var selectedAnswer: Answer? = nil
+    @Published var selectedAnswer: LocalAnswer? = nil
     @Published var hasAnswered: Bool = false
     @Published var score: Int = 0
     @Published var showResults: Bool = false
 
     // MARK: - Private Properties
-    private let questions: [Question]
+    private let questions: [LocalQuestion]
     private let level: Level
 
     // MARK: - Computed Properties
-    var currentQuestion: Question {
+    var currentQuestion: LocalQuestion {
         questions[currentQuestionIndex]
     }
 
@@ -62,7 +62,7 @@ class QuizViewModel: ObservableObject {
     }
 
     // MARK: - Public Methods
-    func selectAnswer(_ answer: Answer) {
+    func selectAnswer(_ answer: LocalAnswer) {
         selectedAnswer = answer
         hasAnswered = true
 

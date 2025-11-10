@@ -206,7 +206,7 @@ private struct ErrorCardView: View {
 
 #Preview {
     let container = try! ModelContainer(
-        for: AudioFile.self,
+        for: LocalAudioFile.self,
         configurations: ModelConfiguration(isStoredInMemoryOnly: true)
     )
     NavigationStack {
