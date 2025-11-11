@@ -18,7 +18,6 @@ struct LoginView: View {
         let repository = AuthRepositoryImpl(dataSource: dataSource)
         let authUseCase = AuthUseCase(repository: repository)
         
-        // Buat ViewModel sekali di init
         _viewModel = StateObject(wrappedValue: LoginViewModel(authUseCase: authUseCase))
     }
     

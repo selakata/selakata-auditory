@@ -28,6 +28,7 @@ class APIClient: APIClientProtocol {
                 forHTTPHeaderField: "Authorization"
             )
         }
+        
         let task = session.dataTask(with: request) { data, response, error in
             if let error = error {
                 completion(.failure(error))
