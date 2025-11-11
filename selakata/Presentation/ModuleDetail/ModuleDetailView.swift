@@ -6,16 +6,7 @@ struct ModuleDetailView: View {
     
     init(category: Category) {
         self.category = category
-        
-        let apiClient = APIClient()
-        let appConfiguration = AppConfiguration()
-        let apiConfiguration = LevelAPIConfiguration(configuration: appConfiguration)
-        let dataSource: LevelDataSource = RemoteLevelDataSource(apiClient: apiClient, apiConfiguration: apiConfiguration)
-        let repository = LevelRepositoryImpl(dataSource: dataSource)
-        let levelUseCase = LevelUseCase(repository: repository)
-        
-        // Buat ViewModel sekali di init
-        _viewModel = StateObject(wrappedValue: ModuleDetailViewModel(levelUseCase: levelUseCase, moduleId: category.id))
+        _viewModel = StateObject(wrappedValue: DependencyContainer.shared.makeModuleDetailViewModel(moduleId: category.id))
     }
     
     @Environment(\.dismiss) private var dismiss

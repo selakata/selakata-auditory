@@ -10,7 +10,7 @@ import SwiftData
 
 struct PersonalVoiceListView: View {
     @Environment(\.modelContext) private var modelContext
-    @StateObject private var viewModel = PersonalVoiceViewModel()
+    @StateObject private var viewModel = DependencyContainer.shared.makePersonalVoiceViewModel()
     @StateObject private var audioPlayerService = AudioPlayerService()
     @AppStorage("selectedVoiceID") private var selectedVoiceID: String?
 
