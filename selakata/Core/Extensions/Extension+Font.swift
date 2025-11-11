@@ -1,10 +1,4 @@
-//
-//  AppFont.swift
-//  selakata
-//
 //  Created by ais on 03/11/25.
-//
-
 
 import SwiftUI
 

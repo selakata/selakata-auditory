@@ -1,13 +1,7 @@
-//
-//  RoundedCorner.swift
-//  selakata
-//
 //  Created by ais on 03/11/25.
-//
 
 import SwiftUI
 
-// Tambahkan ini sekali di project kamu
 extension View {
     func cornerRadius(_ radius: CGFloat, corners: UIRectCorner) -> some View {
         clipShape(RoundedCorner(radius: radius, corners: corners))

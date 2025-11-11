@@ -1,9 +1,4 @@
-//
-//  LoginView.swift
-//  selakata
-//
 //  Created by ais on 05/11/25.
-//
 
 import SwiftUI
 

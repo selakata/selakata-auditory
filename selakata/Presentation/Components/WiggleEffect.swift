@@ -1,10 +1,4 @@
-//
-//  WiggleEffect.swift
-//  selakata
-//
 //  Created by Anisa Amalia on 05/11/25.
-//
-
 
 import SwiftUI
 
