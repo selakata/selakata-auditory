@@ -16,16 +16,9 @@ class ProfileViewModel: ObservableObject {
     private let getProfileDataUseCase: GetProfileDataUseCase
     let hearingTestRepository: HearingTestRepository
     
-    init() {
-        let hearingRepo = HearingTestRepositoryImpl()
-        let profileRepo = AuthenticationService()
-        
-        self.getProfileDataUseCase = GetProfileDataUseCase(
-            hearingRepo: hearingRepo,
-            profileRepo: profileRepo
-        )
-        
-        self.hearingTestRepository = hearingRepo
+    init(getProfileDataUseCase: GetProfileDataUseCase, hearingTestRepository: HearingTestRepository) {
+        self.getProfileDataUseCase = getProfileDataUseCase
+        self.hearingTestRepository = hearingTestRepository
     }
     
     func onAppear() {

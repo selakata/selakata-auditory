@@ -9,19 +9,7 @@ import SwiftUI
 import SwiftData
 
 struct MainView: View {
-    @StateObject private var viewModel: ModulesViewModel
-    
-    init() {
-        let apiClient = APIClient()
-        let appConfiguration = AppConfiguration()
-        let apiConfiguration = ModuleAPIConfiguration(configuration: appConfiguration)
-        let dataSource: ModuleDataSource = RemoteModuleDataSource(apiClient: apiClient, apiConfiguration: apiConfiguration)
-        let repository = ModuleRepositoryImpl(dataSource: dataSource)
-        let moduleUseCase = ModuleUseCase(repository: repository)
-        
-        // Buat ViewModel sekali di init
-        _viewModel = StateObject(wrappedValue: ModulesViewModel(moduleUseCase: moduleUseCase))
-    }
+    @StateObject private var viewModel = DependencyContainer.shared.makeModulesViewModel()
     
     var body: some View {
         TabView {

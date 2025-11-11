@@ -17,5 +17,9 @@ public class LevelRepositoryImpl: LevelRepository {
     public func fetchLevel(moduleId: String, completion: @escaping (Result<LevelResponse, Error>) -> Void) {
         dataSource.fetchLevel (moduleId: moduleId, completion: completion)
     }
+    
+    public func fetchLevelDetail(levelId: String, completion: @escaping (Result<LevelDetailResponse, Error>) -> Void) {
+        dataSource.fetchLevelDetail (levelId: levelId, completion: completion)
+    }
 }
 

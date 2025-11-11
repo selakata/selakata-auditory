@@ -17,11 +17,8 @@ class PersonalVoiceViewModel: ObservableObject {
 
     private let privacyKey = "hasAcceptedVoicePrivacy"
     
-    init() {
-        let repository = PersonalVoiceRepositoryImpl()
-        self.useCase = PersonalVoiceUseCase(
-            repository: repository
-        )
+    init(useCase: PersonalVoiceUseCase) {
+        self.useCase = useCase
     }
     
     func addVoiceButtonTapped() {

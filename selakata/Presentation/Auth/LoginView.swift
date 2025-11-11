@@ -8,19 +8,7 @@
 import SwiftUI
 
 struct LoginView: View {
-    @StateObject private var viewModel: LoginViewModel
-    
-    init() {
-        let apiClient = APIClient()
-        let appConfiguration = AppConfiguration()
-        let apiConfiguration = AuthAPIConfiguration(configuration: appConfiguration)
-        let dataSource: AuthDataSource = RemoteAuthDataSource(apiClient: apiClient, apiConfiguration: apiConfiguration)
-        let repository = AuthRepositoryImpl(dataSource: dataSource)
-        let authUseCase = AuthUseCase(repository: repository)
-        
-        // Buat ViewModel sekali di init
-        _viewModel = StateObject(wrappedValue: LoginViewModel(authUseCase: authUseCase))
-    }
+    @StateObject private var viewModel = DependencyContainer.shared.makeLoginViewModel()
     
     @State private var showingMainView = false
 

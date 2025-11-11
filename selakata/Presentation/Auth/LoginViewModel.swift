@@ -26,7 +26,6 @@ final class LoginViewModel: ObservableObject {
 
     // MARK: - Init
     init(authService: AuthenticationService? = nil, authUseCase: AuthUseCase) {
-        // Construct the default dependency inside the main-actor isolated context
         self.authService = authService ?? AuthenticationService()
         self.authUseCase = authUseCase
         bindAuthService()
@@ -43,19 +42,16 @@ final class LoginViewModel: ObservableObject {
 
     // MARK: - Private binding
     private func bindAuthService() {
-        // --- 1. Update isAuthenticated binding biasa
         authService.$isAuthenticated
             .receive(on: RunLoop.main)
             .assign(to: &$isAuthenticated)
         
-        // --- 2. Combine 3 publisher untuk user data
         Publishers.CombineLatest3(
             authService.$userAuthId,
             authService.$userEmail,
             authService.$userFullName
         )
         .compactMap { id, email, name -> (String, String, String)? in
-            // Hanya lanjut kalau semua non-nil
             guard
                 let id = id,
                 let email = email,
@@ -94,7 +90,6 @@ final class LoginViewModel: ObservableObject {
         }
         .store(in: &cancellables)
         
-        // --- 4. Loading & error binding
         authService.$isLoading
             .receive(on: RunLoop.main)
             .assign(to: &$isLoading)
