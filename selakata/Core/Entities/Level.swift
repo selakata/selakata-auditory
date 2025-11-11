@@ -17,9 +17,9 @@ final class Level {
     var createdAt: String
     var updatedAt: String
     var updatedBy: String
-    var question: [Question]
+    var question: [LocalQuestion]
     
-    init(id: UUID, label: String, value: Int, isActive: Bool, createdAt: String, updatedAt: String, updatedBy: String, question: [Question] = []) {
+    init(id: UUID, label: String, value: Int, isActive: Bool, createdAt: String, updatedAt: String, updatedBy: String, question: [LocalQuestion] = []) {
         self.id = id
         self.label = label
         self.value = value

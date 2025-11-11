@@ -8,7 +8,7 @@ import Foundation
 import SwiftUI
 
 struct AnswerButton: View {
-    let answer: Answer
+    let answer: LocalAnswer
     let isSelected: Bool
     let isCorrect: Bool?
     let isWrong: Bool

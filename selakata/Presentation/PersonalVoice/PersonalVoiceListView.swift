@@ -14,7 +14,7 @@ struct PersonalVoiceListView: View {
     @StateObject private var audioPlayerService = AudioPlayerService()
     @AppStorage("selectedVoiceID") private var selectedVoiceID: String?
 
-    @Query(sort: \AudioFile.createdAt) private var savedVoices: [AudioFile]
+    @Query(sort: \LocalAudioFile.createdAt) private var savedVoices: [LocalAudioFile]
 
     var body: some View {
         NavigationStack {
@@ -152,7 +152,7 @@ struct PrivacyAgreementSheet: View {
 }
 
 #Preview {
-    let container = try! ModelContainer(for: AudioFile.self, configurations: ModelConfiguration(isStoredInMemoryOnly: true))
+    let container = try! ModelContainer(for: LocalAudioFile.self, configurations: ModelConfiguration(isStoredInMemoryOnly: true))
     
 //    let voice1 = AudioFile(voiceName: "Flavia", rawText: "Test", localFileName: "file1.m4a", duration: 15)
 //    let voice2 = AudioFile(voiceName: "Anisa", rawText: "Test", localFileName: "file2.m4a", duration: 20)

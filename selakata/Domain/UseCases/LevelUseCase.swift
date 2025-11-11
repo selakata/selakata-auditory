@@ -12,7 +12,7 @@ public class LevelUseCase {
         self.repository = repository
     }
     
-    public func fetchLevel(completion: @escaping (Result<LevelResponse, Error>) -> Void) {
-        repository.fetchLevel(completion: completion)
+    public func fetchLevel(moduleId: String, completion: @escaping (Result<LevelResponse, Error>) -> Void) {
+        repository.fetchLevel(moduleId: moduleId, completion: completion)
     }
 }

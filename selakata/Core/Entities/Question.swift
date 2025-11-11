@@ -9,7 +9,7 @@ import Foundation
 import SwiftData
 
 @Model
-final class Question {
+final class LocalQuestion {
     @Attribute(.unique) var id: UUID
     var text: String
     var urutan: Int
@@ -18,10 +18,10 @@ final class Question {
     var createdAt: String
     var updatedAt: String
     var updatedBy: String
-    var audioFile: AudioFile
-    var answer: [Answer]
+    var audioFile: LocalAudioFile
+    var answer: [LocalAnswer]
     
-    init(id: UUID, text: String, urutan: Int, mainVolume: Int, noiseVolume: Int, createdAt: String, updatedAt: String, updatedBy: String, audioFile: AudioFile, answer: [Answer] = []) {
+    init(id: UUID, text: String, urutan: Int, mainVolume: Int, noiseVolume: Int, createdAt: String, updatedAt: String, updatedBy: String, audioFile: LocalAudioFile, answer: [LocalAnswer] = []) {
         self.id = id
         self.text = text
         self.urutan = urutan

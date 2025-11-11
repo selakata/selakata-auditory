@@ -8,6 +8,7 @@
 import Foundation
 
 public protocol LevelDataSource {
-    func fetchLevel(completion: @escaping (Result<LevelResponse, Error>) -> Void)
+    func fetchLevel(moduleId: String, completion: @escaping (Result<LevelResponse, Error>) -> Void)
+    func fetchLevelDetail(levelId: String, completion: @escaping (Result<LevelDetailResponse, Error>) -> Void)
 }
 
