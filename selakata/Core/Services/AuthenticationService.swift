@@ -19,9 +19,8 @@ final class AuthenticationService: NSObject, ObservableObject, ProfileRepository
     @Published var isLoading = false
     @Published var errorMessage: String?
     
-    // MARK: - Keychain
-    private let keychainService = "com.selakata.auth"
-    private let keychainAccount = "appleUserId"
+    // MARK: - Keychain key
+    private let keychainKey = "appleUserId"
     
     // MARK: - Init
     override init() {
@@ -37,9 +36,7 @@ final class AuthenticationService: NSObject, ObservableObject, ProfileRepository
         let request = ASAuthorizationAppleIDProvider().createRequest()
         request.requestedScopes = [.fullName, .email]
         
-        let controller = ASAuthorizationController(authorizationRequests: [
-            request
-        ])
+        let controller = ASAuthorizationController(authorizationRequests: [request])
         controller.delegate = self
         controller.presentationContextProvider = self
         controller.performRequests()
@@ -53,10 +50,7 @@ final class AuthenticationService: NSObject, ObservableObject, ProfileRepository
         userEmail = nil
         
         // Hapus data dari Keychain dan UserDefaults
-        KeychainHelper.shared.delete(
-            service: keychainService,
-            account: keychainAccount
-        )
+        deleteFromKeychain(for: keychainKey)
         UserDefaults.standard.removeObject(forKey: "user_name")
         UserDefaults.standard.removeObject(forKey: "user_email")
         
@@ -65,34 +59,21 @@ final class AuthenticationService: NSObject, ObservableObject, ProfileRepository
     
     // MARK: - Check state (auto login)
     private func checkAuthenticationState() {
-        // Cek apakah userId tersimpan di Keychain
-        guard
-            let data = KeychainHelper.shared.read(
-                service: keychainService,
-                account: keychainAccount
-            ),
-            let userId = String(data: data, encoding: .utf8)
-        else {
-            print(
-                "❌ Tidak ada Apple ID tersimpan di Keychain, tampilkan LoginView"
-            )
+        guard let userId = getFromKeychain(for: keychainKey) else {
+            print("❌ Tidak ada Apple ID tersimpan di Keychain, tampilkan LoginView")
             return
         }
         
         let provider = ASAuthorizationAppleIDProvider()
-        provider.getCredentialState(forUserID: userId) {
-            [weak self] (state, error) in
+        provider.getCredentialState(forUserID: userId) { [weak self] (state, _) in
             DispatchQueue.main.async {
                 guard let self = self else { return }
+                
                 switch state {
                 case .authorized:
                     self.isAuthenticated = true
-                    self.userFullName = UserDefaults.standard.string(
-                        forKey: "user_name"
-                    ) ?? "Learner"
-                    self.userEmail = UserDefaults.standard.string(
-                        forKey: "user_email"
-                    )
+                    self.userFullName = UserDefaults.standard.string(forKey: "user_name") ?? "Learner"
+                    self.userEmail = UserDefaults.standard.string(forKey: "user_email")
                     print("✅ Apple ID valid, langsung masuk Home (\(userId))")
                 case .revoked, .notFound:
                     self.signOut()
@@ -116,10 +97,7 @@ extension AuthenticationService: ASAuthorizationControllerDelegate {
     ) {
         isLoading = false
         
-        guard
-            let credential = authorization.credential
-                as? ASAuthorizationAppleIDCredential
-        else {
+        guard let credential = authorization.credential as? ASAuthorizationAppleIDCredential else {
             self.errorMessage = "Invalid Apple credential"
             return
         }
@@ -133,31 +111,25 @@ extension AuthenticationService: ASAuthorizationControllerDelegate {
         print(" - fullName:", fullName?.formatted() ?? "nil")
         print(" - email:", email ?? "nil")
         
-        let data = Data(authId.utf8)
-        KeychainHelper.shared.save(
-            data,
-            service: keychainService,
-            account: keychainAccount
-        )
-        
+        // Simpan userId ke Keychain
+        saveToKeychain(value: authId, for: keychainKey)
         self.userAuthId = authId
         
+        // Simpan data tambahan ke UserDefaults
         if let email = email {
             UserDefaults.standard.set(email, forKey: "user_email")
             self.userEmail = email
         }
         
         if let fullName = fullName {
-            let displayName = PersonNameComponentsFormatter().string(
-                from: fullName
-            )
+            let displayName = PersonNameComponentsFormatter().string(from: fullName)
             if !displayName.isEmpty {
                 UserDefaults.standard.set(displayName, forKey: "user_name")
                 self.userFullName = displayName
             }
         }
         
-        // Mark as authenticated
+        // Tandai sudah login
         self.isAuthenticated = true
     }
     
@@ -185,15 +157,10 @@ extension AuthenticationService: ASAuthorizationControllerDelegate {
 }
 
 // MARK: - Presentation Context
-extension AuthenticationService:
-    ASAuthorizationControllerPresentationContextProviding
-{
-    func presentationAnchor(for controller: ASAuthorizationController)
-    -> ASPresentationAnchor
-    {
+extension AuthenticationService: ASAuthorizationControllerPresentationContextProviding {
+    func presentationAnchor(for controller: ASAuthorizationController) -> ASPresentationAnchor {
         guard
-            let windowScene = UIApplication.shared.connectedScenes.first
-                as? UIWindowScene,
+            let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
             let window = windowScene.windows.first
         else {
             return ASPresentationAnchor()
