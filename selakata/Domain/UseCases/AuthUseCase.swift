@@ -21,7 +21,6 @@ public class AuthUseCase {
         name: String,
         completion: @escaping (Result<AuthResponse, Error>) -> Void
     ) {
-        print("AISDEBUG:AuthUseCase.execute: \(appleId) \(username) \(email) \(name)")
         repository.auth(
             username: username,
             appleId: appleId,

@@ -16,17 +16,3 @@ public class LevelAPIConfiguration : BaseAPIConfiguration{
         makeURL(path: "/pub/level/detail/\(levelId)")
     }
 }
-
-//    private let configuration: ConfigurationProtocol
-//
-//    init(configuration: ConfigurationProtocol) {
-//        self.configuration = configuration
-//    }
-
-//    func makeModuleURL() -> URL? {
-//        let baseURL = configuration.baseURL
-//
-//        let components = URLComponents(string: baseURL + "/modul")
-//
-//        return components?.url
-//    }
