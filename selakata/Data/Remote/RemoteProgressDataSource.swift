@@ -1,0 +1,44 @@
+//
+//  RemoteProgressDataSource.swift
+//  selakata
+//
+//  Created by Anisa Amalia on 12/11/25.
+//
+
+import Foundation
+
+public class RemoteProgressDataSource: ProgressDataSource {
+    private let apiClient: APIClientProtocol
+    private let apiConfiguration: ProgressAPIConfiguration
+
+    public init(apiClient: APIClientProtocol, apiConfiguration: ProgressAPIConfiguration) {
+        self.apiClient = apiClient
+        self.apiConfiguration = apiConfiguration
+    }
+
+    public func submitEarlyTest(
+        data: EarlyTestSubmitRequest,
+        completion: @escaping (Result<EmptyResponse, Error>) -> Void
+    ) {
+        guard let request = apiConfiguration.makeSubmitEarlyTestRequest(data: data) else {
+            completion(.failure(
+                NSError(domain: "", code: -1, userInfo: [NSLocalizedDescriptionKey: "Invalid Request"])
+            ))
+            return
+        }
+        
+        print("RemoteProgressDataSource: Sending submitEarlyTest request...")
+        
+        apiClient.request(request: request) { result in
+            switch result {
+            case .success(let data):
+                print("RemoteProgressDataSource: Submit success.")
+                completion(.success(EmptyResponse()))
+                
+            case .failure(let error):
+                print("RemoteProgressDataSource: Submit failed. \(error.localizedDescription)")
+                completion(.failure(error))
+            }
+        }
+    }
+}
