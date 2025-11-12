@@ -107,11 +107,6 @@ class PersonalVoiceUseCase {
         completion: @escaping (Result<Void, Error>) -> Void
     ) {
         
-        print("TEST")
-        let fakeVoiceId = "TEST_VOICE_ID_\(UUID().uuidString.prefix(4))"
-        self.runSaveToTeamAPI(name: name, voiceId: fakeVoiceId, recording: lastRecordingResult, context: context, completion: completion)
-        return
-
         guard let recording = lastRecordingResult else {
             completion(.failure(RecordingError.recorderError("No recording found.")))
             return
@@ -181,57 +176,6 @@ class PersonalVoiceUseCase {
                                 completion(.failure(error))
                             }
                         }
-                    }
-                }
-            }
-        }
-    }
-    
-    private func runSaveToTeamAPI(
-            name: String,
-            voiceId: String,
-            recording: RecordingResult?,
-            context: ModelContext,
-            completion: @escaping (Result<Void, Error>) -> Void
-    ) {
-        guard let teamApiUrl = self.voiceConfig.makeTeamAddVoiceURL() else {
-            DispatchQueue.main.async { completion(.failure(URLError(.badURL))) }
-            return
-        }
-        
-        let body = TeamAddVoiceRequest(voiceName: name, voiceId: voiceId)
-        
-        self.apiClient.requestWithBody(
-            url: teamApiUrl,
-            method: .post,
-            body: body
-        ) { (result: Result<EmptyResponse, Error>) in
-            DispatchQueue.main.async {
-                switch result {
-                case .failure(let error):
-                    print("Team API save error. \(error.localizedDescription)")
-                    completion(.failure(error))
-                    
-                case .success:
-                    print("Saved voiceId to team API.")
-                    
-                    guard let recording = recording else {
-                        completion(.failure(RecordingError.recorderError("No recording found for save to swiftdata.")))
-                        return
-                    }
-                    
-                    do {
-                        try self.repository.saveNewVoice(
-                            name: name,
-                            tempRecordingURL: recording.fileURL,
-                            duration: recording.duration,
-                            context: context
-                        )
-                        print("Saved to local SwiftData.")
-                        completion(.success(()))
-                    } catch {
-                        print("SwiftData save error. \(error.localizedDescription)")
-                        completion(.failure(error))
                     }
                 }
             }
