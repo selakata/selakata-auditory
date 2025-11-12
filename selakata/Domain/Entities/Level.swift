@@ -17,4 +17,5 @@ public struct Level: Codable, Identifiable {
     let isUnlocked: Bool
     let isPassed: Bool
     let latestScore: Double?
+    let questions: [Question?]?
 }

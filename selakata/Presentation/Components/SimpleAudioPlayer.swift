@@ -154,37 +154,44 @@ struct SimpleAudioPlayer: View {
             audioPlayer.stop()
         }
         
-        // Try to load audio from Resources/Audio subdirectory
+        // Check if fileName is a local file path (cached)
+        if fileName.hasPrefix("/") {
+            // Local file path
+            let fileURL = URL(fileURLWithPath: fileName)
+            if FileManager.default.fileExists(atPath: fileName) {
+                audioPlayer.loadAudioFromURL(fileURL)
+                hasAudio = true
+                print("✅ Successfully loaded from cache: \(fileName)")
+                return
+            } else {
+                print("⚠️ Cached file not found: \(fileName)")
+            }
+        }
+        
+        // Check if fileName is a URL (streaming)
+        if fileName.hasPrefix("http://") || fileName.hasPrefix("https://") {
+            if let url = URL(string: fileName) {
+                audioPlayer.loadAudioFromURL(url)
+                hasAudio = true
+                print("✅ Successfully loaded from URL: \(fileName)")
+                return
+            }
+        }
+        
+        // Fallback: Try to load from bundle (for local resources)
         let subdirectory = "Resources/Audio"
         
         if let audioURL = Bundle.main.url(forResource: fileName, withExtension: "mp3", subdirectory: subdirectory) {
-            // Load audio using AudioPlayerService
             audioPlayer.loadAudioFromPath(fileName: fileName, subdirectory: subdirectory)
             hasAudio = true
             print("✅ Successfully loaded: \(fileName).mp3 from \(subdirectory)")
-            print("   Full path: \(audioURL.path)")
+        } else if let audioURL = Bundle.main.url(forResource: fileName, withExtension: "mp3") {
+            audioPlayer.loadAudio(fileName: fileName)
+            hasAudio = true
+            print("✅ Successfully loaded: \(fileName).mp3 from root bundle")
         } else {
-            // Fallback: try root bundle
-            if let audioURL = Bundle.main.url(forResource: fileName, withExtension: "mp3") {
-                audioPlayer.loadAudio(fileName: fileName)
-                hasAudio = true
-                print("✅ Successfully loaded: \(fileName).mp3 from root bundle")
-                print("   Full path: \(audioURL.path)")
-            } else {
-                hasAudio = false
-                print("❌ Audio file not found: \(fileName).mp3")
-                print("   Tried locations:")
-                print("   - \(subdirectory)/\(fileName).mp3")
-                print("   - \(fileName).mp3 (root)")
-                
-                // Debug: List all available MP3 files
-                if let mp3Files = Bundle.main.urls(forResourcesWithExtension: "mp3", subdirectory: subdirectory) {
-                    print("   Available files in \(subdirectory):")
-                    for file in mp3Files {
-                        print("     - \(file.lastPathComponent)")
-                    }
-                }
-            }
+            hasAudio = false
+            print("❌ Audio file not found: \(fileName)")
         }
     }
     

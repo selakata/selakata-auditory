@@ -25,13 +25,37 @@ public class RemoteLevelDataSource: LevelDataSource {
         apiClient.request(url: url, method: .get, completion: completion)
     }
     
-    public func fetchDetailLevel(levelId: String, completion: @escaping (Result<APIResponse<Question>, Error>) -> Void) {
+    public func fetchDetailLevel(levelId: String, completion: @escaping (Result<APIResponse<Level>, Error>) -> Void) {
         guard let url = apiConfiguration.makeDetailLevelURL(levelId: levelId) else {
             completion(.failure(NSError(domain: "", code: -1, userInfo: [NSLocalizedDescriptionKey: "Invalid URL"])))
             return
         }
         
         apiClient.request(url: url, method: .get, completion: completion)
+    }
+    
+    public func updateLevelScore(levelId: String,score: Int, completion: @escaping (Result<String, Error>) -> Void) {
+        guard let request = apiConfiguration.makeUpdateLevelScore(levelId: levelId, score: score) else {
+            completion(.failure(NSError(domain: "", code: -1, userInfo: [NSLocalizedDescriptionKey: "Invalid URL"])))
+            return
+        }
+        
+        apiClient.request(request: request) { result in
+            switch result {
+            case .success(let data):
+                do {
+                    let decoder = JSONDecoder()
+                    decoder.dateDecodingStrategy = .iso8601
+                    let response = try decoder.decode(String.self, from: data)
+                    completion(.success(response))
+                } catch {
+                    completion(.failure(error))
+                }
+                
+            case .failure(let error):
+                completion(.failure(error))
+            }
+        }
     }
 }
 

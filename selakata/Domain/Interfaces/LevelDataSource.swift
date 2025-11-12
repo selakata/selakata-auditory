@@ -9,6 +9,7 @@ import Foundation
 
 public protocol LevelDataSource {
     func fetchLevel(moduleId: String, completion: @escaping (Result<APIResponse<[Level]>, Error>) -> Void)
-    func fetchDetailLevel(levelId: String, completion: @escaping (Result<APIResponse<Question>, Error>) -> Void)
+    func fetchDetailLevel(levelId: String, completion: @escaping (Result<APIResponse<Level>, Error>) -> Void)
+    func updateLevelScore(levelId: String, score: Int,completion: @escaping (Result<String, Error>) -> Void)
 }
 
