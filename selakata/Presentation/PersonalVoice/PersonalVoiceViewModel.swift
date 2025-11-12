@@ -17,8 +17,24 @@ class PersonalVoiceViewModel: ObservableObject {
 
     private let privacyKey = "hasAcceptedVoicePrivacy"
     
-    init(useCase: PersonalVoiceUseCase) {
-        self.useCase = useCase
+    init() {
+        let repository = PersonalVoiceRepositoryImpl()
+        let apiClient = APIClient()
+        let appConfig = AppConfiguration()
+        let voiceConfig = VoiceAPIConfiguration(configuration: appConfig)
+        let elevenLabsConfig = ElevenLabsAPIConfiguration(configuration: appConfig)
+        
+        let recorder = AudioRecorderService()
+        let player = AudioPlayerService()
+
+        self.useCase = PersonalVoiceUseCase(
+            recorder: recorder,
+            player: player,
+            repository: repository,
+            apiClient: apiClient,
+            voiceConfig: voiceConfig,
+            elevenLabsConfig: elevenLabsConfig
+        )
     }
     
     func addVoiceButtonTapped() {
