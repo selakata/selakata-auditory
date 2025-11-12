@@ -1,12 +1,4 @@
-//
-//  AppleSignInButton.swift
-//  selakata
-//
-//  Created by Kiro on 02/11/25.
-//
-
 import SwiftUI
-import AuthenticationServices
 
 struct AppleSignInButton: View {
     let action: () -> Void
@@ -21,17 +13,19 @@ struct AppleSignInButton: View {
                         .scaleEffect(0.8)
                 } else {
                     Image(systemName: "applelogo")
-                        .font(.system(size: 18, weight: .medium))
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 18, height: 18)
                 }
                 
                 Text(isLoading ? "Signing In..." : "Sign in with Apple")
-                    .font(.system(size: 16, weight: .medium))
+                    .fontWeight(.semibold)
             }
-            .foregroundColor(.white)
             .frame(maxWidth: .infinity)
-            .frame(height: 44)
-            .background(Color.slColor)
-            .cornerRadius(20)
+            .padding()
+            .foregroundColor(.white)
+            .background(Color.Primary._500)
+            .cornerRadius(10)
         }
         .disabled(isLoading)
     }

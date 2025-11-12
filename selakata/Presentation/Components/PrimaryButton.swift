@@ -6,6 +6,7 @@ struct PrimaryButton: View {
     var rightIcon: Image? = nil
     var isDisabled: Bool = false
     let action: () -> Void
+    var isLoading: Bool = false
 
     var body: some View {
         Button(action: {
@@ -14,7 +15,12 @@ struct PrimaryButton: View {
             }
         }) {
             HStack(spacing: 8) {
-                if let leftIcon = leftIcon {
+                if isLoading {
+                    ProgressView()
+                        .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                        .scaleEffect(1)
+                }
+                else if let leftIcon = leftIcon {
                     leftIcon
                         .resizable()
                         .scaledToFit()
@@ -43,7 +49,10 @@ struct PrimaryButton: View {
 }
 
 #Preview {
-    PrimaryButton(title: "Primary Button") {
-        
+    VStack {
+        PrimaryButton(title: "Primary Button") {
+            
+        }
     }
+    .padding()
 }

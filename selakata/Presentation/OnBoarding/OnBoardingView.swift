@@ -7,6 +7,8 @@ struct OnboardingView: View {
     @State private var hasReachedLastPage = false
     @State private var timerCancellable: Cancellable?
     
+    @StateObject private var viewModel = DependencyContainer.shared.makeLoginViewModel()
+    
     private let pages: [OnboardingPage] = [
         OnboardingPage(
             title: "Imagine train with a voice that feels familiar, comforting, and truly yours",
@@ -17,7 +19,7 @@ struct OnboardingView: View {
             imageName: "photo"
         ),
         OnboardingPage(
-            title: "Start your journey today with your own voice.",
+            title: "Start your journey today with your own voice",
             imageName: "photo"
         )
     ]
@@ -78,13 +80,21 @@ struct OnboardingView: View {
             
             Spacer()
             
+            if let errorMessage = viewModel.errorMessage {
+                Text(errorMessage)
+                    .font(.caption)
+                    .foregroundColor(.red)
+                    .padding(.horizontal, 24)
+            }
+            
             PrimaryButton(
                 title: "Continue with Apple",
                 leftIcon: Image("icon-apple"),
-                isDisabled: !hasReachedLastPage
-            ) {
-                hasSeenOnboarding = true
-            }
+                isDisabled: !hasReachedLastPage,
+                action:  {
+                    hasSeenOnboarding = true
+                    viewModel.signInWithApple()
+                }, isLoading: viewModel.isLoading)
             .padding(.horizontal, 24)
             .padding(.bottom, 40)
         }
