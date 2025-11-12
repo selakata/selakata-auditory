@@ -1,71 +1,18 @@
-//
-//  LoginView.swift
-//  selakata
-//
 //  Created by ais on 05/11/25.
-//
 
 import SwiftUI
 
 struct LoginView: View {
     @StateObject private var viewModel = DependencyContainer.shared.makeLoginViewModel()
-    
     @State private var showingMainView = false
 
     var body: some View {
-        GeometryReader { geometry in
-            VStack(spacing: 0) {
-                // MARK: - Header
-                VStack {
-                    Text("SelaKata")
-                        .font(.title2)
-                        .fontWeight(.medium)
-                        .foregroundColor(.primary)
-                        .padding(.top, 60)
-
-                    Spacer()
-                }
-                .frame(height: geometry.size.height * 0.2)
-
-                // MARK: - Description
-                VStack(spacing: 16) {
-                    Text(
-                        "No more endless 'what?' moments. SelaKata keeps the convo rolling!"
-                    )
-                    .font(.title2)
-                    .fontWeight(.bold)
-                    .multilineTextAlignment(.center)
-                    .foregroundColor(.primary)
-                    .padding(.horizontal, 32)
-                }
-                .frame(maxHeight: .infinity)
-
-                // MARK: - Sign In Button
-                VStack {
-                    Spacer()
-
-                    AppleSignInButton(
-                        action: {
-                            viewModel.signInWithApple()
-                        },
-                        isLoading: viewModel.isLoading
-                    )
-                    .padding(.horizontal, 24)
-
-                    if let errorMessage = viewModel.errorMessage {
-                        Text(errorMessage)
-                            .font(.caption)
-                            .foregroundColor(.red)
-                            .padding(.horizontal, 24)
-                    }
-
-                    Spacer()
-                }
-                .frame(height: geometry.size.height * 0.3)
-            }
-        }
+        SingleOnBoardingView(action: viewModel.signInWithApple,
+                             isLoading: viewModel.isLoading,
+                             errorMessage: viewModel.errorMessage)
         .padding(36)
         .background(Color(.systemBackground))
+        
         // MARK: - Navigation
         .fullScreenCover(isPresented: $showingMainView) {
             MainView()
@@ -80,6 +27,7 @@ struct LoginView: View {
                 showingMainView = true
             }
         }
+        
         // MARK: - Loading Overlay
         .overlay(
             Group {
@@ -95,6 +43,7 @@ struct LoginView: View {
                 }
             }
         )
+        
         // MARK: - Alert Handling
         .alert(
             "Authentication Error",

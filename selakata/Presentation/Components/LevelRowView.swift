@@ -20,12 +20,11 @@ struct LevelRowView: View {
     }
 
     var body: some View {
-        //        NavigationLink(
-        //            destination: QuizView(
-        //                level: level,
-        //                questionCategory: questionCategory
-        //            )
-        //        ) {
+                NavigationLink(
+                    destination: QuizView(
+                        levelId: level.id
+                    )
+                ) {
         HStack {
             ZStack {
                 Rectangle()
@@ -78,7 +77,7 @@ struct LevelRowView: View {
             )
         }
 
-        //        }
+                }
     }
 }
 //

@@ -1,18 +1,17 @@
-//
-//  selakataApp.swift
-//  selakata
-//
-//  Created by Fachry Anwar on 13/10/25.
-//
-
 import SwiftUI
 import SwiftData
 
 @main
 struct selakataApp: App {
+    @AppStorage("hasSeenOnboarding") var hasSeenOnboarding = false
+    
     var body: some Scene {
         WindowGroup {
-            LoginView()
+            if hasSeenOnboarding {
+                LoginView()
+            } else {
+                OnboardingView()
+            }
         }
     }
 }

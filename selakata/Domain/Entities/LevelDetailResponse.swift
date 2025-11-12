@@ -9,11 +9,10 @@ import Foundation
 
 // MARK: - LevelDetailResponse
 public struct LevelDetailResponse: Codable {
-    let data: LevelDetailData
+    let data: QuestionResponse
 }
 
-// MARK: - LevelDetailData
-struct LevelDetailData: Codable, Identifiable {
+struct QuestionResponse: Codable {
     let id: String
     let label: String
     let value: Int
@@ -21,12 +20,11 @@ struct LevelDetailData: Codable, Identifiable {
     let createdAt: String
     let updatedAt: String
     let updatedBy: String
-    let modul: ModuleData
-    let questionList: [QuestionData]
+    let modul: Modul
+    let questionList: [Question]
 }
 
-// MARK: - ModuleData
-struct ModuleData: Codable, Identifiable {
+struct Modul: Codable {
     let id: String
     let label: String
     let value: Int
@@ -37,8 +35,7 @@ struct ModuleData: Codable, Identifiable {
     let updatedBy: String
 }
 
-// MARK: - QuestionData
-struct QuestionData: Codable, Identifiable {
+struct Question: Codable {
     let id: String
     let text: String
     let urutan: Int
@@ -46,23 +43,35 @@ struct QuestionData: Codable, Identifiable {
     let noiseRMS: Double
     let isActive: Bool
     let snr: Double?
-    let poin: Double?
+    let poin: Int?
     let type: Int
     let createdAt: String
     let updatedAt: String
     let updatedBy: String
-    let answerList: [AnswerData]
-    //let audioFile: AudioFileData
-    let noiseFile: NoiseFile?
+    let answerList: [Answer]
+    let audioFile: AudioFile?
+    let noiseFile: String?
 }
 
-// MARK: - AnswerData
-struct AnswerData: Codable, Identifiable {
+struct Answer: Codable {
     let id: String
     let text: String
     let urutan: Int
     let isCorrect: Bool
-    let createdAt: String
-    let updatedAt: String
 }
 
+struct AudioFile: Codable {
+    let id: String
+    let fileName: String
+    let fileURL: String
+    let rawText: String
+    let size: Int
+    let duration: Double
+    let voiceId: String
+    let voiceName: String
+    let similarityBoost: Double
+    let speed: Double
+    let stability: Double
+    let useSpeakerBoost: Bool
+    let type: Int
+}

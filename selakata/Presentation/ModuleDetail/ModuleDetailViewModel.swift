@@ -6,6 +6,8 @@ class ModuleDetailViewModel: ObservableObject {
     @Published var levels: [LocalLevelData] = []
     
     @Published var levelResponse: LevelResponse?
+    @Published var isLoading: Bool = false
+    @Published var errorMessage: String?
     
     private let levelUseCase: LevelUseCase
     private let moduleId: String
@@ -19,15 +21,13 @@ class ModuleDetailViewModel: ObservableObject {
     func fetchLevels() {
         levelUseCase.fetchLevel(moduleId: moduleId) { [weak self] result in
             DispatchQueue.main.async {
-//                self?.isLoading = false
+                self?.isLoading = false
                 
                 switch result {
                 case .success(let levelResponse):
                     self?.levelResponse = levelResponse
-                    print("AISDEBUG:MODULES:SUCCESS: \(levelResponse.data)")
                 case .failure(let error):
-//                    self?.errorMessage = error.localizedDescription
-                    print("AISDEBUG:MODULES:ERROR: \(error.localizedDescription)")
+                    self?.errorMessage = error.localizedDescription
                 }
             }
         }
