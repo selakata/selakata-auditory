@@ -9,7 +9,7 @@ final class LoginViewModel: ObservableObject {
     private let authService: AuthenticationService
 
     private let authUseCase: AuthUseCase
-    @Published var authResponse: AuthResponse?
+    @Published var authData: AuthData?
     @Published var errorMessage2: String?
 
     // MARK: - Published properties (observed by View)
@@ -69,10 +69,10 @@ final class LoginViewModel: ObservableObject {
                 name: fullName
             ) { [weak self] result in
                 switch result {
-                case .success(let authResponse):
+                case .success(let authData):
                     DispatchQueue.main.async {
-                        self?.authResponse = authResponse
-                        saveToKeychain(value: authResponse.data.token, for: "token")
+                        self?.authData = authData.data
+                        saveToKeychain(value: authData.data.token, for: "token")
                     }
                 case .failure(let error):
                     DispatchQueue.main.async {

@@ -5,7 +5,7 @@ import SwiftUI
 class ModuleDetailViewModel: ObservableObject {
     @Published var levels: [LocalLevelData] = []
     
-    @Published var levelResponse: LevelResponse?
+    @Published var level: [Level] = []
     @Published var isLoading: Bool = false
     @Published var errorMessage: String?
     
@@ -24,8 +24,8 @@ class ModuleDetailViewModel: ObservableObject {
                 self?.isLoading = false
                 
                 switch result {
-                case .success(let levelResponse):
-                    self?.levelResponse = levelResponse
+                case .success(let level):
+                    self?.level = level.data
                 case .failure(let error):
                     self?.errorMessage = error.localizedDescription
                 }

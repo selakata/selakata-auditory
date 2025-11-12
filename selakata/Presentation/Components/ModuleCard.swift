@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct ModuleCard: View {
-    let module: Category
+    let module: Module
     let showProgressBar: Bool
     
     let moduleImages = [

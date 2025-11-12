@@ -12,7 +12,7 @@ struct HomeView: View {
     @StateObject private var viewModel = HomeViewModel()
     @State private var isStartingTest = false
     
-    @Query(sort: \Module.orderIndex) private var allModules: [Module]
+//    @Query(sort: \Module.orderIndex) private var allModules: [Module]
 
     var body: some View {
         NavigationStack {
@@ -45,27 +45,27 @@ struct HomeView: View {
                 HearingTestOnboardingView(isStartingTest: $isStartingTest)
             }
         }
-        .onChange(of: allModules) {
-            viewModel.processModules(allModules)
-        }
-        .onAppear {
-            viewModel.processModules(allModules)
-        }
+//        .onChange(of: allModules) {
+//            viewModel.processModules(allModules)
+//        }
+//        .onAppear {
+//            viewModel.processModules(allModules)
+//        }
     }
     
     private var progressCardSection: some View {
         VStack(alignment: .leading, spacing: 8) {
             if let moduleToDisplay = viewModel.mostRecentModule ?? viewModel.firstAvailableModule {
-                Text(moduleToDisplay.progress == 0.0 ? "Start your journey" : "Continue exercise")
-                    .font(.headline)
-                    .padding(.horizontal, 24)
-
-                //TO DO:DEBUGGING
-//                NavigationLink(destination: Text("Question Page")) {
-//                    ModuleCard(module: moduleToDisplay, showProgressBar: true)
-//                }
-                .buttonStyle(.plain)
-                .padding(.horizontal, 24)
+//                Text(moduleToDisplay.progress == 0.0 ? "Start your journey" : "Continue exercise")
+//                    .font(.headline)
+//                    .padding(.horizontal, 24)
+//
+//                //TO DO:DEBUGGING
+////                NavigationLink(destination: Text("Question Page")) {
+////                    ModuleCard(module: moduleToDisplay, showProgressBar: true)
+////                }
+//                .buttonStyle(.plain)
+//                .padding(.horizontal, 24)
             } else {
                 Text("Module not found")
                     .padding()
@@ -75,8 +75,8 @@ struct HomeView: View {
         }
     }
 }
-
-
-#Preview {
-    HomeView()
-}
+//
+//
+//#Preview {
+//    HomeView()
+//}

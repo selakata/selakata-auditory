@@ -25,9 +25,9 @@ struct AnswerDummy: Identifiable {
 
 struct QuizData {
     //dummy for Module - Complete with all quiz data
-    static let dummyModule: [Module] = [
+    static let dummyModule: [LocalModule] = [
         // Audio Identification Module
-        Module(
+        LocalModule(
             id: UUID(),
             label: "Identification",
             desc: "Test kemampuan identifikasi suara dan kata",
@@ -37,7 +37,7 @@ struct QuizData {
             updatedBy: "system",
             levelList: [
                 // Easy Level
-                Level(
+                LocalLevel(
                     id: UUID(),
                     label: "Easy",
                     value: 1,
@@ -87,7 +87,7 @@ struct QuizData {
                     }
                 ),
                 // Medium Level
-                Level(
+                LocalLevel(
                     id: UUID(),
                     label: "Medium",
                     value: 2,
@@ -137,7 +137,7 @@ struct QuizData {
                     }
                 ),
                 // Hard Level
-                Level(
+                LocalLevel(
                     id: UUID(),
                     label: "Hard",
                     value: 3,
@@ -190,7 +190,7 @@ struct QuizData {
         ),
         
         // Audio Discrimination Module
-        Module(
+        LocalModule(
             id: UUID(),
             label: "Discrimination",
             desc: "Test kemampuan diskriminasi suara",
@@ -200,7 +200,7 @@ struct QuizData {
             updatedBy: "system",
             levelList: [
                 // Easy Level
-                Level(
+                LocalLevel(
                     id: UUID(),
                     label: "Easy",
                     value: 1,
@@ -250,7 +250,7 @@ struct QuizData {
                     }
                 ),
                 // Medium Level
-                Level(
+                LocalLevel(
                     id: UUID(),
                     label: "Medium",
                     value: 2,
@@ -300,7 +300,7 @@ struct QuizData {
                     }
                 ),
                 // Hard Level
-                Level(
+                LocalLevel(
                     id: UUID(),
                     label: "Hard",
                     value: 3,
@@ -353,7 +353,7 @@ struct QuizData {
         ),
         
         // Audio Comprehension Module
-        Module(
+        LocalModule(
             id: UUID(),
             label: "Comprehension",
             desc: "Test kemampuan pemahaman audio",
@@ -363,7 +363,7 @@ struct QuizData {
             updatedBy: "system",
             levelList: [
                 // Easy Level
-                Level(
+                LocalLevel(
                     id: UUID(),
                     label: "Easy",
                     value: 1,
@@ -413,7 +413,7 @@ struct QuizData {
                     }
                 ),
                 // Medium Level
-                Level(
+                LocalLevel(
                     id: UUID(),
                     label: "Medium",
                     value: 2,
@@ -463,7 +463,7 @@ struct QuizData {
                     }
                 ),
                 // Hard Level
-                Level(
+                LocalLevel(
                     id: UUID(),
                     label: "Hard",
                     value: 3,
@@ -516,7 +516,7 @@ struct QuizData {
         ),
         
         // Competing Speaker Module
-        Module(
+        LocalModule(
             id: UUID(),
             label: "Competing Speaker",
             desc: "Test kemampuan mendengar dalam lingkungan bising",
@@ -526,7 +526,7 @@ struct QuizData {
             updatedBy: "system",
             levelList: [
                 // Level II
-                Level(
+                LocalLevel(
                     id: UUID(),
                     label: "Level II",
                     value: 2,
@@ -576,7 +576,7 @@ struct QuizData {
                     }
                 ),
                 // Level III
-                Level(
+                LocalLevel(
                     id: UUID(),
                     label: "Level III",
                     value: 3,

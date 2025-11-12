@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct LevelView: View {
-    let levels: [LevelData]
+    let levels: [Level]
     let moduleLabel: String
     
     var body: some View {

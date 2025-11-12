@@ -6,14 +6,14 @@ enum AnswerLayout {
 }
 
 struct AnswerView: View {
-    let question: LocalQuestion
-    let selectedAnswer: LocalAnswer?
+    let question: Question
+    let selectedAnswer: Answer?
     let hasAnswered: Bool
     let layout: AnswerLayout
-    let onSelect: (LocalAnswer) -> Void
+    let onSelect: (Answer) -> Void
     
-    var sortedAnswers: [LocalAnswer] {
-        question.answer.sorted { $0.urutan < $1.urutan }
+    var sortedAnswers: [Answer] {
+        question.answerList.sorted { $0.urutan < $1.urutan }
     }
     
     var body: some View {
@@ -30,11 +30,15 @@ struct AnswerView: View {
             case .grid(let columns):
                 LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 12), count: columns), spacing: 12) {
                     ForEach(sortedAnswers, id: \.id) { answer in
+                        let isSelected = selectedAnswer?.id == answer.id
+                        let isCorrect = hasAnswered ? answer.isCorrect : nil
+                        let isWrong = hasAnswered && isSelected && !answer.isCorrect
+                        
                         AnswerButton(
                             answer: answer,
-                            isSelected: selectedAnswer?.id == answer.id,
-                            isCorrect: hasAnswered ? answer.isCorrect : nil,
-                            isWrong: hasAnswered && selectedAnswer?.id == answer.id && !answer.isCorrect,
+                            isSelected: isSelected,
+                            isCorrect: isCorrect,
+                            isWrong: isWrong,
                             onTap: {
                                 if !hasAnswered {
                                     onSelect(answer)
@@ -47,11 +51,15 @@ struct AnswerView: View {
             case .list:
                 VStack(spacing: 12) {
                     ForEach(sortedAnswers, id: \.id) { answer in
+                        let isSelected = selectedAnswer?.id == answer.id
+                        let isCorrect = hasAnswered ? answer.isCorrect : nil
+                        let isWrong = hasAnswered && isSelected && !answer.isCorrect
+                        
                         AnswerButton(
                             answer: answer,
-                            isSelected: selectedAnswer?.id == answer.id,
-                            isCorrect: hasAnswered ? answer.isCorrect : nil,
-                            isWrong: hasAnswered && selectedAnswer?.id == answer.id && !answer.isCorrect,
+                            isSelected: isSelected,
+                            isCorrect: isCorrect,
+                            isWrong: isWrong,
                             onTap: {
                                 if !hasAnswered {
                                     onSelect(answer)
@@ -59,6 +67,7 @@ struct AnswerView: View {
                             }
                         )
                     }
+
                 }
             }
         }

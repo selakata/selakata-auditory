@@ -1,23 +1,12 @@
 //
-//  AuthResponse.swift
+//  User.swift
 //  selakata
 //
-//  Created by ais on 07/11/25.
+//  Created by ais on 12/11/25.
 //
-
-
 import Foundation
 
-public struct AuthResponse: Codable {
-    let data: AuthData
-}
-
-struct AuthData: Codable {
-    let token: String
-    let user: User
-}
-
-struct User: Codable {
+public struct User: Codable {
     let id: String
     let username: String
     let appleId: String?

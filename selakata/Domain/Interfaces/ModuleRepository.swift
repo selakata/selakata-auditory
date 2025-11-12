@@ -6,5 +6,5 @@
 //
 
 public protocol ModuleRepository {
-    func fetchModule(completion: @escaping (Result<ModuleResponse, Error>) -> Void)
+    func fetchModule(completion: @escaping (Result<APIResponse<[Module]>, Error>) -> Void)
 }

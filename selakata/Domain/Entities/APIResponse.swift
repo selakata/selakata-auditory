@@ -1,6 +1,6 @@
 import Foundation
 
-struct APIResponse<T: Codable>: Codable {
+public struct APIResponse<T: Codable>: Codable {
     let data: T
     let meta: Metadata?
 }
