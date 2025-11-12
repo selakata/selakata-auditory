@@ -21,7 +21,10 @@ public class SubmitEarlyTestUseCase {
         completion: @escaping (Result<EmptyResponse, Error>) -> Void
     ) {
         func getThreshold(_ value: Float?) -> Int {
-            return Int(value?.rounded() ?? 0)
+            let floatValue = value ?? 0.0
+            let positiveValue = abs(floatValue)
+            let roundedValue = positiveValue.rounded()
+            return Int(roundedValue)
         }
 
         let leftData = EarThresholds(
