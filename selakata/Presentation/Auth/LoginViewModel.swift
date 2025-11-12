@@ -78,12 +78,10 @@ final class LoginViewModel: ObservableObject {
                     DispatchQueue.main.async {
                         self?.authResponse = authResponse
                         saveToKeychain(value: authResponse.data.token, for: "token")
-                        print("AISDEBUG:AUTH:SUCCESS:", authResponse)
                     }
                 case .failure(let error):
                     DispatchQueue.main.async {
                         self?.errorMessage = error.localizedDescription
-                        print("AISDEBUG:AUTH:ERROR:", error.localizedDescription)
                     }
                 }
             }

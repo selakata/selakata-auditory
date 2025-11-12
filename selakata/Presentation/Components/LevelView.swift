@@ -13,7 +13,6 @@ struct LevelView: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
-            // Header
             HStack {
                 Text("Exercises")
                     .font(.app(.headline))
@@ -27,7 +26,6 @@ struct LevelView: View {
                 .foregroundStyle(Color.green)
             }
             
-            // Daftar level
             ForEach(levels) { level in
                 LevelRowView(
                     level: level,
