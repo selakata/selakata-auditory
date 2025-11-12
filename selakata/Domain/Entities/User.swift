@@ -13,8 +13,8 @@ public struct User: Codable {
     let email: String
     let name: String
     let role: String
-    let createdAt: Date
-    let updatedAt: Date
+    let createdAt: String
+    let updatedAt: String
     let snrBaselineHistories: [String]?
     let earThresholds: [String]?
 

@@ -9,19 +9,48 @@ import Foundation
 import SwiftData
 import AVFoundation
 
+// decode dari 11labs
+private struct ElevenLabsJSONResponse: Decodable {
+    let voiceId: String
+    enum CodingKeys: String, CodingKey {
+        case voiceId = "voice_id"
+    }
+}
+
+// encode buat ke be
+private struct TeamAddVoiceRequest: Encodable {
+    let voiceName: String
+    let voiceId: String
+}
+
 @MainActor
 class PersonalVoiceUseCase {
     private let recorder: AudioRecorderService
     private let player: AudioPlayerService
     private let repository: PersonalVoiceRepository
     
-    var lastRecordingResult: RecordingResult?
-    let promptText = "I like morning walks. The birds always sound happy"
+    private let apiClient: APIClientProtocol
+    private let voiceConfig: VoiceAPIConfiguration
+    private let elevenLabsConfig: ElevenLabsAPIConfiguration
 
-    init(repository: PersonalVoiceRepository) {
+    var lastRecordingResult: RecordingResult?
+    let promptText = "Hai, apa kabar? Ini suara saya yang digunakan untuk latihan mendengar. Saya akan berbicara seperti biasa, dengan nada yang tenang dan jelas. Kadang saya akan menurunkan sedikit intonasi, lalu menaikkan lagi, supaya sistem bisa mengenali warna suara saya dengan lebih baik."
+
+    init(
+        recorder: AudioRecorderService,
+        player: AudioPlayerService,
+        repository: PersonalVoiceRepository,
+        apiClient: APIClientProtocol,
+        voiceConfig: VoiceAPIConfiguration,
+        elevenLabsConfig: ElevenLabsAPIConfiguration
+    ) {
+        self.recorder = recorder
+        self.player = player
         self.repository = repository
-        self.recorder = AudioRecorderService()
-        self.player = AudioPlayerService()
+        self.apiClient = apiClient
+        self.voiceConfig = voiceConfig
+        self.elevenLabsConfig = elevenLabsConfig
+        
         player.setupPlayer()
         recorder.requestPermission()
     }
@@ -30,6 +59,8 @@ class PersonalVoiceUseCase {
     var isPlaying: Bool { player.isPlaying }
     var isPermissionGranted: Bool { recorder.isPermissionGranted }
     var recordingTime: TimeInterval { recorder.audioRecorder?.currentTime ?? 0 }
+    var lastRecordingDuration: TimeInterval? { lastRecordingResult?.duration }
+
     
     func startRecording() throws {
         try recorder.startRecording()
@@ -70,24 +101,84 @@ class PersonalVoiceUseCase {
         player.stop()
     }
     
-    func saveRecording(name: String, context: ModelContext) -> Result<Void, Error> {
+    func saveAndCloneRecording(
+        name: String,
+        context: ModelContext,
+        completion: @escaping (Result<Void, Error>) -> Void
+    ) {
+        
         guard let recording = lastRecordingResult else {
-            return .failure(RecordingError.recorderError("No recording found."))
+            completion(.failure(RecordingError.recorderError("No recording found.")))
+            return
         }
         guard !name.trimmingCharacters(in: .whitespaces).isEmpty else {
-            return .failure(RecordingError.recorderError("Voice Name is empty."))
+            completion(.failure(RecordingError.recorderError("Name is empty.")))
+            return
         }
         
-        do {
-            try repository.saveNewVoice(
-                name: name,
-                tempRecordingURL: recording.fileURL,
-                duration: recording.duration,
-                context: context
-            )
-            return .success(())
-        } catch {
-            return .failure(error)
+        guard let elevenLabsURL = elevenLabsConfig.makeElevenLabsAddVoiceURL() else {
+            completion(.failure(URLError(.badURL)))
+            return
+        }
+        
+        apiClient.uploadFile(
+            url: elevenLabsURL,
+            fileURL: recording.fileURL,
+            voiceName: name,
+            apiKey: elevenLabsConfig.getAPIKey()
+        ) { [weak self] (result: Result<ElevenLabsJSONResponse, Error>) in
+            
+            guard let self = self else { return }
+            
+            switch result {
+            case .failure(let error):
+                print("11Labs upload error. \(error.localizedDescription)")
+                DispatchQueue.main.async { completion(.failure(error)) }
+                
+            case .success(let elevenLabsResponse):
+                let voiceId = elevenLabsResponse.voiceId
+                print("Got voiceId \(voiceId)")
+                
+                
+                guard let teamApiUrl = self.voiceConfig.makeTeamAddVoiceURL() else {
+                    DispatchQueue.main.async { completion(.failure(URLError(.badURL))) }
+                    return
+                }
+                
+                let body = TeamAddVoiceRequest(voiceName: name, voiceId: voiceId)
+                
+                self.apiClient.requestWithBody(
+                    url: teamApiUrl,
+                    method: .post,
+                    body: body
+                ) { (result: Result<EmptyResponse, Error>) in
+                    
+                    DispatchQueue.main.async {
+                        switch result {
+                        case .failure(let error):
+                            print("Team API save error. \(error.localizedDescription)")
+                            completion(.failure(error))
+                            
+                        case .success:
+                            print("Saved voiceId to team API.")
+                            
+                            do {
+                                try self.repository.saveNewVoice(
+                                    name: name,
+                                    tempRecordingURL: recording.fileURL,
+                                    duration: recording.duration,
+                                    context: context
+                                )
+                                print("Step 3 Success: Saved to local SwiftData.")
+                                completion(.success(()))
+                            } catch {
+                                print("Step 3 Failed: SwiftData save error. \(error.localizedDescription)")
+                                completion(.failure(error))
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 }

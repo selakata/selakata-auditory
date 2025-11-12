@@ -58,9 +58,9 @@ struct VoiceRecordingGuideView: View {
     }
 }
 
-#Preview {
-    NavigationStack {
-        VoiceRecordingGuideView(isPresented: .constant(true), useCase: PersonalVoiceUseCase(repository: PersonalVoiceRepositoryImpl()))
-            .modelContainer(for: LocalAudioFile.self, inMemory: true)
-    }
-}
+//#Preview {
+//    NavigationStack {
+//        VoiceRecordingGuideView(isPresented: .constant(true), useCase: PersonalVoiceUseCase(repository: PersonalVoiceRepositoryImpl()))
+//            .modelContainer(for: LocalAudioFile.self, inMemory: true)
+//    }
+//}
