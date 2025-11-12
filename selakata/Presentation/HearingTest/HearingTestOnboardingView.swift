@@ -9,14 +9,26 @@ import SwiftUI
 
 struct HearingTestOnboardingView: View {
     @Binding var isStartingTest: Bool
-    
-    @State private var audioService = AudioService()
-    @State private var repository = HearingTestRepositoryImpl()
+
+    private var audioService: AudioService
+    private var repository: HearingTestRepository
+    private var submitEarlyTestUseCase: SubmitEarlyTestUseCase
     
     @ScaledMetric var mainLogoSize: CGFloat = 96
     @ScaledMetric var horizontalPadding: CGFloat = 32
     @ScaledMetric var benefitSpacing: CGFloat = 24
     
+    init(
+        isStartingTest: Binding<Bool>,
+        audioService: AudioService,
+        repository: HearingTestRepository,
+        submitEarlyTestUseCase: SubmitEarlyTestUseCase
+    ) {
+        self._isStartingTest = isStartingTest
+        self.audioService = audioService
+        self.repository = repository
+        self.submitEarlyTestUseCase = submitEarlyTestUseCase
+    }
 
 
     var body: some View {
@@ -58,7 +70,8 @@ struct HearingTestOnboardingView: View {
             NavigationLink(destination: HearingTestGuideView(
                 isStartingTest: $isStartingTest,
                 audioService: audioService,
-                repository: repository
+                repository: repository,
+                submitEarlyTestUseCase: submitEarlyTestUseCase
             )) {
                 Text("Get Started")
                     .font(.headline)
@@ -96,5 +109,19 @@ struct GuideRowView: View {
 }
 
 #Preview {
-    HearingTestOnboardingView(isStartingTest: .constant(true))
+    class MockProgressDataSource: ProgressDataSource {
+        func submitEarlyTest(data: EarlyTestSubmitRequest, completion: @escaping (Result<EmptyResponse, Error>)->Void) {
+            completion(.success(EmptyResponse()))
+        }
+    }
+    let mockDataSource = MockProgressDataSource()
+    let mockProgressRepo = ProgressRepositoryImpl(dataSource: mockDataSource)
+    let submitUseCase = SubmitEarlyTestUseCase(repository: mockProgressRepo)
+    
+    return HearingTestOnboardingView(
+        isStartingTest: .constant(true),
+        audioService: AudioService(),
+        repository: HearingTestRepositoryImpl(),
+        submitEarlyTestUseCase: submitUseCase
+    )
 }
