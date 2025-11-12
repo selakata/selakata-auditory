@@ -12,7 +12,7 @@ public class ModuleUseCase {
         self.repository = repository
     }
     
-    public func fetchModule(completion: @escaping (Result<ModuleResponse, Error>) -> Void) {
+    public func fetchModule(completion: @escaping (Result<APIResponse<[Module]>, Error>) -> Void) {
         repository.fetchModule(completion: completion)
     }
 }

@@ -9,7 +9,7 @@ final class LoginViewModel: ObservableObject {
     private let authService: AuthenticationService
 
     private let authUseCase: AuthUseCase
-    @Published var authResponse: AuthResponse?
+    @Published var authData: AuthData?
     @Published var errorMessage2: String?
 
     // MARK: - Published properties (observed by View)
@@ -41,7 +41,7 @@ final class LoginViewModel: ObservableObject {
         authService.signOut()
         deleteFromKeychain(for: "token")
         self.isServerAuthenticated = false
-        self.authResponse = nil
+        self.authData = nil
     }
 
     // MARK: - Private binding
@@ -92,7 +92,7 @@ final class LoginViewModel: ObservableObject {
                         self.isLoading = false
                         switch result {
                         case .success(let authResponse):
-                            self.authResponse = authResponse
+                            self.authData = authResponse.data
                             
                             // Save the token
                             saveToKeychain(value: authResponse.data.token, for: "token")

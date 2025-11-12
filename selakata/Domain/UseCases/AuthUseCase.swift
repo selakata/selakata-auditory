@@ -19,7 +19,7 @@ public class AuthUseCase {
         appleId: String,
         email: String,
         name: String,
-        completion: @escaping (Result<AuthResponse, Error>) -> Void
+        completion: @escaping (Result<APIResponse<AuthData>, Error>) -> Void
     ) {
         repository.auth(
             username: username,

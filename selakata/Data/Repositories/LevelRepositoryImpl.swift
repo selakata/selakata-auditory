@@ -14,11 +14,11 @@ public class LevelRepositoryImpl: LevelRepository {
         self.dataSource = dataSource
     }
     
-    public func fetchLevel(moduleId: String, completion: @escaping (Result<LevelResponse, Error>) -> Void) {
+    public func fetchLevel(moduleId: String, completion: @escaping (Result<APIResponse<[Level]>, Error>) -> Void) {
         dataSource.fetchLevel (moduleId: moduleId, completion: completion)
     }
     
-    public func fetchDetailLevel(levelId: String, completion: @escaping (Result<LevelDetailResponse, Error>) -> Void) {
+    public func fetchDetailLevel(levelId: String, completion: @escaping (Result<APIResponse<Question>, Error>) -> Void) {
         dataSource.fetchDetailLevel (levelId: levelId, completion: completion)
     }
 }

@@ -9,12 +9,12 @@ import Foundation
 
 @MainActor
 class ModulesViewModel: ObservableObject {
-    @Published var modules: [Module] = []
+    @Published var modules: [LocalModule] = []
     @Published var isLoading: Bool = false
     @Published var errorMessage: String?
     
     private let moduleUseCase: ModuleUseCase
-    @Published var moduleResponse: ModuleResponse?
+    @Published var module: [Module]?
     
     init(moduleUseCase: ModuleUseCase) {
         self.moduleUseCase = moduleUseCase
@@ -31,11 +31,9 @@ class ModulesViewModel: ObservableObject {
                 
                 switch result {
                 case .success(let modulResponse):
-                    self?.moduleResponse = modulResponse
-                    print("AISDEBUG:MODULES:SUCCESS: \(modulResponse.data.count)")
+                    self?.module = modulResponse.data
                 case .failure(let error):
                     self?.errorMessage = error.localizedDescription
-                    print("AISDEBUG:MODULES:ERROR: \(error.localizedDescription)")
                 }
             }
         }
@@ -105,7 +103,7 @@ class ModulesViewModel: ObservableObject {
     //    }
 
     // Legacy support for SwiftData Module
-    func isModuleUnlocked(_ module: Module, in allModules: [Module]) -> Bool {
+    func isModuleUnlocked(_ module: LocalModule, in allModules: [LocalModule]) -> Bool {
         if module.orderIndex == 0 {
             return true
         }

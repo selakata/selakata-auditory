@@ -28,7 +28,7 @@ struct MainView: View {
                     Label("Profile", systemImage: "person.fill")
                 }
         }
-        .modelContainer(for: [LocalAudioFile.self, Module.self, Level.self])
+        .modelContainer(for: [LocalAudioFile.self, LocalModule.self, LocalLevel.self])
     }
 }
 

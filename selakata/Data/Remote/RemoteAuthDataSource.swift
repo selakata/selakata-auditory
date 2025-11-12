@@ -21,7 +21,7 @@ public class RemoteAuthDataSource: AuthDataSource {
         appleId: String,
         email: String,
         name: String,
-        completion: @escaping (Result<AuthResponse, Error>) -> Void
+        completion: @escaping (Result<APIResponse<AuthData>, Error>) -> Void
     ) {
         guard let request = apiConfiguration.makeLoginURLRequest(username, appleId, email, name) else {
             completion(.failure(
@@ -36,7 +36,7 @@ public class RemoteAuthDataSource: AuthDataSource {
                 do {
                     let decoder = JSONDecoder()
                     decoder.dateDecodingStrategy = .iso8601
-                    let response = try decoder.decode(AuthResponse.self, from: data)
+                    let response = try decoder.decode(APIResponse<AuthData>.self, from: data)
                     completion(.success(response))
                 } catch {
                     completion(.failure(error))

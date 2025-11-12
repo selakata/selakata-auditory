@@ -6,6 +6,6 @@
 //
 
 public protocol LevelRepository {
-    func fetchLevel(moduleId: String, completion: @escaping (Result<LevelResponse, Error>) -> Void)
-    func fetchDetailLevel(levelId: String, completion: @escaping (Result<LevelDetailResponse, Error>) -> Void)
+    func fetchLevel(moduleId: String, completion: @escaping (Result<APIResponse<[Level]>, Error>) -> Void)
+    func fetchDetailLevel(levelId: String, completion: @escaping (Result<APIResponse<Question>, Error>) -> Void)
 }

@@ -12,11 +12,11 @@ public class LevelUseCase {
         self.repository = repository
     }
     
-    public func fetchLevel(moduleId: String, completion: @escaping (Result<LevelResponse, Error>) -> Void) {
+    public func fetchLevel(moduleId: String, completion: @escaping (Result<APIResponse<[Level]>, Error>) -> Void) {
         repository.fetchLevel(moduleId: moduleId, completion: completion)
     }
     
-    public func fetchDetailLevel(levelId: String, completion: @escaping (Result<LevelDetailResponse, Error>) -> Void) {
+    public func fetchDetailLevel(levelId: String, completion: @escaping (Result<APIResponse<Question>, Error>) -> Void) {
         repository.fetchDetailLevel(levelId: levelId, completion: completion)
     }
 }

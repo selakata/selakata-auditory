@@ -23,18 +23,18 @@ struct ModulesView: View {
                         .font(.largeTitle.weight(.bold))
                         .padding([.horizontal, .top])
 
-                    if let response = viewModel.moduleResponse {
-                        if response.data.isEmpty {
+                    if let response = viewModel.module {
+                        if response.isEmpty {
                             // Jika data kosong
                             Text("Tidak ada modul yang tersedia.")
                                 .foregroundColor(.secondary)
                                 .padding()
                         } else {
-                            ForEach(response.data.indices, id: \.self) { index in
+                            ForEach(response.indices, id: \.self) { index in
                                 NavigationLink(
-                                    destination: ModuleDetailView(category: response.data[index])
+                                    destination: ModuleDetailView(module: response[index])
                                 ) {
-                                    ModuleCard(module: response.data[index], showProgressBar: true)
+                                    ModuleCard(module: response[index], showProgressBar: true)
                                 }
                                 .buttonStyle(.plain)
                             }

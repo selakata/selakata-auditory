@@ -1,12 +1,12 @@
 import SwiftUI
 
 struct ModuleDetailView: View {
-    let category: Category
+    let module: Module
     @StateObject private var viewModel: ModuleDetailViewModel
     
-    init(category: Category) {
-        self.category = category
-        _viewModel = StateObject(wrappedValue: DependencyContainer.shared.makeModuleDetailViewModel(moduleId: category.id))
+    init(module: Module) {
+        self.module = module
+        _viewModel = StateObject(wrappedValue: DependencyContainer.shared.makeModuleDetailViewModel(moduleId: module.id))
     }
     
     @Environment(\.dismiss) private var dismiss
@@ -22,7 +22,7 @@ struct ModuleDetailView: View {
             ScrollView {
                 VStack(spacing: 0) {
                     VStack{
-                        Image(systemName: moduleImages[category.value-1])
+                        Image(systemName: moduleImages[module.value-1])
                             .font(.system(size: 60))
                             .foregroundColor(.blue)
                             .frame(width: 100, height: 100)
@@ -33,17 +33,17 @@ struct ModuleDetailView: View {
                     
                     VStack(spacing: 24) {
                         VStack(alignment: .leading, spacing: 4) {
-                            Text(category.label)
+                            Text(module.label)
                                 .font(.app(.headline))
                                 .fontWeight(.bold)
-                            Text(category.label)
+                            Text(module.label)
                                 .font(.app(.subhead))
                                 .foregroundColor(.secondary)
                         }
                         .frame(maxWidth: .infinity, alignment: .leading)
                         
-                        if viewModel.levelResponse != nil {
-                            LevelView(levels: viewModel.levelResponse!.data, moduleLabel: category.label)
+                        if viewModel.level != nil {
+                            LevelView(levels: viewModel.level, moduleLabel: module.label)
                         }
                     }
                     .padding(22)
@@ -79,19 +79,19 @@ struct ModuleDetailView: View {
     
 }
 
-#Preview {
-    NavigationView {
-        ModuleDetailView(
-            category: Category(
-                id: "1",
-                label: "Matematika",
-                value: 10,
-                description: "Kategori untuk latihan soal matematika dasar.",
-                isActive: true,
-                createdAt: "2025-01-01T10:00:00Z",
-                updatedAt: "2025-01-05T15:00:00Z",
-                updatedBy: "admin"
-            )
-        )
-    }
-}
+//#Preview {
+//    NavigationView {
+//        ModuleDetailView(
+//            category: LocalModule(
+//                id: "1",
+//                label: "Matematika",
+//                value: 10,
+//                description: "Kategori untuk latihan soal matematika dasar.",
+//                isActive: true,
+//                createdAt: "2025-01-01T10:00:00Z",
+//                updatedAt: "2025-01-05T15:00:00Z",
+//                updatedBy: "admin"
+//            )
+//        )
+//    }
+//}

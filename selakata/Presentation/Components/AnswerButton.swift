@@ -8,7 +8,7 @@ import Foundation
 import SwiftUI
 
 struct AnswerButton: View {
-    let answer: LocalAnswer
+    let answer: Answer
     let isSelected: Bool
     let isCorrect: Bool?
     let isWrong: Bool
@@ -92,23 +92,23 @@ struct AnswerButton: View {
     }
 }
 
-#Preview {
-    VStack(spacing: 20) {
-        AnswerView(
-            question: QuizData.dummyModule[0].levelList[0].question[0],
-            selectedAnswer: nil,
-            hasAnswered: false,
-            layout: .grid(columns: 2),
-            onSelect: { _ in }
-        )
-        
-        AnswerView(
-            question: QuizData.dummyModule[2].levelList[0].question[0],
-            selectedAnswer: nil,
-            hasAnswered: false,
-            layout: .list,
-            onSelect: { _ in }
-        )
-    }
-    .padding()
-}
+//#Preview {
+//    VStack(spacing: 20) {
+//        AnswerView(
+//            question: QuizData.dummyModule[0].levelList[0].question[0],
+//            selectedAnswer: nil,
+//            hasAnswered: false,
+//            layout: .grid(columns: 2),
+//            onSelect: { _ in }
+//        )
+//        
+//        AnswerView(
+//            question: QuizData.dummyModule[2].levelList[0].question[0],
+//            selectedAnswer: nil,
+//            hasAnswered: false,
+//            layout: .list,
+//            onSelect: { _ in }
+//        )
+//    }
+//    .padding()
+//}
