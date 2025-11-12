@@ -7,4 +7,5 @@
 
 public protocol LevelRepository {
     func fetchLevel(moduleId: String, completion: @escaping (Result<LevelResponse, Error>) -> Void)
+    func fetchDetailLevel(levelId: String, completion: @escaping (Result<LevelDetailResponse, Error>) -> Void)
 }

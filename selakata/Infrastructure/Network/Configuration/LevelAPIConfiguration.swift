@@ -12,7 +12,7 @@ public class LevelAPIConfiguration : BaseAPIConfiguration{
         makeURL(path: "/pub/level/\(moduleId)")
     }
     
-    func makeLevelDetailURL(levelId: String) -> URL? {
+    func makeDetailLevelURL(levelId: String) -> URL? {
         makeURL(path: "/pub/level/detail/\(levelId)")
     }
 }

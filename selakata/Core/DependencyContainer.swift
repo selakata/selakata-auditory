@@ -86,6 +86,10 @@ class DependencyContainer {
         return ModuleDetailViewModel(levelUseCase: levelUseCase, moduleId: moduleId)
     }
     
+    func makeQuizViewModel(levelId: String) -> QuizViewModel {
+        return QuizViewModel(levelUseCase: levelUseCase, levelId: levelId)
+    }
+    
     func makeLoginViewModel() -> LoginViewModel {
         return LoginViewModel(authUseCase: authUseCase)
     }
