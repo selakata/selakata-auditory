@@ -14,6 +14,7 @@ final class LoginViewModel: ObservableObject {
 
     // MARK: - Published properties (observed by View)
     @Published var isAuthenticated: Bool = false
+    @Published var isServerAuthenticated: Bool = false
     @Published var isLoading: Bool = false
     @Published var errorMessage: String? = nil
 
@@ -24,6 +25,11 @@ final class LoginViewModel: ObservableObject {
         self.authService = authService ?? AuthenticationService()
         self.authUseCase = authUseCase
         bindAuthService()
+        
+        if getFromKeychain(for: "token") != nil {
+            self.isServerAuthenticated = true
+            print("LoginViewModel: Token found in keychain. User is already authenticated.")
+        }
     }
 
     // MARK: - Public functions
@@ -33,6 +39,9 @@ final class LoginViewModel: ObservableObject {
 
     func signOut() {
         authService.signOut()
+        deleteFromKeychain(for: "token")
+        self.isServerAuthenticated = false
+        self.authResponse = nil
     }
 
     // MARK: - Private binding
@@ -40,48 +49,67 @@ final class LoginViewModel: ObservableObject {
         authService.$isAuthenticated
             .receive(on: RunLoop.main)
             .assign(to: &$isAuthenticated)
-        
-        Publishers.CombineLatest3(
-            authService.$userAuthId,
-            authService.$userEmail,
-            authService.$userFullName
-        )
-        .compactMap { id, email, name -> (String, String, String)? in
-            guard
-                let id = id,
-                let email = email,
-                let name = name
-            else { return nil }
-            return (id, email, name)
-        }
-        // --- 3. Trigger hanya saat user benar-benar sudah authenticated
-        .combineLatest(authService.$isAuthenticated)
-        .filter { _, isAuthed in isAuthed } // pastikan user udah login
-        .map { combined, _ in combined }    // ambil tuple (id, email, name)
-        .receive(on: RunLoop.main)
-        .sink { [weak self] (userId, email, fullName) in
-            guard let self = self else { return }
-            
-            self.authUseCase.execute(
-                username: userId,
-                appleId: userId,
-                email: email,
-                name: fullName
-            ) { [weak self] result in
-                switch result {
-                case .success(let authResponse):
+
+        authService.$userAuthId
+            .compactMap { $0 }
+            .combineLatest(authService.$isAuthenticated)
+            .filter { (userId, isAuthed) in isAuthed }
+            .map { (userId, isAuthed) in userId }
+            .removeDuplicates()
+            .receive(on: RunLoop.main)
+            .sink { [weak self] (userId) in
+                guard let self = self else { return }
+                
+                if self.isServerAuthenticated { return }
+                
+                let email = self.authService.userEmail
+                            ?? UserDefaults.standard.string(forKey: "user_email")
+                            ?? "\(userId)@privaterelay.appleid.com" // Default fallback
+
+                let nameFromService = self.authService.userFullName
+                let nameFromDefaults = UserDefaults.standard.string(forKey: "user_name")
+                
+                var name = "Learner"
+                if let nameFromService = nameFromService, !nameFromService.isEmpty {
+                    name = nameFromService
+                } else if let nameFromDefaults = nameFromDefaults, !nameFromDefaults.isEmpty {
+                    name = nameFromDefaults
+                }
+                
+
+                print("LoginViewModel: Apple Sign-In success. Now logging into team server...")
+                self.isLoading = true
+                
+                self.authUseCase.execute(
+                    username: userId,
+                    appleId: userId,
+                    email: email,
+                    name: name
+                ) { [weak self] result in
+                    guard let self = self else { return }
+                    
                     DispatchQueue.main.async {
-                        self?.authResponse = authResponse
-                        saveToKeychain(value: authResponse.data.token, for: "token")
-                    }
-                case .failure(let error):
-                    DispatchQueue.main.async {
-                        self?.errorMessage = error.localizedDescription
+                        self.isLoading = false
+                        switch result {
+                        case .success(let authResponse):
+                            self.authResponse = authResponse
+                            
+                            // Save the token
+                            saveToKeychain(value: authResponse.data.token, for: "token")
+                            
+                            
+                            self.isServerAuthenticated = true
+                            
+                            print("[LoginViewModel] AISDEBUG:AUTH:SUCCESS: Real token saved. User is fully authenticated.")
+                            
+                        case .failure(let error):
+                            self.errorMessage = error.localizedDescription
+                            print("[LoginViewModel] AISDEBUG:AUTH:ERROR:", error.localizedDescription)
+                        }
                     }
                 }
             }
-        }
-        .store(in: &cancellables)
+            .store(in: &cancellables)
         
         authService.$isLoading
             .receive(on: RunLoop.main)

@@ -48,18 +48,25 @@ struct VoiceRecordingView: View {
                     viewModel: viewModel,
                     onDone: handleDone
                 )
+            case .saving:
+                Spacer()
+                ProgressView("Saving and cloning voice...")
+                Spacer()
             }
         }
+        .disabled(viewModel.recordingState == .saving)
     }
     
     private func handleDone() {
         viewModel.stopAudio()
         
-        if viewModel.saveRecording() {
-            isPresented = false
-        } else {
-            withAnimation(.spring(response: 0.2, dampingFraction: 0.2, blendDuration: 0.2)) {
-                wiggleCount += 1
+        viewModel.handleDoneButtonTap { success in
+            if success {
+                isPresented = false
+            } else {
+                withAnimation(.spring(response: 0.2, dampingFraction: 0.2, blendDuration: 0.2)) {
+                    wiggleCount += 1
+                }
             }
         }
     }
@@ -204,12 +211,12 @@ private struct ErrorCardView: View {
     }
 }
 
-#Preview {
-    let container = try! ModelContainer(
-        for: LocalAudioFile.self,
-        configurations: ModelConfiguration(isStoredInMemoryOnly: true)
-    )
-    NavigationStack {
-        VoiceRecordingView(isPresented: .constant(true), useCase: PersonalVoiceUseCase(repository: PersonalVoiceRepositoryImpl()), modelContext: container.mainContext)
-    }
-}
+//#Preview {
+//    let container = try! ModelContainer(
+//        for: LocalAudioFile.self,
+//        configurations: ModelConfiguration(isStoredInMemoryOnly: true)
+//    )
+//    NavigationStack {
+//        VoiceRecordingView(isPresented: .constant(true), useCase: PersonalVoiceUseCase(repository: PersonalVoiceRepositoryImpl()), modelContext: container.mainContext)
+//    }
+//}

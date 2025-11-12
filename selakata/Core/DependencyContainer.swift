@@ -60,9 +60,35 @@ class DependencyContainer {
     }()
     
     // MARK: - Personal Voice Dependencies
+    lazy var recorderService: AudioRecorderService = {
+        AudioRecorderService()
+    }()
+    
+    lazy var playerService: AudioPlayerService = {
+        AudioPlayerService()
+    }()
+    
+    lazy var personalVoiceRepository: PersonalVoiceRepository = {
+        PersonalVoiceRepositoryImpl()
+    }()
+    
+    lazy var voiceConfig: VoiceAPIConfiguration = {
+        VoiceAPIConfiguration(configuration: appConfiguration)
+    }()
+    
+    lazy var elevenLabsConfig: ElevenLabsAPIConfiguration = {
+        ElevenLabsAPIConfiguration(configuration: appConfiguration)
+    }()
+
     lazy var personalVoiceUseCase: PersonalVoiceUseCase = {
-        let repository = PersonalVoiceRepositoryImpl()
-        return PersonalVoiceUseCase(repository: repository)
+        return PersonalVoiceUseCase(
+            recorder: recorderService,
+            player: playerService,
+            repository: personalVoiceRepository,
+            apiClient: apiClient,
+            voiceConfig: voiceConfig,
+            elevenLabsConfig: elevenLabsConfig
+        )
     }()
     
     // MARK: - Profile Dependencies
@@ -102,7 +128,7 @@ class DependencyContainer {
     }
     
     func makePersonalVoiceViewModel() -> PersonalVoiceViewModel {
-        return PersonalVoiceViewModel(useCase: personalVoiceUseCase)
+        return PersonalVoiceViewModel()
     }
     
     private init() {}

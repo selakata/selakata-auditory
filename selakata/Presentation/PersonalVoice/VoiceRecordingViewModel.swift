@@ -12,7 +12,7 @@ import SwiftUI
 @MainActor
 class VoiceRecordingViewModel: ObservableObject {
     
-    enum RecordingState { case idle, recording, review }
+    enum RecordingState { case idle, recording, review, saving }
     @Published var recordingState: RecordingState = .idle
     @Published var voiceName: String = ""
     @Published var validationError: String? = nil
@@ -74,7 +74,7 @@ class VoiceRecordingViewModel: ObservableObject {
             } else {
                 validationError = error.localizedDescription
             }
-            recordingState = .idle
+            recordingState = .review
         }
     }
     
@@ -95,24 +95,27 @@ class VoiceRecordingViewModel: ObservableObject {
         useCase.playRecording()
     }
     
-    func saveRecording() -> Bool {
+    func handleDoneButtonTap(completion: @escaping (Bool) -> Void) {
         validationError = nil
         
-        let result = useCase.saveRecording(
-            name: voiceName,
-            context: modelContext
-        )
+        guard !voiceName.trimmingCharacters(in: .whitespaces).isEmpty else {
+            validationError = "Please enter a name for your voice."
+            completion(false)
+            return
+        }
         
-        switch result {
-        case .success:
-            return true
-        case .failure(let error):
-            if case RecordingError.recorderError(let msg) = error, msg == "Name is empty." {
-                validationError = "Please enter a name for your voice."
-                return false
+        recordingState = .saving
+        
+        useCase.saveAndCloneRecording(name: voiceName, context: modelContext) { result in
+            switch result {
+            case .success:
+                self.recordingState = .idle
+                completion(true)
+            case .failure(let error):
+                self.validationError = "Save failed: \(error.localizedDescription)"
+                self.recordingState = .review
+                completion(false)
             }
-            validationError = error.localizedDescription
-            return false
         }
     }
     
