@@ -1,20 +1,12 @@
-//
-//  ModuleResponse.swift
-//  selakata
-//
 //  Created by ais on 06/11/25.
-//
-
 
 import Foundation
 
-// MARK: - Root Response
 public struct ModuleResponse: Codable {
     let data: [Category]
-    let meta: Meta
+    let meta: Metadata
 }
 
-// MARK: - Data Model
 struct Category: Codable {
     let id: String
     let label: String
@@ -24,14 +16,4 @@ struct Category: Codable {
     let createdAt: String
     let updatedAt: String
     let updatedBy: String
-}
-
-// MARK: - Meta Model
-struct Meta: Codable {
-    let currentPage: Int
-    let from: Int
-    let to: Int
-    let lastPage: Int
-    let perPage: Int
-    let total: Int
 }
