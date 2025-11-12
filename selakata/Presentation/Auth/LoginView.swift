@@ -70,13 +70,13 @@ struct LoginView: View {
         .fullScreenCover(isPresented: $showingMainView) {
             MainView()
         }
-        .onChange(of: viewModel.isAuthenticated) { oldValue, newValue in
+        .onChange(of: viewModel.isServerAuthenticated) { oldValue, newValue in
             if newValue {
                 showingMainView = true
             }
         }
         .onAppear {
-            if viewModel.isAuthenticated {
+            if viewModel.isServerAuthenticated {
                 showingMainView = true
             }
         }
