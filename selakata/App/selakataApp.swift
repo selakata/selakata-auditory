@@ -4,14 +4,23 @@ import SwiftData
 @main
 struct selakataApp: App {
     @AppStorage("hasSeenOnboarding") var hasSeenOnboarding = false
+    @StateObject private var authService = AuthenticationService()
     
     var body: some Scene {
         WindowGroup {
-            if hasSeenOnboarding {
-                LoginView()
-            } else {
-                OnboardingView()
+            Group {
+                if hasSeenOnboarding {
+                    if (authService.isAuthenticated) {
+                        MainView()
+                    } else {
+                        LoginView()
+                    }
+                } else {
+                    OnboardingView()
+                }
             }
+            .environmentObject(authService)
+            .preferredColorScheme(.light)
         }
     }
 }

@@ -1,9 +1,4 @@
-//
-//  AuthenticationService.swift
-//  selakata
-//
 //  Created by ais on 02/11/25.
-//
 
 import AuthenticationServices
 import Foundation
@@ -16,15 +11,21 @@ final class AuthenticationService: NSObject, ObservableObject, ProfileRepository
     @Published var userAuthId: String?
     @Published var userFullName: String?
     @Published var userEmail: String?
+    @Published var token: String?
+    
     @Published var isLoading = false
     @Published var errorMessage: String?
     
     // MARK: - Keychain key
     private let keychainKey = "appleUserId"
+    private let tokenKey = "token"
     
     // MARK: - Init
     override init() {
         super.init()
+        if let savedToken = getFromKeychain(for: tokenKey) {
+             self.token = savedToken
+         }
         checkAuthenticationState()
     }
     
@@ -61,6 +62,7 @@ final class AuthenticationService: NSObject, ObservableObject, ProfileRepository
     private func checkAuthenticationState() {
         guard let userId = getFromKeychain(for: keychainKey) else {
             print("❌ Tidak ada Apple ID tersimpan di Keychain, tampilkan LoginView")
+            signOut()
             return
         }
         
@@ -74,7 +76,6 @@ final class AuthenticationService: NSObject, ObservableObject, ProfileRepository
                     self.isAuthenticated = true
                     self.userFullName = UserDefaults.standard.string(forKey: "user_name") ?? "Learner"
                     self.userEmail = UserDefaults.standard.string(forKey: "user_email")
-                    print("✅ Apple ID valid, langsung masuk Home (\(userId))")
                 case .revoked, .notFound:
                     self.signOut()
                 default:
@@ -141,12 +142,26 @@ extension AuthenticationService: ASAuthorizationControllerDelegate {
         
         if let authError = error as? ASAuthorizationError {
             switch authError.code {
-            case .canceled: errorMessage = "Sign in was canceled"
-            case .failed: errorMessage = "Sign in failed"
-            case .invalidResponse: errorMessage = "Invalid response"
-            case .notHandled: errorMessage = "Sign in not handled"
-            case .unknown: errorMessage = "Unknown error occurred"
-            @unknown default: errorMessage = "An error occurred"
+            case .canceled: 
+                errorMessage = "Sign in was canceled"
+            case .failed:
+                errorMessage = "Sign in failed"
+            case .invalidResponse:
+                errorMessage = "Invalid response"
+            case .notHandled:
+                errorMessage = "Sign in not handled"
+            case .unknown:
+                errorMessage = "Unknown error occurred"
+            case .notInteractive:
+                errorMessage = "Sign in not interactive"
+            case .matchedExcludedCredential:
+                errorMessage = "Matched excluded credential"
+            case .credentialImport:
+                errorMessage = "Credential import failed"
+            case .credentialExport:
+                errorMessage = "Credential export failed"
+            @unknown default: 
+                errorMessage = "An error occurred"
             }
         } else {
             errorMessage = error.localizedDescription

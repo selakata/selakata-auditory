@@ -64,7 +64,7 @@ final class LoginViewModel: ObservableObject {
                 
                 let email = self.authService.userEmail
                             ?? UserDefaults.standard.string(forKey: "user_email")
-                            ?? "\(userId)@privaterelay.appleid.com" // Default fallback
+                            ?? "\(userId)@privaterelay.appleid.com"
 
                 let nameFromService = self.authService.userFullName
                 let nameFromDefaults = UserDefaults.standard.string(forKey: "user_name")
@@ -75,7 +75,6 @@ final class LoginViewModel: ObservableObject {
                 } else if let nameFromDefaults = nameFromDefaults, !nameFromDefaults.isEmpty {
                     name = nameFromDefaults
                 }
-                
 
                 print("LoginViewModel: Apple Sign-In success. Now logging into team server...")
                 self.isLoading = true
@@ -96,7 +95,6 @@ final class LoginViewModel: ObservableObject {
                             
                             // Save the token
                             saveToKeychain(value: authResponse.data.token, for: "token")
-                            
                             
                             self.isServerAuthenticated = true
                             

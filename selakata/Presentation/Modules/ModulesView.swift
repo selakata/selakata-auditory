@@ -1,9 +1,4 @@
-//
-//  ModulesView.swift
-//  selakata
-//
 //  Created by Anisa Amalia on 18/10/25.
-//
 
 import SwiftData
 import SwiftUI
@@ -64,7 +59,7 @@ struct ModulesView: View {
                     }
                 }
             }
-            .navigationTitle("Exercise")
+            .navigationTitle("Journey")
             .navigationBarHidden(true)
         }
     }
