@@ -1,9 +1,4 @@
-//
-//  Keychain.swift
-//  selakata
-//
 //  Created by ais on 11/11/25.
-//
 
 import Foundation
 import Security

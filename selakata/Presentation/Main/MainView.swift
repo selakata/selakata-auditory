@@ -1,9 +1,4 @@
-//
-//  MainView.swift
-//  selakata
-//
 //  Created by ais on 05/11/25.
-//
 
 import SwiftUI
 import SwiftData
@@ -20,7 +15,7 @@ struct MainView: View {
             
             ModulesView(viewModel: viewModel)
                 .tabItem {
-                    Label("Modules", systemImage: "ear.fill")
+                    Label("Journey", systemImage: "flag")
                 }
             
             ProfileView()

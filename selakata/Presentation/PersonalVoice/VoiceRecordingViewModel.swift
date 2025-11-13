@@ -17,13 +17,15 @@ class VoiceRecordingViewModel: ObservableObject {
     @Published var voiceName: String = ""
     @Published var validationError: String? = nil
     @Published var recordingTimeDisplay: String = "00:00"
+    @Published var audioLevels: [Float] = []
 
     private let useCase: PersonalVoiceUseCase
     private let modelContext: ModelContext
     private var recordingTimer: Timer?
-    
+
+    @ObservedObject var playerService: AudioPlayerService
+
     var promptText: String { useCase.promptText }
-    var isPlaying: Bool { useCase.isPlaying }
 
     var formattedDuration: String {
         guard let duration = useCase.lastRecordingResult?.duration else {
@@ -37,10 +39,13 @@ class VoiceRecordingViewModel: ObservableObject {
     init(useCase: PersonalVoiceUseCase, modelContext: ModelContext) {
         self.useCase = useCase
         self.modelContext = modelContext
+        self.playerService = useCase.player
     }
     
     func startRecording() {
         validationError = nil
+        audioLevels = []
+        
         do {
             try useCase.startRecording()
             recordingState = .recording
@@ -69,6 +74,8 @@ class VoiceRecordingViewModel: ObservableObject {
             validationError = nil
             recordingState = .review
         case .failure(let error):
+            useCase.retakeRecording()
+            
             if let recError = error as? RecordingError, case .recorderError(let msg) = recError {
                 validationError = msg
             } else {
@@ -83,11 +90,13 @@ class VoiceRecordingViewModel: ObservableObject {
         let minutes = Int(time) / 60
         let seconds = Int(time) % 60
         recordingTimeDisplay = String(format: "%02d:%02d", minutes, seconds)
+        self.audioLevels.append(useCase.getAudioLevel())
     }
     
     func retakeRecording() {
         useCase.retakeRecording()
         validationError = nil
+        audioLevels = []
         recordingState = .idle
     }
     
@@ -100,6 +109,12 @@ class VoiceRecordingViewModel: ObservableObject {
         
         guard !voiceName.trimmingCharacters(in: .whitespaces).isEmpty else {
             validationError = "Please enter a name for your voice."
+            completion(false)
+            return
+        }
+    
+        guard useCase.lastRecordingResult != nil else {
+            validationError = "Recording is invalid. Please retake."
             completion(false)
             return
         }

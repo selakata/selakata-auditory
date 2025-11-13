@@ -1,9 +1,4 @@
-//
-//  ModulesViewModel.swift
-//  selakata
-//
 //  Created by Anisa Amalia on 18/10/25.
-//
 
 import Foundation
 

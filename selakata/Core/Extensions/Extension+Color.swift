@@ -1,9 +1,4 @@
-//
-//  AppColor.swift
-//  selakata
-//
 //  Created by ais on 03/11/25.
-//
 
 import SwiftUI
 
@@ -32,6 +27,20 @@ extension Color {
         static let _400 = Color(hex: 0xFFDD80)
         static let _500 = Color(hex: 0xFFC645)
         static let _600 = Color(hex: 0xFFB91A)
+    }
+    
+    enum Default {
+        static let _50 = Color(hex: 0xF6F6F6)
+        static let _100 = Color(hex: 0xE7E7E7)
+        static let _200 = Color(hex: 0xD1D1D1)
+        static let _300 = Color(hex: 0xB0B0B0)
+        static let _400 = Color(hex: 0x888888)
+        static let _500 = Color(hex: 0x6D6D6D)
+        static let _600 = Color(hex: 0x5D5D5D)
+        static let _700 = Color(hex: 0x4F4F4F)
+        static let _800 = Color(hex: 0x454545)
+        static let _900 = Color(hex: 0x3D3D3D)
+        static let _950 = Color(hex: 0x1E1E1E)
     }
     //    static let secondary = Color(hex: 0x007AFF)
     //    static let accent = Color(hex: 0x34C759)

@@ -4,29 +4,13 @@ import SwiftUI
 
 struct LoginView: View {
     @StateObject private var viewModel = DependencyContainer.shared.makeLoginViewModel()
-    @State private var showingMainView = false
-
+    
     var body: some View {
         SingleOnBoardingView(action: viewModel.signInWithApple,
                              isLoading: viewModel.isLoading,
                              errorMessage: viewModel.errorMessage)
         .padding(36)
         .background(Color(.systemBackground))
-        
-        // MARK: - Navigation
-        .fullScreenCover(isPresented: $showingMainView) {
-            MainView()
-        }
-        .onChange(of: viewModel.isServerAuthenticated) { oldValue, newValue in
-            if newValue {
-                showingMainView = true
-            }
-        }
-        .onAppear {
-            if viewModel.isServerAuthenticated {
-                showingMainView = true
-            }
-        }
         
         // MARK: - Loading Overlay
         .overlay(

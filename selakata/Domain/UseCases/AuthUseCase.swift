@@ -1,10 +1,4 @@
-//
-//  AuthUseCase.swift
-//  selakata
-//
 //  Created by ais on 07/11/25.
-//
-
 
 
 public class AuthUseCase {
