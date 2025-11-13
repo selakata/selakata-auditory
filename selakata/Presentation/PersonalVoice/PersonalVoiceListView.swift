@@ -13,16 +13,47 @@ struct PersonalVoiceListView: View {
     @StateObject private var viewModel = DependencyContainer.shared.makePersonalVoiceViewModel()
     @StateObject private var audioPlayerService = AudioPlayerService()
     @AppStorage("selectedVoiceID") private var selectedVoiceID: String?
-
+    
+    @State private var isPersonalVoiceOn: Bool
+    @State private var expandedVoiceID: String? = nil
+    @State private var showingConfirmationSheet = false
+    @State private var pendingSelection: LocalAudioFile? = nil
+    
     @Query(sort: \LocalAudioFile.createdAt) private var savedVoices: [LocalAudioFile]
+
+    init() {
+        let storedID = UserDefaults.standard.string(forKey: "selectedVoiceID")
+        _isPersonalVoiceOn = State(initialValue: storedID != nil)
+    }
+    
 
     var body: some View {
         NavigationStack {
-            Group {
+            VStack(spacing: 0) {
+                Toggle("Personalized Voice", isOn: $isPersonalVoiceOn)
+                    .tint(.accentColor)
+                    .padding(.horizontal, 16)
+                    .padding(.vertical, 12)
+                    .background(Color(.systemGray6))
+                    .cornerRadius(10)
+                    .padding(.horizontal)
+                    .padding(.top, 10)
+                    .padding(.bottom, 20)
+
                 if savedVoices.isEmpty {
                     emptyStateView
+                        .frame(maxHeight: .infinity)
+                        .disabled(!isPersonalVoiceOn)
+                        .opacity(isPersonalVoiceOn ? 1.0 : 0.5)
                 } else {
-                    voiceListView
+                    List {
+                        voiceListView
+                            .listRowInsets(EdgeInsets(top: 0, leading: 16, bottom: 0, trailing: 16))
+                            .listRowSeparator(.visible)
+                    }
+                    .listStyle(.plain)
+                    .disabled(!isPersonalVoiceOn)
+                    .opacity(isPersonalVoiceOn ? 1.0 : 0.5)
                 }
             }
             .navigationTitle("Personalized Voice")
@@ -34,6 +65,7 @@ struct PersonalVoiceListView: View {
                     }) {
                         Image(systemName: "plus")
                     }
+                    .disabled(!isPersonalVoiceOn)
                 }
             }
             .toolbar(.hidden, for: .tabBar)
@@ -51,37 +83,125 @@ struct PersonalVoiceListView: View {
                     )
                 }
             }
+            .onChange(of: isPersonalVoiceOn) { _, isOn in
+                if isOn {
+                    if selectedVoiceID == nil {
+                        selectedVoiceID = savedVoices.first?.voiceId
+                    }
+                } else {
+                    selectedVoiceID = nil
+                    expandedVoiceID = nil
+                }
+            }
+            .sheet(isPresented: $showingConfirmationSheet) {
+                ConfirmationSheetView(
+                    onConfirm: {
+                        if let newVoice = pendingSelection {
+                            selectedVoiceID = newVoice.voiceId
+                            expandedVoiceID = newVoice.voiceId
+                        }
+                        pendingSelection = nil
+                        showingConfirmationSheet = false
+                    },
+                    onCancel: {
+                        pendingSelection = nil
+                        showingConfirmationSheet = false
+                    }
+                )
+                .presentationDetents([.fraction(0.3)])
+            }
         }
     }
     
     private var emptyStateView: some View {
         VStack(spacing: 16) {
             Spacer()
+            
             Image("emptyVoice")
                 .font(.system(size: 150))
                 .foregroundStyle(Color(.systemGray4))
+                .frame(maxWidth: .infinity, alignment: .center)
             
             Text("No personalized voice yet")
                 .font(.title2.weight(.bold))
+                .frame(maxWidth: .infinity, alignment: .center)
             
             Text("Tap the \"+\" button to create one.")
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
+                .frame(maxWidth: .infinity, alignment: .center)
             
-            Spacer()
             Spacer()
         }
         .padding()
     }
     
     private var voiceListView: some View {
-        List(savedVoices) { voice in
+        ForEach(savedVoices) { voice in
             VoiceRowView(
                 voice: voice,
                 audioPlayerService: audioPlayerService,
-                selectedVoiceID: $selectedVoiceID
+                isSelected: selectedVoiceID == voice.voiceId,
+                isExpanded: expandedVoiceID == voice.voiceId
             )
+            .onTapGesture {
+                handleVoiceTap(voice)
+            }
+            .buttonStyle(.plain)
         }
+    }
+    
+    private func handleVoiceTap(_ voice: LocalAudioFile) {
+        guard isPersonalVoiceOn else { return }
+        
+        let tappedNewVoice = selectedVoiceID != nil && selectedVoiceID != voice.voiceId
+        let tappedSameVoice = selectedVoiceID == voice.voiceId
+        
+        if tappedSameVoice {
+            withAnimation {
+                expandedVoiceID = (expandedVoiceID == voice.voiceId) ? nil : voice.voiceId
+            }
+        } else if tappedNewVoice {
+            pendingSelection = voice
+            showingConfirmationSheet = true
+        } else {
+            withAnimation {
+                selectedVoiceID = voice.voiceId
+                expandedVoiceID = voice.voiceId
+            }
+        }
+    }
+}
+
+struct ConfirmationSheetView: View {
+    var onConfirm: () -> Void
+    var onCancel: () -> Void
+    
+    var body: some View {
+        VStack(spacing: 24) {
+            Spacer()
+            Text("Are you sure you'd like to\nupdate your selected voice?")
+                .font(.title2.weight(.bold))
+                .multilineTextAlignment(.center)
+            
+            Button("Yes, please") {
+                onConfirm()
+            }
+            .font(.headline.weight(.semibold))
+            .frame(maxWidth: .infinity)
+            .padding()
+            .background(Color.accentColor)
+            .foregroundStyle(.white)
+            .clipShape(Capsule())
+            
+            Button("Cancel") {
+                onCancel()
+            }
+            .font(.headline.weight(.semibold))
+            
+            Spacer()
+        }
+        .padding()
     }
 }
 

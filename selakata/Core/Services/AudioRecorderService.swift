@@ -100,6 +100,14 @@ class AudioRecorderService: NSObject, ObservableObject, AVAudioRecorderDelegate 
         return .success(RecordingResult(fileURL: url, duration: duration))
     }
     
+    func getAudioLevel() -> Float {
+        guard let recorder = audioRecorder, isRecording else { return 0.0 }
+        recorder.updateMeters()
+        let power = recorder.averagePower(forChannel: 0)
+        let normalizedPower = (50 + power) / 50
+        return max(0, min(1, normalizedPower))
+    }
+    
     nonisolated func audioRecorderDidFinishRecording(_ recorder: AVAudioRecorder, successfully flag: Bool) {
         if !flag {
             Task { @MainActor in
