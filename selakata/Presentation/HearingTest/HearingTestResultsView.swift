@@ -15,16 +15,30 @@ struct HearingTestResultsView: View {
     @Binding var isStartingTest: Bool
     @ScaledMetric var horizontalPadding: CGFloat = 24
     
-    init(isStartingTest: Binding<Bool>, repository: HearingTestRepository) {
+    init(
+        isStartingTest: Binding<Bool>,
+        repository: HearingTestRepository,
+        submitEarlyTestUseCase: SubmitEarlyTestUseCase
+    ) {
         self._isStartingTest = isStartingTest
         self.isFromProfile = false
-        _viewModel = StateObject(wrappedValue: HearingTestResultsViewModel(repository: repository))
+        _viewModel = StateObject(wrappedValue: HearingTestResultsViewModel(
+            repository: repository,
+            submitEarlyTestUseCase: submitEarlyTestUseCase
+        ))
     }
     
-    init(isFromProfile: Bool, repository: HearingTestRepository) {
+    init(
+        isFromProfile: Bool,
+        repository: HearingTestRepository,
+        submitEarlyTestUseCase: SubmitEarlyTestUseCase
+    ) {
         self._isStartingTest = .constant(false)
         self.isFromProfile = isFromProfile
-        _viewModel = StateObject(wrappedValue: HearingTestResultsViewModel(repository: repository))
+        _viewModel = StateObject(wrappedValue: HearingTestResultsViewModel(
+            repository: repository,
+            submitEarlyTestUseCase: submitEarlyTestUseCase
+        ))
     }
 
     var body: some View {
@@ -79,20 +93,29 @@ struct HearingTestResultsView: View {
             Spacer()
             
             if !isFromProfile {
-                Button(action: {
-                    isStartingTest = false
-                }) {
-                    Text("Continue")
-                        .font(.headline)
-                        .fontWeight(.semibold)
-                        .frame(maxWidth: .infinity)
-                        .padding()
-                        .background(Color.accentColor)
-                        .foregroundStyle(.white)
-                        .clipShape(Capsule())
+                VStack(spacing: 8) {
+                    Button(action: {
+                        viewModel.submitResultsToBackend()
+                    }) {
+                        Text("Continue")
+                            .font(.headline)
+                            .fontWeight(.semibold)
+                            .frame(maxWidth: .infinity)
+                            .padding()
+                            .background(Color.accentColor)
+                            .foregroundStyle(.white)
+                            .clipShape(Capsule())
+                    }
+                    .padding(.horizontal, horizontalPadding)
+                    .padding(.bottom)
+                    
+                    if let errorMessage = viewModel.errorMessage {
+                        Text(errorMessage)
+                            .font(.caption)
+                            .foregroundStyle(.red)
+                            .padding(.horizontal, horizontalPadding)
+                    }
                 }
-                .padding(.horizontal, horizontalPadding)
-                .padding(.bottom)
             }
             
         }
@@ -105,11 +128,39 @@ struct HearingTestResultsView: View {
             viewModel.loadResults()
         }
         .toolbar(isFromProfile ? .hidden : .automatic, for: .tabBar)
+        .overlay(
+            Group {
+                if viewModel.isLoading {
+                    Color.black.opacity(0.3)
+                        .ignoresSafeArea()
+                    
+                    ProgressView()
+                        .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                        .scaleEffect(1.2)
+                }
+            }
+        )
+        .onChange(of: viewModel.didSuccessfullySave) { _, didSave in
+            if didSave {
+                isStartingTest = false
+            }
+        }
     }
 }
 
 #Preview {
     let repository = HearingTestRepositoryImpl()
+    
+    class MockProgressDataSource: ProgressDataSource {
+        func submitEarlyTest(data: EarlyTestSubmitRequest, completion: @escaping (Result<EmptyResponse, Error>) -> Void) {
+            completion(.success(EmptyResponse()))
+        }
+    }
+
+    let mockDataSource = MockProgressDataSource()
+    let mockProgressRepo = ProgressRepositoryImpl(dataSource: mockDataSource)
+    let submitUseCase = SubmitEarlyTestUseCase(repository: mockProgressRepo)
+        
     
     let dataLeftThresholds: [Double: Float] = [
         500: -50, 1000: -55, 2000: -45, 4000: -40
@@ -125,6 +176,8 @@ struct HearingTestResultsView: View {
     return NavigationStack {
         HearingTestResultsView(
             isStartingTest: .constant(true),
-            repository: repository)
+            repository: repository,
+            submitEarlyTestUseCase: submitUseCase
+            )
     }
 }

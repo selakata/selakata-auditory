@@ -12,6 +12,7 @@ import Combine
 class SNRTestViewModel: ObservableObject {
     @Published var audioPlayerService: AudioPlayerService
     let repository: HearingTestRepository
+    let submitEarlyTestUseCase: SubmitEarlyTestUseCase
     
     @Published var isTestFinished = false
     @Published var currentQuestionText = "Were you able to understand the conversation?"
@@ -20,9 +21,10 @@ class SNRTestViewModel: ObservableObject {
     private var currentLevelIndex = 0
     private var audioRange = ""
 
-    init(repository: HearingTestRepository, audioPlayerService: AudioPlayerService) {
+    init(repository: HearingTestRepository, audioPlayerService: AudioPlayerService, submitEarlyTestUseCase: SubmitEarlyTestUseCase) {
         self.repository = repository
         self.audioPlayerService = audioPlayerService
+        self.submitEarlyTestUseCase = submitEarlyTestUseCase
     }
     
     func startTest() {

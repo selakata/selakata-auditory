@@ -56,9 +56,12 @@ struct ProfileView: View {
                         }
                     }
                     
+                    let submitUseCase = DependencyContainer.shared.submitEarlyTestUseCase
+                    
                     NavigationLink(destination: HearingTestResultsView(
                         isFromProfile: true,
-                        repository: viewModel.hearingTestRepository
+                        repository: viewModel.hearingTestRepository,
+                        submitEarlyTestUseCase: submitUseCase
                     )) {
                         HStack(spacing: 13) {
                             Image(systemName: "doc.badge.clock")

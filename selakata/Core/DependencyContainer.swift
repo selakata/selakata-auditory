@@ -58,6 +58,18 @@ class DependencyContainer {
     lazy var hearingTestRepository: HearingTestRepository = {
         HearingTestRepositoryImpl()
     }()
+        
+    lazy var submitEarlyTestUseCase: SubmitEarlyTestUseCase = {
+        let apiConfiguration = ProgressAPIConfiguration(configuration: appConfiguration)
+        let dataSource: ProgressDataSource = RemoteProgressDataSource(
+            apiClient: apiClient,
+            apiConfiguration: apiConfiguration
+        )
+        let repository = ProgressRepositoryImpl(dataSource: dataSource)
+        
+        return SubmitEarlyTestUseCase(repository: repository)
+    }()
+    
     
     // MARK: - Personal Voice Dependencies
     lazy var recorderService: AudioRecorderService = {

@@ -42,7 +42,16 @@ struct HomeView: View {
             .navigationTitle("Home")
             .navigationBarHidden(true)
             .navigationDestination(isPresented: $isStartingTest) {
-                HearingTestOnboardingView(isStartingTest: $isStartingTest)
+                let audioService = AudioService()
+                let repo = DependencyContainer.shared.hearingTestRepository
+                let useCase = DependencyContainer.shared.submitEarlyTestUseCase
+                
+                HearingTestOnboardingView(
+                    isStartingTest: $isStartingTest,
+                    audioService: audioService,
+                    repository: repo,
+                    submitEarlyTestUseCase: useCase
+                )
             }
         }
 //        .onChange(of: allModules) {

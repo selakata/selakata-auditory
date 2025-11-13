@@ -93,22 +93,32 @@ class APIClient: APIClientProtocol {
                 completion(.failure(error))
                 return
             }
+            if let httpResponse = response as? HTTPURLResponse, !(200...299).contains(httpResponse.statusCode) {
+                print("❌ [APIClient] Server Error: Status \(httpResponse.statusCode)")
+                if let data = data, let body = String(data: data, encoding: .utf8) {
+                    print("❌ [APIClient] Server Error Body: \(body)")
+                }
+                // Fail with a specific error
+                completion(.failure(NSError(
+                    domain: "APIClientError",
+                    code: httpResponse.statusCode,
+                    userInfo: [NSLocalizedDescriptionKey: "Invalid server response (Code: \(httpResponse.statusCode))"]
+                )))
+                return
+            }
 
             guard let data = data else {
                 completion(.failure(URLError(.badServerResponse)))
                 return
             }
-            
-            if let httpResponse = response as? HTTPURLResponse {
-                print("📦 [APIClient] Response Status: \(httpResponse.statusCode)")
-            }
+
             if let jsonString = String(data: data, encoding: .utf8), !jsonString.isEmpty {
-                print("📦 [APIClient] Response JSON:")
-                print(jsonString)
-            } else {
-                print("📦 [APIClient] Response: (Empty Body)")
-            }
-            
+                 print("📦 [APIClient] Response JSON:")
+                 print(jsonString)
+             } else {
+                 print("📦 [APIClient] Success: (Code: \((response as? HTTPURLResponse)?.statusCode ?? 0)) with empty response.")
+             }
+
             completion(.success(data))
         }
         task.resume()
