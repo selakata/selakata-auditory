@@ -13,12 +13,12 @@ public struct AudioFile: Codable {
     let rawText: String
     let size: Int
     let duration: Double
-    let voiceId: String
+    let voiceId: String?
     let voiceName: String
-    let similarityBoost: Double
-    let speed: Double
-    let stability: Double
-    let useSpeakerBoost: Bool
+    let similarityBoost: Double?
+    let speed: Double?
+    let stability: Double?
+    let useSpeakerBoost: Bool?
     let type: Int
     let createdAt: String
     let updatedAt: String

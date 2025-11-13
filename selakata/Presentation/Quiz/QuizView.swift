@@ -6,9 +6,7 @@ struct QuizView: View {
     @Environment(\.dismiss) private var dismiss
 
     @State private var audioCompleted: Bool = false
-    @State private var lives: Int = 3
     @State private var hasPlayedOnce: Bool = false
-    @State private var showReplayConfirmation: Bool = false
     @State private var triggerReplay: Bool = false
 
     //    let category: Level
@@ -41,8 +39,66 @@ struct QuizView: View {
     //    }
 
     var body: some View {
+        if viewModel.isLoading {
+            VStack(spacing: 16) {
+                ProgressView()
+                    .scaleEffect(1.2)
+                
+                if viewModel.isDownloadingAudio {
+                    Text(viewModel.downloadProgress)
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
+                } else {
+                    Text("Loading questions...")
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
+                }
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+        } else if let errorMessage = viewModel.errorMessage {
+            VStack(spacing: 16) {
+                Image(systemName: "exclamationmark.triangle")
+                    .font(.system(size: 50))
+                    .foregroundColor(.orange)
+                
+                Text("Error loading questions")
+                    .font(.headline)
+                
+                Text(errorMessage)
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
+                    .multilineTextAlignment(.center)
+                    .padding(.horizontal)
+                
+                Button("Go Back") {
+                    dismiss()
+                }
+                .buttonStyle(.bordered)
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+        } else if viewModel.questions.isEmpty {
+            VStack(spacing: 16) {
+                Image(systemName: "questionmark.circle")
+                    .font(.system(size: 50))
+                    .foregroundColor(.gray)
+                
+                Text("No questions available")
+                    .font(.headline)
+                
+                Button("Go Back") {
+                    dismiss()
+                }
+                .buttonStyle(.bordered)
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+        } else {
+            quizContent
+        }
+    }
+    
+    private var quizContent: some View {
         VStack(spacing: 16) {
-            // Top bar: Back + Lives
+            // Top bar: Back button
             HStack(alignment: .center) {
                 Button(action: { dismiss() }) {
                     HStack(spacing: 6) {
@@ -53,12 +109,6 @@ struct QuizView: View {
                 .foregroundStyle(.primary)
 
                 Spacer()
-
-                HStack(spacing: 12) {
-                    ForEach(0..<3, id: \.self) { index in
-                        Heart(isFilled: index < lives)
-                    }
-                }
             }
             .padding(.horizontal)
             .padding(.top, 8)
@@ -87,6 +137,7 @@ struct QuizView: View {
             SimpleAudioPlayer(
                 title: viewModel.audioTitle,
                 fileName: viewModel.audioFileName,
+                noiseFileName: viewModel.noiseFileName,
                 onAudioCompleted: {
                     print("📱 QuizView received audio completion callback")
                     withAnimation(.easeInOut(duration: 0.5)) {
@@ -94,7 +145,11 @@ struct QuizView: View {
                     }
                 },
                 onReplayRequested: {
-                    showReplayConfirmation = true
+                    // Reset audio state and replay
+                    audioCompleted = false
+                    hasPlayedOnce = false
+                    // Trigger audio replay in SimpleAudioPlayer
+                    triggerReplay.toggle()
                 },
                 shouldReplay: triggerReplay
             )
@@ -106,25 +161,10 @@ struct QuizView: View {
                     question: viewModel.currentQuestion,
                     selectedAnswer: viewModel.selectedAnswer,
                     hasAnswered: viewModel.hasAnswered,
-                    layout: .grid(columns: 3),  //debug
+                    layout: .list,  //debug
                     onSelect: { answer in
                         withAnimation(.easeInOut(duration: 0.3)) {
                             viewModel.selectAnswer(answer)
-
-                            // Reduce life if answer is wrong
-                            if !answer.isCorrect {
-                                lives = max(0, lives - 1)
-
-                                // Check if game over
-                                if lives == 0 {
-                                    // Handle game over
-                                    DispatchQueue.main.asyncAfter(
-                                        deadline: .now() + 1.5
-                                    ) {
-                                        dismiss()
-                                    }
-                                }
-                            }
                         }
                     }
                 )
@@ -200,23 +240,7 @@ struct QuizView: View {
             .presentationDragIndicator(.visible)
             .presentationCornerRadius(20)
         }
-        .alert("Replay Audio", isPresented: $showReplayConfirmation) {
-            Button("Cancel", role: .cancel) {}
-            Button("Replay (-1 ❤️)") {
-                if lives > 0 {
-                    lives -= 1
-                    // Reset audio state and replay
-                    audioCompleted = false
-                    hasPlayedOnce = false
-                    // Trigger audio replay in SimpleAudioPlayer
-                    triggerReplay.toggle()
-                }
-            }
-        } message: {
-            Text(
-                "Replaying audio will cost 1 life. You have \(lives) lives remaining."
-            )
-        }
+
     }
 }
 //
