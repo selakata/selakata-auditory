@@ -16,6 +16,7 @@ final class LocalAudioFile{
     var voiceName: String
     var isSynced: Bool
     
+    var urlPreview: String?
     var fileURL: String?
     var size: Int?
     var snr: Int?
@@ -50,12 +51,14 @@ final class LocalAudioFile{
         self.isSynced = true
     }
     
-    init(voiceName: String, fileName: String, duration: Int) {
+    init(voiceName: String, fileName: String, duration: Int, voiceId: String, urlPreview: String? = nil) {
         self.id = UUID()
         self.voiceName = voiceName
         self.fileName = fileName
         self.duration = duration
         self.createdAt = Date()
         self.isSynced = false
+        self.voiceId = voiceId
+        self.urlPreview = urlPreview
     }
 }
