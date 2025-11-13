@@ -9,21 +9,16 @@ struct ModulesView: View {
     init(viewModel: ModulesViewModel) {
         _viewModel = StateObject(wrappedValue: viewModel)
     }
-
+    
     var body: some View {
         NavigationStack {
             ScrollView {
                 VStack(alignment: .leading, spacing: 20) {
-                    Text("Exercise")
-                        .font(.largeTitle.weight(.bold))
-                        .padding([.horizontal, .top])
-
                     if let response = viewModel.module {
                         if response.isEmpty {
-                            // Jika data kosong
-                            Text("Tidak ada modul yang tersedia.")
-                                .foregroundColor(.secondary)
-                                .padding()
+                            ErrorStateView(
+                                title: "Tidak ada modul yang tersedia"
+                            )
                         } else {
                             ForEach(response.indices, id: \.self) { index in
                                 NavigationLink(
@@ -36,44 +31,31 @@ struct ModulesView: View {
                             .padding(.horizontal, 24)
                         }
                     } else if viewModel.isLoading {
-                        ProgressView("Memuat modul...")
-                            .padding()
-                    } else if let errorMessage = viewModel.errorMessage {
-                        VStack(spacing: 8) {
-                            Text("Gagal memuat modul.")
-                                .font(.headline)
-                            Text(errorMessage)
-                                .font(.subheadline)
-                                .foregroundColor(.secondary)
-                            Button("Coba Lagi") {
-                                viewModel.fetchModule()
+                        VStack(spacing: 20) {
+                            ForEach(0..<4, id: \.self) { _ in
+                                SkeletonView(height: 135, cornerRadius: 20)
                             }
-                            .buttonStyle(.borderedProminent)
                         }
                         .padding()
-                    } else {
-                        // State awal (misalnya belum mulai load)
-                        Text("Tidak ada data modul.")
-                            .foregroundColor(.secondary)
-                            .padding()
+                    } else if let errorMessage = viewModel.errorMessage {
+                        ErrorStateView(
+                            title: "Gagal memuat modul",
+                            description: errorMessage,
+                            ctaText: "Coba Lagi",
+                            onCtaTap: {
+                                viewModel.fetchModule()
+                            }
+                        )
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
                     }
                 }
             }
+            .padding(.top, 20)
             .navigationTitle("Journey")
-            .navigationBarHidden(true)
         }
     }
 }
 
-struct LockOverlay: View {
-    var body: some View {
-        ZStack {
-            Color.black.opacity(0.5)
-
-            Image(systemName: "lock.fill")
-                .font(.largeTitle)
-                .foregroundColor(.white)
-        }
-        .cornerRadius(20)
-    }
+#Preview {
+    ModulesView(viewModel: DependencyContainer.shared.makeModulesViewModel())
 }
