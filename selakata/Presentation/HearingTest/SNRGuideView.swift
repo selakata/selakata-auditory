@@ -10,6 +10,8 @@ import SwiftUI
 struct SNRGuideView: View {
     @Binding var isStartingTest: Bool
     let repository: HearingTestRepository
+    let submitEarlyTestUseCase: SubmitEarlyTestUseCase
+    
     @State private var audioPlayerService = AudioPlayerService()
     
     @ScaledMetric var horizontalPadding: CGFloat = 32
@@ -37,7 +39,8 @@ struct SNRGuideView: View {
             NavigationLink(destination: SNRTestView(
                 isStartingTest: $isStartingTest,
                 repository: repository,
-                audioPlayerService: audioPlayerService
+                audioPlayerService: audioPlayerService,
+                submitEarlyTestUseCase: submitEarlyTestUseCase
             )) {
                 Text("Get Started")
                     .font(.headline)
@@ -57,9 +60,20 @@ struct SNRGuideView: View {
 }
 
 #Preview {
-    NavigationStack {
+    class MockProgressDataSource: ProgressDataSource {
+        func submitEarlyTest(data: EarlyTestSubmitRequest, completion: @escaping (Result<EmptyResponse, Error>)->Void) {
+            completion(.success(EmptyResponse()))
+        }
+    }
+    let mockDataSource = MockProgressDataSource()
+    let mockProgressRepo = ProgressRepositoryImpl(dataSource: mockDataSource)
+    let submitUseCase = SubmitEarlyTestUseCase(repository: mockProgressRepo)
+
+    return NavigationStack {
         SNRGuideView(
             isStartingTest: .constant(true),
-            repository: HearingTestRepositoryImpl())
+            repository: HearingTestRepositoryImpl(),
+            submitEarlyTestUseCase: submitUseCase
+        )
     }
 }

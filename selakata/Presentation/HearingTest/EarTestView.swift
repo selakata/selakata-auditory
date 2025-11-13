@@ -13,8 +13,9 @@ struct EarTestView: View {
     
     private let audioService: AudioService
     private let repository: HearingTestRepository
+    let submitEarlyTestUseCase: SubmitEarlyTestUseCase
     
-    init(isStartingTest: Binding<Bool>, ear: Ear, audioService: AudioService, repository: HearingTestRepository) {
+    init(isStartingTest: Binding<Bool>, ear: Ear, audioService: AudioService, repository: HearingTestRepository, submitEarlyTestUseCase: SubmitEarlyTestUseCase) {
         self._isStartingTest = isStartingTest
         _viewModel = StateObject(wrappedValue: EarTestViewModel(
             initialEar: ear,
@@ -23,6 +24,7 @@ struct EarTestView: View {
         ))
         self.audioService = audioService
         self.repository = repository
+        self.submitEarlyTestUseCase = submitEarlyTestUseCase
     }
 
     var body: some View {
@@ -61,12 +63,14 @@ struct EarTestView: View {
                     isStartingTest: $isStartingTest,
                     ear: .right,
                     audioService: audioService,
-                    repository: repository
+                    repository: repository,
+                    submitEarlyTestUseCase: submitEarlyTestUseCase
                 )
             } else {
                 SNRGuideView(
                     isStartingTest: $isStartingTest,
-                    repository: repository
+                    repository: repository,
+                    submitEarlyTestUseCase: submitEarlyTestUseCase
                 )
             }
         }

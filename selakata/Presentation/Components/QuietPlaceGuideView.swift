@@ -15,6 +15,7 @@ struct QuietPlaceGuideView: View {
     
     let audioService: AudioService
     let repository: HearingTestRepository
+    let submitEarlyTestUseCase: SubmitEarlyTestUseCase
     
     var body: some View {
         VStack(spacing: 24) {
@@ -41,7 +42,8 @@ struct QuietPlaceGuideView: View {
                 isStartingTest: $isStartingTest,
                 ear: .left,
                 audioService: audioService,
-                repository: repository
+                repository: repository,
+                submitEarlyTestUseCase: submitEarlyTestUseCase
             )) {
                 Text("Next")
                     .font(.headline)
@@ -59,11 +61,21 @@ struct QuietPlaceGuideView: View {
 }
 
 #Preview {
-    NavigationStack {
+    class MockProgressDataSource: ProgressDataSource {
+        func submitEarlyTest(data: EarlyTestSubmitRequest, completion: @escaping (Result<EmptyResponse, Error>)->Void) {
+            completion(.success(EmptyResponse()))
+        }
+    }
+    let mockDataSource = MockProgressDataSource()
+    let mockProgressRepo = ProgressRepositoryImpl(dataSource: mockDataSource)
+    let submitUseCase = SubmitEarlyTestUseCase(repository: mockProgressRepo)
+
+    return NavigationStack {
         QuietPlaceGuideView(
             isStartingTest: .constant(true),
             audioService: AudioService(),
-            repository: HearingTestRepositoryImpl()
+            repository: HearingTestRepositoryImpl(),
+            submitEarlyTestUseCase: submitUseCase
         )
     }
 }

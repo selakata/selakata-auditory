@@ -15,11 +15,12 @@ struct SNRTestView: View {
     @ScaledMetric var horizontalPadding: CGFloat = 32
     @ScaledMetric var iconSize: CGFloat = 100
     
-    init(isStartingTest: Binding<Bool>, repository: HearingTestRepository, audioPlayerService: AudioPlayerService) {
+    init(isStartingTest: Binding<Bool>, repository: HearingTestRepository, audioPlayerService: AudioPlayerService, submitEarlyTestUseCase: SubmitEarlyTestUseCase) {
         self._isStartingTest = isStartingTest
         let vm = SNRTestViewModel(
             repository: repository,
-            audioPlayerService: audioPlayerService
+            audioPlayerService: audioPlayerService,
+            submitEarlyTestUseCase: submitEarlyTestUseCase
         )
         _viewModel = StateObject(wrappedValue: vm)
         self.audioPlayerService = vm.audioPlayerService
@@ -67,7 +68,8 @@ struct SNRTestView: View {
         .navigationDestination(isPresented: $viewModel.isTestFinished) {
             HearingTestResultsView(
                 isStartingTest: $isStartingTest,
-                repository: viewModel.repository
+                repository: viewModel.repository,
+                submitEarlyTestUseCase: viewModel.submitEarlyTestUseCase
             )
         }
     }
@@ -89,11 +91,21 @@ struct ChoiceButton: View {
 }
 
 #Preview {
-    NavigationStack {
+    class MockProgressDataSource: ProgressDataSource {
+        func submitEarlyTest(data: EarlyTestSubmitRequest, completion: @escaping (Result<EmptyResponse, Error>)->Void) {
+            completion(.success(EmptyResponse()))
+        }
+    }
+    let mockDataSource = MockProgressDataSource()
+    let mockProgressRepo = ProgressRepositoryImpl(dataSource: mockDataSource)
+    let submitUseCase = SubmitEarlyTestUseCase(repository: mockProgressRepo)
+    
+    return NavigationStack {
         SNRTestView(
             isStartingTest: .constant(true),
             repository: HearingTestRepositoryImpl(),
-            audioPlayerService: AudioPlayerService()
+            audioPlayerService: AudioPlayerService(),
+            submitEarlyTestUseCase: submitUseCase
         )
     }
 }
