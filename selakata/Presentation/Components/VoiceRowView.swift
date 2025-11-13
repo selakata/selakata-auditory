@@ -10,88 +10,125 @@ import SwiftUI
 struct VoiceRowView: View {
     let voice: LocalAudioFile
     @ObservedObject var audioPlayerService: AudioPlayerService
-    @Binding var selectedVoiceID: String?
-    @State private var isExpanded = false
 
+    let isSelected: Bool
+    let isExpanded: Bool
+    
     var body: some View {
-        VStack(alignment: .leading) {
-            // Collapsed Row
+        VStack(alignment: .leading, spacing: 0) {
             HStack {
-                VStack(alignment: .leading, spacing: 4) {
-                    Text(voice.voiceName)
-                        .font(.headline)
-                    Text("Duration: \(voice.duration)s")
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
-                }
+                Text(voice.voiceName)
+                    .font(.headline)
                 
                 Spacer()
                 
-                if selectedVoiceID == voice.id.uuidString {
+                if isSelected {
                     Image(systemName: "checkmark")
                         .foregroundStyle(.accent)
                 }
             }
-            .contentShape(Rectangle())
-            .onTapGesture {
-                withAnimation {
-                    selectedVoiceID = voice.id.uuidString
-                    isExpanded.toggle()
-                }
-            }
+            .padding(.vertical, 16)
             
-            // Expanded Player
             if isExpanded {
-                VStack(spacing: 12) {
-                    Slider(value: $audioPlayerService.currentTime, in: 0...audioPlayerService.duration) { editing in
-                        if !editing {
-                            audioPlayerService.seek(to: audioPlayerService.currentTime)
-                        }
-                    }
-                    
-                    // Player Controls
-                    HStack {
-                        Text(String(format: "%.2f", audioPlayerService.currentTime))
-                            .font(.footnote.monospaced())
-                            .foregroundStyle(.secondary)
-                        
-                        Spacer()
-                        
-                        // play/pause btn
-                        Button(action: {
-                            if audioPlayerService.isPlaying {
-                                audioPlayerService.pause()
-                            } else {
-                                audioPlayerService.loadAudioFromPath(
-                                    fileName: voice.fileName,
-                                    subdirectory: "Resource/Audio"
-                                )
-                                audioPlayerService.play()
-                            }
-                        }) {
-                            Image(systemName: audioPlayerService.isPlaying ? "pause.fill" : "play.fill")
-                                .font(.title)
-                        }
-                        
-                        Spacer()
-                        
-                        Button(action: {
-                            
-                        }) {
-                            Image(systemName: "trash")
-                                .font(.body)
-                                .foregroundStyle(.red)
-                        }
-                    }
-                }
-                .padding(.top, 10)
+                PlayerControlsView(
+                    voice: voice,
+                    audioPlayerService: audioPlayerService
+                )
+                .padding(.bottom, 16)
             }
         }
     }
 }
 
+private struct PlayerControlsView: View {
+    let voice: LocalAudioFile
+    @ObservedObject var audioPlayerService: AudioPlayerService
+    @Environment(\.modelContext) private var modelContext
+
+    
+    private var isPlaying: Bool {
+        audioPlayerService.isPlaying
+    }
+    
+    private var safeDuration: Double {
+        let duration = audioPlayerService.duration
+        return duration > 0 ? duration : 1.0
+    }
+    
+    var body: some View {
+        VStack(spacing: 12) {
+            Slider(
+                value: $audioPlayerService.currentTime,
+                in: 0...safeDuration,
+                onEditingChanged: { isEditing in
+                    if !isEditing {
+                        audioPlayerService.seek(to: audioPlayerService.currentTime)
+                    }
+                }
+            )
+            .tint(.accentColor)
+            .disabled(audioPlayerService.duration == 0)
+
+            
+            HStack {
+                Button(action: {
+                    
+                }) {
+                    Image(systemName: "waveform")
+                        .font(.title2)
+                        .foregroundStyle(.accent)
+                }
+                
+                Spacer()
+                
+                Button(action: {
+                    playPreview()
+                }) {
+                    Image(systemName: isPlaying ? "pause.fill" : "play.fill")
+                        .font(.title2)
+                        .foregroundStyle(.primary)
+                }
+                
+                Spacer()
+                
+                Button(action: {
+                    
+                }) {
+                    Image(systemName: "trash")
+                        .font(.title2)
+                        .foregroundStyle(.accent)
+                }
+            }
+        }
+        .padding(.horizontal, 4)
+    }
+    
+    private func playPreview() {
+        guard let urlString = voice.urlPreview, let url = URL(string: urlString) else {
+            return
+        }
+        
+        if audioPlayerService.isPlaying {
+            audioPlayerService.stop()
+        } else {
+            audioPlayerService.loadAudioFromURL(url)
+            audioPlayerService.play()
+        }
+    }
+}
+
+
 #Preview {
-    VoiceRowView(voice: LocalAudioFile(voiceName: "Flavia", fileName: "WAWAWA", duration: 20), audioPlayerService: AudioPlayerService(),
-        selectedVoiceID: .constant("")
+    VoiceRowView(
+        voice: LocalAudioFile(
+            voiceName: "Flavia",
+            fileName: "WAWAWA",
+            duration: 20,
+            voiceId: "asdasd",
+            urlPreview: "xxxx"
+        ),
+        audioPlayerService: AudioPlayerService(),
+        isSelected: true,
+        isExpanded: true
     )
 }
