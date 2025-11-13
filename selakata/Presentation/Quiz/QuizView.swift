@@ -137,6 +137,7 @@ struct QuizView: View {
             SimpleAudioPlayer(
                 title: viewModel.audioTitle,
                 fileName: viewModel.audioFileName,
+                noiseFileName: viewModel.noiseFileName,
                 onAudioCompleted: {
                     print("📱 QuizView received audio completion callback")
                     withAnimation(.easeInOut(duration: 0.5)) {

@@ -71,8 +71,17 @@ class QuizViewModel: ObservableObject {
     }
     
     private func downloadAudioFiles() {
-        // Get all audio URLs from questions
-        let audioURLs = questions.compactMap { $0.audioFile?.fileURL }
+        // Get all audio URLs from questions (main + noise)
+        var audioURLs: [String] = []
+        
+        for question in questions {
+            if let mainAudioURL = question.audioFile?.fileURL {
+                audioURLs.append(mainAudioURL)
+            }
+            if let noiseAudioURL = question.noiseFile?.fileURL {
+                audioURLs.append(noiseAudioURL)
+            }
+        }
         
         guard !audioURLs.isEmpty else {
             isLoading = false
@@ -92,7 +101,7 @@ class QuizViewModel: ObservableObject {
                 
                 switch result {
                 case .success:
-                    print("✅ All audio files downloaded successfully")
+                    print("✅ All audio files (main + noise) downloaded successfully")
                 case .failure(let error):
                     print("⚠️ Some audio files failed to download: \(error.localizedDescription)")
                     // Continue anyway, will try to stream if cache fails
@@ -143,6 +152,20 @@ class QuizViewModel: ObservableObject {
         
         // Fallback to streaming URL
         return audioURL
+    }
+    
+    var noiseFileName: String? {
+        guard let noiseURL = currentQuestion.noiseFile?.fileURL else {
+            return nil
+        }
+        
+        // Try to get cached URL first
+        if let cachedURL = cacheService.getCachedURL(for: noiseURL) {
+            return cachedURL.path
+        }
+        
+        // Fallback to streaming URL
+        return noiseURL
     }
 
     var isLastQuestion: Bool {

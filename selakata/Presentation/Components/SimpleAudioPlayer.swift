@@ -4,18 +4,22 @@ import AVFoundation
 struct SimpleAudioPlayer: View {
     let title: String
     let fileName: String
+    let noiseFileName: String?
     let onAudioCompleted: (() -> Void)?
     let onReplayRequested: (() -> Void)?
     let shouldReplay: Bool
     @StateObject private var audioPlayer = AudioPlayerService()
+    @StateObject private var noisePlayer = AudioPlayerService()
     @State private var hasAudio = false
     @State private var hasCompletedOnce = false
     @State private var timer: Timer?
     @State private var hasPlayedOnce = false
+    @State private var showNoiseIndicator = false
     
-    init(title: String, fileName: String, onAudioCompleted: (() -> Void)? = nil, onReplayRequested: (() -> Void)? = nil, shouldReplay: Bool = false) {
+    init(title: String, fileName: String, noiseFileName: String? = nil, onAudioCompleted: (() -> Void)? = nil, onReplayRequested: (() -> Void)? = nil, shouldReplay: Bool = false) {
         self.title = title
         self.fileName = fileName
+        self.noiseFileName = noiseFileName
         self.onAudioCompleted = onAudioCompleted
         self.onReplayRequested = onReplayRequested
         self.shouldReplay = shouldReplay
@@ -44,17 +48,48 @@ struct SimpleAudioPlayer: View {
                         .progressViewStyle(LinearProgressViewStyle(tint: .blue))
                 }
                 
+                // Noise indicator
+                if showNoiseIndicator && noiseFileName != nil {
+                    HStack(spacing: 4) {
+                        Image(systemName: "waveform")
+                            .font(.caption2)
+                        Text("Background noise active")
+                            .font(.caption2)
+                    }
+                    .foregroundColor(.orange)
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 4)
+                    .background(Color.orange.opacity(0.1))
+                    .cornerRadius(6)
+                }
+                
                 // Controls
                 HStack(spacing: 20) {
                     Button(action: {
                         if audioPlayer.isPlaying {
                             audioPlayer.pause()
+                            noisePlayer.pause()
                         } else {
                             // Check if this is a replay attempt
                             if hasPlayedOnce && hasCompletedOnce {
                                 onReplayRequested?()
                             } else {
-                                audioPlayer.play()
+                                // Sequence: Noise → (1s) → Main Audio + Noise → Main ends → (1s) → Noise ends
+                                if noiseFileName != nil {
+                                    // Show noise indicator
+                                    showNoiseIndicator = true
+                                    
+                                    // Start noise first
+                                    noisePlayer.play()
+                                    
+                                    // Start main audio after 1 second
+                                    DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+                                        audioPlayer.play()
+                                    }
+                                } else {
+                                    // No noise, just play main audio
+                                    audioPlayer.play()
+                                }
                                 hasPlayedOnce = true
                             }
                         }
@@ -115,9 +150,14 @@ struct SimpleAudioPlayer: View {
         .cornerRadius(12)
         .onAppear {
             loadAudio()
+            if let noiseFileName = noiseFileName {
+                loadNoiseAudio(noiseFileName)
+            }
         }
         .onDisappear {
             stopTimer()
+            audioPlayer.stop()
+            noisePlayer.stop()
         }
         .onChange(of: shouldReplay) { oldValue, newValue in
             if newValue {
@@ -125,15 +165,34 @@ struct SimpleAudioPlayer: View {
                 hasCompletedOnce = false
                 hasPlayedOnce = false
                 audioPlayer.stop()
-                audioPlayer.play()
+                noisePlayer.stop()
+                
+                // Replay with sequence
+                if noiseFileName != nil {
+                    // Start noise first
+                    noisePlayer.play()
+                    
+                    // Start main audio after 1 second
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+                        audioPlayer.play()
+                    }
+                } else {
+                    // No noise, just play main audio
+                    audioPlayer.play()
+                }
             }
         }
         .onChange(of: fileName) { oldValue, newValue in
             print("🔄 Audio file changed from '\(oldValue)' to '\(newValue)'")
             audioPlayer.stop() // Stop current audio
+            noisePlayer.stop() // Stop noise audio
             hasCompletedOnce = false // Reset completion flag
+            showNoiseIndicator = false // Reset noise indicator
             stopTimer()
             loadAudio() // Load new audio
+            if let noiseFileName = noiseFileName {
+                loadNoiseAudio(noiseFileName)
+            }
         }
         .onChange(of: audioPlayer.isPlaying) { oldValue, newValue in
             if newValue {
@@ -217,20 +276,35 @@ struct SimpleAudioPlayer: View {
     private func startCompletionTimer() {
         stopTimer() // Stop any existing timer
         
-        timer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) { _ in
-            // Check if audio has completed
+        timer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { _ in
+            guard audioPlayer.duration > 0 else { return }
+            
+            // Show answers 1 second before audio completes
+            let timeBeforeEnd = 1.0
+            
             if audioPlayer.duration > 0 && 
-               audioPlayer.currentTime >= audioPlayer.duration - 0.5 && 
+               audioPlayer.currentTime >= audioPlayer.duration - timeBeforeEnd && 
                !hasCompletedOnce {
                 
-                print("🎵 Audio completed! Duration: \(audioPlayer.duration), Current: \(audioPlayer.currentTime)")
+                print("🎵 Audio near completion! Duration: \(audioPlayer.duration), Current: \(audioPlayer.currentTime)")
                 hasCompletedOnce = true
-                stopTimer()
                 
-                // Call completion callback
+                // Call completion callback earlier (1 second before end)
                 DispatchQueue.main.async {
-                    onAudioCompleted?()
+                    self.onAudioCompleted?()
                 }
+                
+                // If there's noise, stop it 1 second after main audio ends
+                if self.noiseFileName != nil {
+                    let delayUntilNoiseStop = audioPlayer.duration - audioPlayer.currentTime + 1.0
+                    DispatchQueue.main.asyncAfter(deadline: .now() + delayUntilNoiseStop) {
+                        self.noisePlayer.stop()
+                        self.showNoiseIndicator = false
+                        print("🔇 Noise stopped 1 second after main audio")
+                    }
+                }
+                
+                stopTimer()
             }
         }
     }
@@ -238,6 +312,38 @@ struct SimpleAudioPlayer: View {
     private func stopTimer() {
         timer?.invalidate()
         timer = nil
+    }
+    
+    private func loadNoiseAudio(_ noiseFileName: String) {
+        print("🔊 Loading noise audio: \(noiseFileName)")
+        
+        // Check if noiseFileName is a local file path (cached)
+        if noiseFileName.hasPrefix("/") {
+            let fileURL = URL(fileURLWithPath: noiseFileName)
+            if FileManager.default.fileExists(atPath: noiseFileName) {
+                noisePlayer.loadAudioFromURL(fileURL)
+                print("✅ Noise audio loaded from cache: \(noiseFileName)")
+                return
+            }
+        }
+        
+        // Check if noiseFileName is a URL (streaming)
+        if noiseFileName.hasPrefix("http://") || noiseFileName.hasPrefix("https://") {
+            if let url = URL(string: noiseFileName) {
+                noisePlayer.loadAudioFromURL(url)
+                print("✅ Noise audio loaded from URL: \(noiseFileName)")
+                return
+            }
+        }
+        
+        // Fallback: Try to load from bundle
+        let subdirectory = "Resources/Audio"
+        if let audioURL = Bundle.main.url(forResource: noiseFileName, withExtension: "mp3", subdirectory: subdirectory) {
+            noisePlayer.loadAudioFromPath(fileName: noiseFileName, subdirectory: subdirectory)
+            print("✅ Noise audio loaded from bundle: \(noiseFileName)")
+        } else {
+            print("⚠️ Noise audio not found: \(noiseFileName)")
+        }
     }
 }
 
