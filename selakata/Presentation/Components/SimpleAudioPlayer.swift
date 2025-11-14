@@ -70,33 +70,74 @@ struct SimpleAudioPlayer: View {
                             audioPlayer.pause()
                             noisePlayer.pause()
                         } else {
+                            // Check if audio is loaded
+                            guard hasAudio else {
+                                print("⚠️ Cannot play: Audio not loaded yet")
+                                return
+                            }
+                            
                             // Check if this is a replay attempt
                             if hasPlayedOnce && hasCompletedOnce {
+                                // Notify parent about replay request
                                 onReplayRequested?()
-                            } else {
-                                // Sequence: Noise → (1s) → Main Audio + Noise → Main ends → (1s) → Noise ends
-                                if noiseFileName != nil {
-                                    // Show noise indicator
-                                    showNoiseIndicator = true
-                                    
-                                    // Start noise first
-                                    noisePlayer.play()
+                                // Don't return here, continue to play
+                            }
+                            
+                            // Reset states for replay
+                            hasCompletedOnce = false
+                            
+                            // Sequence: Noise → (1s) → Main Audio + Noise → Main ends → (1s) → Noise ends
+                            if noiseFileName != nil {
+                                // Show noise indicator
+                                showNoiseIndicator = true
+                                
+                                // Stop any playing audio first
+                                if audioPlayer.isPlaying {
+                                    audioPlayer.stop()
+                                }
+                                if noisePlayer.isPlaying {
+                                    noisePlayer.stop()
+                                }
+                                
+                                // Wait for stop to complete, then start noise
+                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+                                    print("🔊 Starting noise audio")
+                                    self.noisePlayer.play()
                                     
                                     // Start main audio after 1 second
                                     DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-                                        audioPlayer.play()
+                                        print("🎵 Starting main audio")
+                                        self.audioPlayer.play()
                                     }
-                                } else {
-                                    // No noise, just play main audio
-                                    audioPlayer.play()
                                 }
-                                hasPlayedOnce = true
+                            } else {
+                                // No noise, just play main audio
+                                if audioPlayer.isPlaying {
+                                    audioPlayer.stop()
+                                }
+                                
+                                // Wait for stop to complete
+                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+                                    print("🎵 Starting main audio (no noise)")
+                                    self.audioPlayer.play()
+                                }
                             }
+                            hasPlayedOnce = true
                         }
                     }) {
-                        Image(systemName: audioPlayer.isPlaying ? "pause.circle.fill" : "play.circle.fill")
-                            .font(.system(size: 50))
-                            .foregroundColor(.blue)
+                        ZStack {
+                            Image(systemName: audioPlayer.isPlaying ? "pause.circle.fill" : "play.circle.fill")
+                                .font(.system(size: 50))
+                                .foregroundColor(.blue)
+                            
+                            // Show replay indicator if completed
+                            if hasPlayedOnce && hasCompletedOnce && !audioPlayer.isPlaying {
+                                Image(systemName: "arrow.clockwise")
+                                    .font(.system(size: 20))
+                                    .foregroundColor(.white)
+                                    .offset(x: 0, y: -2)
+                            }
+                        }
                     }
                     
 //                    Button(action: {

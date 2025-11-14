@@ -15,6 +15,7 @@ class AudioPlayerService: NSObject, ObservableObject {
     @Published var currentTime: TimeInterval = 0
     @Published var duration: TimeInterval = 0
     @Published var playbackRate: Float = 1.0
+    @Published var isReady = false
     
     private var timer: Timer?
     
@@ -160,16 +161,28 @@ class AudioPlayerService: NSObject, ObservableObject {
         setupPlayer()
         
         if let audioPlayer = audioPlayer {
+            // Prepare to play if not already prepared
+            if !audioPlayer.prepareToPlay() {
+                print("⚠️ AudioPlayerService: Failed to prepare audio player")
+            }
+            
             if audioPlayer.play() {
                 isPlaying = true
+                isReady = true
                 startTimer()
+                print("✅ Audio playing successfully")
+            } else {
+                print("❌ AudioPlayerService: play() returned false")
             }
         } else if let remotePlayer = remotePlayer {
             remotePlayer.play()
             isPlaying = true
+            isReady = true
             startTimer()
+            print("✅ Remote audio playing successfully")
         } else {
-            print("AudioPlayerService: play() failed. Player not ready or file not loaded.")
+            print("❌ AudioPlayerService: play() failed. Player not ready or file not loaded.")
+            isReady = false
         }
     }
     
@@ -221,10 +234,6 @@ class AudioPlayerService: NSObject, ObservableObject {
         playbackRate = rate
         audioPlayer?.rate = rate
         remotePlayer?.rate = rate
-    }
-    
-    var isReady: Bool {
-        return (audioPlayer != nil && duration > 0) || (remotePlayer != nil && duration > 0)
     }
     
     func debugAudioFiles() {

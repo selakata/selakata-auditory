@@ -145,11 +145,11 @@ struct QuizView: View {
                     }
                 },
                 onReplayRequested: {
-                    // Reset audio state and replay
-                    audioCompleted = false
+                    // Reset audio state for replay
+                    withAnimation(.easeInOut(duration: 0.3)) {
+                        audioCompleted = false
+                    }
                     hasPlayedOnce = false
-                    // Trigger audio replay in SimpleAudioPlayer
-                    triggerReplay.toggle()
                 },
                 shouldReplay: triggerReplay
             )
