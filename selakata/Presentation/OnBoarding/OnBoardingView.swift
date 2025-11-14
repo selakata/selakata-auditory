@@ -87,14 +87,17 @@ struct OnboardingView: View {
                     .padding(.horizontal, 24)
             }
             
-            PrimaryButton(
+            UtilsButton(
                 title: "Continue with Apple",
                 leftIcon: Image("icon-apple"),
                 isDisabled: !hasReachedLastPage,
-                action:  {
+                isLoading: viewModel.isLoading,
+                variant: .primary,
+                action: {
                     hasSeenOnboarding = true
                     viewModel.signInWithApple()
-                }, isLoading: viewModel.isLoading)
+                }
+            )
             .padding(.horizontal, 24)
             .padding(.bottom, 40)
         }

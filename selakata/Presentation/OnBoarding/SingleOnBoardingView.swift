@@ -41,11 +41,13 @@ struct SingleOnBoardingView: View {
                     .padding(.horizontal, 24)
             }
             
-            PrimaryButton(
+            UtilsButton(
                 title: "Continue with Apple",
                 leftIcon: Image("icon-apple"),
-                action:  action,
-                isLoading: isLoading)
+                isLoading: isLoading,
+                variant: .primary,
+                action: action
+            )
             .padding(.horizontal, 24)
             .padding(.bottom, 40)
         }
