@@ -20,5 +20,5 @@ public struct Question: Codable {
     let updatedBy: String?
     let answerList: [Answer]
     let audioFile: AudioFile?
-    let noiseFile: String?
+    let noiseFile: AudioFile?
 }

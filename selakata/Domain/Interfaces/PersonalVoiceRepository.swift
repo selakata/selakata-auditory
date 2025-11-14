@@ -11,6 +11,8 @@ import SwiftData
 protocol PersonalVoiceRepository {
     func saveNewVoice(
         name: String,
+        voiceId: String,
+        urlPreview: String,
         tempRecordingURL: URL,
         duration: TimeInterval,
         context: ModelContext

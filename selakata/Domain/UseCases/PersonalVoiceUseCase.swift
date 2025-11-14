@@ -23,10 +23,24 @@ private struct TeamAddVoiceRequest: Encodable {
     let voiceId: String
 }
 
+private struct VoiceData: Decodable {
+    let id: String
+    let voiceId: String
+    let voiceName: String
+    let previewUrl: String
+    let createdAt: String
+    let updatedAt: String
+}
+
+private struct TeamAddVoiceResponse: Decodable {
+    let message: String
+    let data: VoiceData
+}
+
 @MainActor
 class PersonalVoiceUseCase {
     private let recorder: AudioRecorderService
-    private let player: AudioPlayerService
+    let player: AudioPlayerService
     private let repository: PersonalVoiceRepository
     
     private let apiClient: APIClientProtocol
@@ -61,6 +75,9 @@ class PersonalVoiceUseCase {
     var recordingTime: TimeInterval { recorder.audioRecorder?.currentTime ?? 0 }
     var lastRecordingDuration: TimeInterval? { lastRecordingResult?.duration }
 
+    func getAudioLevel() -> Float {
+        return recorder.getAudioLevel()
+    }
     
     func startRecording() throws {
         try recorder.startRecording()
@@ -151,7 +168,7 @@ class PersonalVoiceUseCase {
                     url: teamApiUrl,
                     method: .post,
                     body: body
-                ) { (result: Result<EmptyResponse, Error>) in
+                ) { (result: Result<TeamAddVoiceResponse, Error>) in
                     
                     DispatchQueue.main.async {
                         switch result {
@@ -159,12 +176,15 @@ class PersonalVoiceUseCase {
                             print("Team API save error. \(error.localizedDescription)")
                             completion(.failure(error))
                             
-                        case .success:
-                            print("Saved voiceId to team API.")
+                        case .success(let response):
+                            print("Team API Success: \(response.message)")
+                            let voiceData = response.data
                             
                             do {
                                 try self.repository.saveNewVoice(
-                                    name: name,
+                                    name: voiceData.voiceName,
+                                    voiceId: voiceData.voiceId,
+                                    urlPreview: voiceData.previewUrl,
                                     tempRecordingURL: recording.fileURL,
                                     duration: recording.duration,
                                     context: context
