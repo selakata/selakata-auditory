@@ -42,8 +42,6 @@ extension Color {
         static let _900 = Color(hex: 0x3D3D3D)
         static let _950 = Color(hex: 0x1E1E1E)
     }
-    //    static let secondary = Color(hex: 0x007AFF)
-    //    static let accent = Color(hex: 0x34C759)
     //
     //    // MARK: - Backgrounds
     //    static let background = Color.white
@@ -56,12 +54,8 @@ extension Color {
     //
     //    // MARK: - Status
     static let success = Color(hex: 0x44BA70)
-    //    static let warning = Color(hex: 0xFFCC00)
+    static let warning = Color(hex: 0xFFCC00)
     static let danger = Color(hex: 0xFF6363)
-    //
-    //    static let gray = Color(hex: 0xF0F0F0)
-    //
-    //    static let slColor = Color(hex: 0x34C759)
     
     static let slColor = Color(hex: 0x5E43E8)
 }

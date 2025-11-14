@@ -1,9 +1,4 @@
-//
-//  LevelModuleUseCase.swift
-//  ExampleMVVM
-//
-//  Created by MacBook Air M1 on 19/6/24.
-//
+//  Created by ais on 30/10/25.
 
 public class ModuleUseCase {
     private let repository: ModuleRepository

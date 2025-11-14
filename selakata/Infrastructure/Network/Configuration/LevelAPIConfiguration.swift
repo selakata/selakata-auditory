@@ -13,12 +13,11 @@ public class LevelAPIConfiguration: BaseAPIConfiguration {
     }
 
     func makeDetailLevelURL(levelId: String) -> URL? {
-        //makeURL(path: "/pub/level/detail/\(levelId)")
-        makeURL(path: "/pub/level/detail/\(levelId)?voiceId=IYwvlItxjjy3CTdsk1fR")
+        makeURL(path: "/pub/level/detail/\(levelId)")
     }
     
     func makeDetailLevelURL(levelId: String, voiceId: String) -> URL? {
-        makeURL(path: "/pub/level/detail/\(levelId)?voiceId=\(voiceId)")
+        return makeURL(path: "/pub/level/detail/\(levelId)?voiceId=\(voiceId)")
     }
 
     func makeUpdateLevelScoreBody(_ levelId: String, _ score: Int) -> Data? {

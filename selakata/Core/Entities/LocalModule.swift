@@ -1,9 +1,4 @@
-//
-//  Module.swift
-//  selakata
-//
 //  Created by ais on 30/10/25.
-//
 
 import Foundation
 import SwiftData

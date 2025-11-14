@@ -5,6 +5,7 @@ import SwiftUI
 
 struct ModulesView: View {
     @StateObject private var viewModel: ModulesViewModel
+    @EnvironmentObject var mainVM: MainViewModel
     
     init(viewModel: ModulesViewModel) {
         _viewModel = StateObject(wrappedValue: viewModel)
@@ -14,19 +15,36 @@ struct ModulesView: View {
         NavigationStack {
             ScrollView {
                 VStack(alignment: .leading, spacing: 20) {
-                    if let response = viewModel.module {
+                    if let response = viewModel.modules {
                         if response.isEmpty {
                             ErrorStateView(
                                 title: "Tidak ada modul yang tersedia"
                             )
                         } else {
                             ForEach(response.indices, id: \.self) { index in
-                                NavigationLink(
-                                    destination: ModuleDetailView(module: response[index])
-                                ) {
-                                    ModuleCard(module: response[index], showProgressBar: true)
+                                let module = response[index]
+                                
+                                if module.isUnlocked {
+                                    NavigationLink(
+                                        destination: ModuleDetailView(module: module)
+                                    ) {
+                                        ModuleCard(module: module, showProgressBar: true)
+                                    }
+                                    .buttonStyle(.plain)
+                                    
+                                } else {
+                                    Button {
+                                        mainVM.showModal(
+                                            image: Image("icon-time-flies"),
+                                            title: "Complete Previous Module",
+                                            description: "Finish the previous module to unlock this one!",
+                                            ctaText: "Continue"
+                                        )
+                                    } label: {
+                                        ModuleCard(module: module, showProgressBar: true)
+                                    }
+                                    .buttonStyle(.plain)
                                 }
-                                .buttonStyle(.plain)
                             }
                             .padding(.horizontal, 24)
                         }

@@ -9,4 +9,6 @@ public struct Module: Codable {
     let createdAt: String
     let updatedAt: String
     let updatedBy: String?
+    let isUnlocked: Bool
+    let percentage: Double
 }
