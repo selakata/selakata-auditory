@@ -31,7 +31,9 @@ class QuizViewModel: ObservableObject {
 
     func fetchQuestions() {
         isLoading = true
-        levelUseCase.fetchDetailLevel(levelId: levelId) { [weak self] result in
+        let selectedVoiceId = UserDefaults.standard.string(forKey: "selectedVoiceID")
+        print("AISDEBUG:SELECTEDVOICEID:\(selectedVoiceId)")
+        levelUseCase.fetchDetailLevel(levelId: levelId, voiceId: selectedVoiceId) { [weak self] result in
             DispatchQueue.main.async {
                 switch result {
                 case .success(let level):
