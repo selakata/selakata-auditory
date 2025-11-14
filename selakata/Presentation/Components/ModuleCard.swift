@@ -10,20 +10,26 @@ struct ModuleCard: View {
     @ScaledMetric var padding: CGFloat = 16
     
     var body: some View {
-        ZStack(alignment: .leading) {
+        ZStack(alignment: .bottomTrailing) {
             Image(safe: "mascot-\(module.label.slugified)", default: "mascot")
                 .resizable()
                 .scaledToFit()
-                .frame(width: 150, height: 150)
+                .frame(width: 130, height: 130)
                 .alignmentGuide(.bottom) { d in d[.bottom] }
                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomTrailing)
             
             HStack {
                 VStack(alignment: .leading, spacing: 6) {
-                    Text(module.label)
-                        .font(.title2)
-                        .fontWeight(.bold)
-                        .foregroundColor(Color.Default._700)
+                    HStack {
+                        if !module.isUnlocked {
+                            Image("icon-lock")
+                        }
+                        Text(module.label)
+                            .font(.title2)
+                            .fontWeight(.bold)
+                            .foregroundColor(Color.Default._700)
+                    }
+                    
                     
                     Text(module.description)
                         .font(.subheadline)
@@ -36,14 +42,22 @@ struct ModuleCard: View {
                 Spacer()
                 
                 Color.clear
-                    .frame(width: 100)
+                    .frame(width: 110)
                 
             }
+            .padding(padding)
         }
-        .padding(padding)
         .frame(maxWidth: .infinity, minHeight: 150, maxHeight: 150, alignment: .leading)
         .background(Color.Default._50)
         .cornerRadius(cornerRadius)
+        .overlay(
+            Group {
+                if !module.isUnlocked {
+                    Color.white.opacity(0.6)
+                        .cornerRadius(cornerRadius)
+                }
+            }
+        )
     }
 }
 
@@ -57,7 +71,9 @@ struct ModuleCard: View {
             isActive: true,
             createdAt: "",
             updatedAt: "",
-            updatedBy: ""
+            updatedBy: "",
+            isUnlocked: false,
+            percentage: 80.0
         ),
         showProgressBar: false
     )
