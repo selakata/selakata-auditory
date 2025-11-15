@@ -70,14 +70,10 @@ private struct PlayerControlsView: View {
             .disabled(audioPlayerService.duration == 0)
 
             
-            HStack {
-                Button(action: {
-                    
-                }) {
-                    Image(systemName: "waveform")
-                        .font(.title2)
-                        .foregroundStyle(.accent)
-                }
+            HStack {                    Image(systemName: "waveform")
+                    .font(.title2)
+                    .foregroundStyle(.accent)
+                    .opacity(0)
                 
                 Spacer()
                 
@@ -85,7 +81,7 @@ private struct PlayerControlsView: View {
                     playPreview()
                 }) {
                     Image(systemName: isPlaying ? "pause.fill" : "play.fill")
-                        .font(.title2)
+                        .font(.largeTitle)
                         .foregroundStyle(.primary)
                 }
                 
@@ -96,7 +92,7 @@ private struct PlayerControlsView: View {
                 }) {
                     Image(systemName: "trash")
                         .font(.title2)
-                        .foregroundStyle(.accent)
+                        .foregroundStyle(.primary)
                 }
             }
         }

@@ -23,7 +23,7 @@ private struct TeamAddVoiceRequest: Encodable {
     let voiceId: String
 }
 
-private struct VoiceData: Decodable {
+struct VoiceData: Decodable {
     let id: String
     let voiceId: String
     let voiceName: String
@@ -182,7 +182,7 @@ class PersonalVoiceUseCase {
     func saveAndCloneRecording(
         name: String,
         context: ModelContext,
-        completion: @escaping (Result<Void, Error>) -> Void
+        completion: @escaping (Result<VoiceData, Error>) -> Void
     ) {
         
         guard let recording = lastRecordingResult else {
@@ -250,10 +250,9 @@ class PersonalVoiceUseCase {
                                     duration: recording.duration,
                                     context: context
                                 )
-                                print("Step 3 Success: Saved to local SwiftData.")
-                                completion(.success(()))
+                                completion(.success(voiceData))
                             } catch {
-                                print("Step 3 Failed: SwiftData save error. \(error.localizedDescription)")
+                                print("SwiftData save error:  \(error.localizedDescription)")
                                 completion(.failure(error))
                             }
                         }

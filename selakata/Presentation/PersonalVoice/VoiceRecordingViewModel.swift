@@ -123,7 +123,8 @@ class VoiceRecordingViewModel: ObservableObject {
         
         useCase.saveAndCloneRecording(name: voiceName, context: modelContext) { result in
             switch result {
-            case .success:
+            case .success(let voiceData):
+                UserDefaults.standard.set(voiceData.voiceId, forKey: "selectedVoiceID")
                 self.recordingState = .idle
                 completion(true)
             case .failure(let error):
