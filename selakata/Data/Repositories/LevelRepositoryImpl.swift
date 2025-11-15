@@ -22,7 +22,7 @@ public class LevelRepositoryImpl: LevelRepository {
         dataSource.fetchDetailLevel (levelId: levelId, completion: completion)
     }
     
-    public func fetchDetailLevel(levelId: String, voiceId: String, completion: @escaping (Result<APIResponse<Level>, Error>) -> Void) {
+    public func fetchDetailLevel(levelId: String, voiceId: String?, completion: @escaping (Result<APIResponse<Level>, Error>) -> Void) {
         dataSource.fetchDetailLevel (levelId: levelId, completion: completion)
     }
     
