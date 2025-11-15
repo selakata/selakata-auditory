@@ -41,10 +41,18 @@ struct PersonalVoiceListView: View {
                     .padding(.bottom, 20)
 
                 if savedVoices.isEmpty {
-                    emptyStateView
-                        .frame(maxHeight: .infinity)
-                        .disabled(!isPersonalVoiceOn)
-                        .opacity(isPersonalVoiceOn ? 1.0 : 0.5)
+                    if viewModel.isSyncing {
+                        Spacer()
+                        ProgressView()
+                        Text("Loading voices...")
+                            .foregroundStyle(.secondary)
+                        Spacer()
+                    } else {
+                         emptyStateView
+                            .frame(maxHeight: .infinity)
+                            .disabled(!isPersonalVoiceOn)
+                            .opacity(isPersonalVoiceOn ? 1.0 : 0.5)
+                    }
                 } else {
                     List {
                         voiceListView
@@ -81,6 +89,7 @@ struct PersonalVoiceListView: View {
                         isPresented: $viewModel.shouldNavigateToRecorder,
                         useCase: viewModel.useCase
                     )
+                    .environment(\.modelContext, modelContext)
                 }
             }
             .onChange(of: isPersonalVoiceOn) { _, isOn in
@@ -109,6 +118,10 @@ struct PersonalVoiceListView: View {
                     }
                 )
                 .presentationDetents([.fraction(0.3)])
+            }
+            .onAppear {
+                viewModel.setup(with: modelContext)
+                viewModel.syncVoiceList()
             }
         }
     }
