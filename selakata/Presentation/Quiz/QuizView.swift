@@ -122,7 +122,8 @@ struct QuizView: View {
                         }
                         hasPlayedOnce = false
                     },
-                    shouldReplay: triggerReplay
+                    shouldReplay: triggerReplay,
+                    autoPlay: true
                 )
                 .padding(.horizontal, 32)
                 .frame(height: geo.size.height * 0.3)

@@ -8,6 +8,7 @@ struct SimpleAudioPlayer: View {
     let onAudioCompleted: (() -> Void)?
     let onReplayRequested: (() -> Void)?
     let shouldReplay: Bool
+    let autoPlay: Bool
 
     @StateObject private var engine = AudioEngineService()
     @State private var showNoiseIndicator = false
@@ -69,6 +70,13 @@ struct SimpleAudioPlayer: View {
             showNoiseIndicator = false
             engine.stopAll()
             loadAudio()
+            
+            // Autoplay if enabled
+            if autoPlay {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                    handlePlay()
+                }
+            }
         }
         .onChange(of: shouldReplay) { _, newValue in if newValue { replay() } }
     }
@@ -152,7 +160,8 @@ struct SimpleAudioPlayer: View {
         onReplayRequested: {
             print("Preview: Replay button tapped!")
         },
-        shouldReplay: false
+        shouldReplay: false,
+        autoPlay: false
     )
     .padding()
 }
