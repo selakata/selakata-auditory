@@ -92,17 +92,11 @@ final class LoginViewModel: ObservableObject {
                         switch result {
                         case .success(let authResponse):
                             self.authData = authResponse.data
-                            
                             // Save the token
                             saveToKeychain(value: authResponse.data.token, for: "token")
-                            
                             self.isServerAuthenticated = true
-                            
-                            print("[LoginViewModel] AISDEBUG:AUTH:SUCCESS: Real token saved. User is fully authenticated.")
-                            
                         case .failure(let error):
                             self.errorMessage = error.localizedDescription
-                            print("[LoginViewModel] AISDEBUG:AUTH:ERROR:", error.localizedDescription)
                         }
                     }
                 }

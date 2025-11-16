@@ -32,21 +32,16 @@ class QuizViewModel: ObservableObject {
     func fetchQuestions() {
         isLoading = true
         let selectedVoiceId = UserDefaults.standard.string(forKey: "selectedVoiceID")
-        print("AISDEBUG:SELECTEDVOICEID:\(selectedVoiceId)")
         levelUseCase.fetchDetailLevel(levelId: levelId, voiceId: selectedVoiceId) { [weak self] result in
             DispatchQueue.main.async {
                 switch result {
                 case .success(let level):
                     self?.level = level.data
                     self?.questions = level.data.questions as! [Question] ?? []
-                    print("AISDEBUG: Fetched \(level.data.questions?.count ?? 0) questions")
-                    
                     // Download audio files after fetching questions
                     self?.downloadAudioFiles()
-                    
                 case .failure(let error):
                     self?.isLoading = false
-                    
                     if let decodingError = error as? DecodingError {
                         switch decodingError {
                         case .typeMismatch(let type, let context):
@@ -228,9 +223,6 @@ class QuizViewModel: ObservableObject {
                 switch result {
                 case .success(let result):
                     self?.resultUpdateScore = result
-                    print("AISDEBUG: sudah diupdate \(result)")
-                
-                    
                 case .failure(let error):
                     print("AISDEBUG: error update - \(error.localizedDescription)")
                 }

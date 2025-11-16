@@ -25,16 +25,7 @@ public class RemoteLevelDataSource: LevelDataSource {
         apiClient.request(url: url, method: .get, completion: completion)
     }
     
-    public func fetchDetailLevel(levelId: String, completion: @escaping (Result<APIResponse<Level>, Error>) -> Void) {
-        guard let url = apiConfiguration.makeDetailLevelURL(levelId: levelId) else {
-            completion(.failure(NSError(domain: "", code: -1, userInfo: [NSLocalizedDescriptionKey: "Invalid URL"])))
-            return
-        }
-        
-        apiClient.request(url: url, method: .get, completion: completion)
-    }
-    
-    public func fetchDetailLevel(levelId: String, voiceId: String, completion: @escaping (Result<APIResponse<Level>, Error>) -> Void) {
+    public func fetchDetailLevel(levelId: String, voiceId: String?, completion: @escaping (Result<APIResponse<Level>, Error>) -> Void) {
         guard let url = apiConfiguration.makeDetailLevelURL(levelId: levelId, voiceId: voiceId) else {
             completion(.failure(NSError(domain: "", code: -1, userInfo: [NSLocalizedDescriptionKey: "Invalid URL"])))
             return

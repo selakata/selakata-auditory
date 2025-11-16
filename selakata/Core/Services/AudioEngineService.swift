@@ -48,11 +48,14 @@ class AudioEngineService: NSObject, ObservableObject, AVAudioPlayerDelegate {
             noisePlayer.currentTime = 0
             noisePlayer.play()
             isNoisePlaying = true
-        }
-
-        // 2. After delay, play main audio
-        DispatchQueue.main.asyncAfter(deadline: .now() + noiseDelayBeforeMain) {
-            self.startMainAudio()
+            
+            // 2. After delay, play main audio (only if noise exists)
+            DispatchQueue.main.asyncAfter(deadline: .now() + noiseDelayBeforeMain) {
+                self.startMainAudio()
+            }
+        } else {
+            // No noise, play main audio immediately
+            startMainAudio()
         }
     }
 
@@ -81,10 +84,12 @@ class AudioEngineService: NSObject, ObservableObject, AVAudioPlayerDelegate {
             // NOTIF 2: main audio selesai
             onMainAudioFinished?()
 
-            // Stop noise after delay
-            DispatchQueue.main.asyncAfter(deadline: .now() + noiseDelayAfterMain) {
-                self.noisePlayer?.stop()
-                self.isNoisePlaying = false
+            // Stop noise after delay (only if noise exists)
+            if noisePlayer != nil {
+                DispatchQueue.main.asyncAfter(deadline: .now() + noiseDelayAfterMain) {
+                    self.noisePlayer?.stop()
+                    self.isNoisePlaying = false
+                }
             }
         }
     }
