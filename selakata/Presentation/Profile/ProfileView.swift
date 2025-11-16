@@ -6,10 +6,25 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct ProfileView: View {
     
     @StateObject private var viewModel = DependencyContainer.shared.makeProfileViewModel()
+    @Environment(\.modelContext) private var modelContext
+    @AppStorage("selectedVoiceID") private var selectedVoiceID: String?
+
+    @Query private var savedVoices: [LocalAudioFile]
+
+    private var currentVoiceName: String {
+        guard let selectedID = selectedVoiceID else {
+            return "Default"
+        }
+        if let voice = savedVoices.first(where: { $0.voiceId == selectedID }) {
+            return voice.voiceName
+        }
+        return "Default"
+    }
 
     var body: some View {
         NavigationStack {
@@ -43,16 +58,16 @@ struct ProfileView: View {
                         HStack {
                             Image(systemName: "mic"); Text("Personalized voice")
                             Spacer()
-                            Text("Flavia") // tar ganti based on the current active personal voice
+                            Text(currentVoiceName)
                                 .foregroundStyle(.secondary)
                         }
                     }
                     
-                    NavigationLink(destination: Text("Progress Page")) {
+                    NavigationLink(destination: Text("Report")) {
                         HStack(spacing: 13) {
                             Image(systemName: "progress.indicator")
                                 .foregroundStyle(.secondary)
-                            Text("Progress")
+                            Text("Report")
                         }
                     }
                     

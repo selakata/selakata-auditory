@@ -6,12 +6,17 @@
 //
 
 import Foundation
+import SwiftData
 
 @MainActor
 class PersonalVoiceViewModel: ObservableObject {
     
     @Published var isShowingPrivacySheet = false
     @Published var shouldNavigateToRecorder = false
+    
+    @Published var isSyncing = false
+    private var modelContext: ModelContext?
+    private var hasBeenSetup = false
     
     let useCase: PersonalVoiceUseCase
 
@@ -35,6 +40,32 @@ class PersonalVoiceViewModel: ObservableObject {
             voiceConfig: voiceConfig,
             elevenLabsConfig: elevenLabsConfig
         )
+    }
+    
+    func setup(with context: ModelContext) {
+        guard !hasBeenSetup else { return }
+        self.modelContext = context
+        self.hasBeenSetup = true
+    }
+    
+    func syncVoiceList() {
+        guard let context = modelContext, !isSyncing else {
+            if modelContext == nil {
+                print("Sync failed, modelContext is nil.")
+            }
+            return
+        }
+        
+        isSyncing = true
+        useCase.syncVoiceList(context: context) { [weak self] result in
+            self?.isSyncing = false
+            switch result {
+            case .success:
+                print("Sync complete.")
+            case .failure(let error):
+                print("Sync failed: \(error.localizedDescription)")
+            }
+        }
     }
     
     func addVoiceButtonTapped() {

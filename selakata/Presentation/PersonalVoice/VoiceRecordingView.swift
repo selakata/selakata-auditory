@@ -27,11 +27,12 @@ struct VoiceRecordingView: View {
     var body: some View {
         ScrollView {
             VStack(spacing: 0) {
-                HStack {
+                HStack(spacing: 4) {
                     TextField("Voice Name", text: $viewModel.voiceName)
                         .font(.title2.weight(.bold))
                         .multilineTextAlignment(.center)
                         .focused($isNameFieldFocused)
+                        .fixedSize()
                     
                     Image(systemName: "pencil")
                         .foregroundStyle(.secondary)

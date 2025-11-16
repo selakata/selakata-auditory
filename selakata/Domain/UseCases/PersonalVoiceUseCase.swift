@@ -23,7 +23,7 @@ private struct TeamAddVoiceRequest: Encodable {
     let voiceId: String
 }
 
-private struct VoiceData: Decodable {
+struct VoiceData: Decodable {
     let id: String
     let voiceId: String
     let voiceName: String
@@ -35,6 +35,10 @@ private struct VoiceData: Decodable {
 private struct TeamAddVoiceResponse: Decodable {
     let message: String
     let data: VoiceData
+}
+
+private struct TeamGetVoicesResponse: Decodable {
+    let data: [VoiceData]
 }
 
 @MainActor
@@ -118,10 +122,67 @@ class PersonalVoiceUseCase {
         player.stop()
     }
     
+    func syncVoiceList(
+        context: ModelContext,
+        completion: @escaping (Result<Void, Error>) -> Void
+    ) {
+        print("Syncing voice list")
+        
+        guard let url = voiceConfig.makeGetVoicesRequest() else {
+            completion(.failure(URLError(.badURL)))
+            return
+        }
+        
+        // decode response
+        apiClient.request(url: url, method: .get) { [weak self] (result: Result<TeamGetVoicesResponse, Error>) in
+            guard self != nil else { return }
+            
+            switch result {
+            case .failure(let error):
+                print("PersonalvoiceUseCase: Failed to fetch voice list. \(error.localizedDescription)")
+                DispatchQueue.main.async {
+                    completion(.failure(error))
+                }
+    
+            case .success(let response):
+                let voicesFromServer = response.data
+                
+                // sync with SwiftData
+                Task { @MainActor in
+                    do {
+                        let descriptor = FetchDescriptor<LocalAudioFile>()
+                        let localVoices = try context.fetch(descriptor)
+                        
+                        let localVoiceIDs = Set(localVoices.map { $0.voiceId })
+                        
+                        let newVoicesToSave = voicesFromServer.filter {
+                            !localVoiceIDs.contains($0.voiceId)
+                        }
+                    
+                        for voiceData in newVoicesToSave {
+                            let newAudioFile = LocalAudioFile(
+                                voiceName: voiceData.voiceName,
+                                fileName: "",
+                                duration: 0,
+                                voiceId: voiceData.voiceId,
+                                urlPreview: voiceData.previewUrl
+                            )
+                            context.insert(newAudioFile)
+                        }
+                        completion(.success(()))
+                    } catch {
+                        print("PersonalVoiceUseCase: Error fetching from SwiftData. \(error.localizedDescription)")
+                        completion(.failure(error))
+                    }
+                }
+            }
+        }
+    }
+    
     func saveAndCloneRecording(
         name: String,
         context: ModelContext,
-        completion: @escaping (Result<Void, Error>) -> Void
+        completion: @escaping (Result<VoiceData, Error>) -> Void
     ) {
         
         guard let recording = lastRecordingResult else {
@@ -189,10 +250,9 @@ class PersonalVoiceUseCase {
                                     duration: recording.duration,
                                     context: context
                                 )
-                                print("Step 3 Success: Saved to local SwiftData.")
-                                completion(.success(()))
+                                completion(.success(voiceData))
                             } catch {
-                                print("Step 3 Failed: SwiftData save error. \(error.localizedDescription)")
+                                print("SwiftData save error:  \(error.localizedDescription)")
                                 completion(.failure(error))
                             }
                         }
