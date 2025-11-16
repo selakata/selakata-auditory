@@ -9,6 +9,7 @@ enum AppFont {
     case body
     case callout
     case subhead
+    case subheadSemiBold
     case footnote
     case caption
     
@@ -20,6 +21,7 @@ enum AppFont {
         case .body:       return .custom("DMSans-Regular", size: 17)
         case .callout:    return .custom("DMSans-Regular", size: 12)
         case .subhead:    return .custom("DMSans-Medium", size: 17)
+        case .subheadSemiBold:    return .custom("DMSans-SemiBold", size: 17)
         case .footnote:   return .custom("DMSans-Regular", size: 13)
         case .caption:    return .custom("DMSans-Regular", size: 10)
         }

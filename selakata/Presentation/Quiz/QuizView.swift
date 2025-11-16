@@ -23,62 +23,62 @@ struct QuizView: View {
     }
 
     var body: some View {
-       //ˆ quizContent
-                if viewModel.isLoading {
-                    VStack(spacing: 16) {
-                        ProgressView()
-                            .scaleEffect(1.2)
-        
-                        if viewModel.isDownloadingAudio {
-                            Text(viewModel.downloadProgress)
-                                .font(.subheadline)
-                                .foregroundColor(.secondary)
-                        } else {
-                            Text("Loading questions...")
-                                .font(.subheadline)
-                                .foregroundColor(.secondary)
-                        }
-                    }
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-                } else if let errorMessage = viewModel.errorMessage {
-                    VStack(spacing: 16) {
-                        Image(systemName: "exclamationmark.triangle")
-                            .font(.system(size: 50))
-                            .foregroundColor(.orange)
-        
-                        Text("Error loading questions")
-                            .font(.headline)
-        
-                        Text(errorMessage)
-                            .font(.subheadline)
-                            .foregroundColor(.secondary)
-                            .multilineTextAlignment(.center)
-                            .padding(.horizontal)
-        
-                        Button("Go Back") {
-                            dismiss()
-                        }
-                        .buttonStyle(.bordered)
-                    }
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-                } else if viewModel.questions.isEmpty {
-                    VStack(spacing: 16) {
-                        Image(systemName: "questionmark.circle")
-                            .font(.system(size: 50))
-                            .foregroundColor(.gray)
-        
-                        Text("No questions available")
-                            .font(.headline)
-        
-                        Button("Go Back") {
-                            dismiss()
-                        }
-                        .buttonStyle(.bordered)
-                    }
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-                } else {
-                    quizContent
-                }
+        quizContent
+//        if viewModel.isLoading {
+//            VStack(spacing: 16) {
+//                ProgressView()
+//                    .scaleEffect(1.2)
+//
+//                if viewModel.isDownloadingAudio {
+//                    Text(viewModel.downloadProgress)
+//                        .font(.subheadline)
+//                        .foregroundColor(.secondary)
+//                } else {
+//                    Text("Loading questions...")
+//                        .font(.subheadline)
+//                        .foregroundColor(.secondary)
+//                }
+//            }
+//            .frame(maxWidth: .infinity, maxHeight: .infinity)
+//        } else if let errorMessage = viewModel.errorMessage {
+//            VStack(spacing: 16) {
+//                Image(systemName: "exclamationmark.triangle")
+//                    .font(.system(size: 50))
+//                    .foregroundColor(.orange)
+//
+//                Text("Error loading questions")
+//                    .font(.headline)
+//
+//                Text(errorMessage)
+//                    .font(.subheadline)
+//                    .foregroundColor(.secondary)
+//                    .multilineTextAlignment(.center)
+//                    .padding(.horizontal)
+//
+//                Button("Go Back") {
+//                    dismiss()
+//                }
+//                .buttonStyle(.bordered)
+//            }
+//            .frame(maxWidth: .infinity, maxHeight: .infinity)
+//        } else if viewModel.questions.isEmpty {
+//            VStack(spacing: 16) {
+//                Image(systemName: "questionmark.circle")
+//                    .font(.system(size: 50))
+//                    .foregroundColor(.gray)
+//
+//                Text("No questions available")
+//                    .font(.headline)
+//
+//                Button("Go Back") {
+//                    dismiss()
+//                }
+//                .buttonStyle(.bordered)
+//            }
+//            .frame(maxWidth: .infinity, maxHeight: .infinity)
+//        } else {
+//            quizContent
+//        }
     }
 
     private var quizContent: some View {
@@ -151,13 +151,10 @@ struct QuizView: View {
                     } else {
                         // Placeholder or instruction text
                         VStack(spacing: 16) {
-                            Image(systemName: "speaker.wave.2")
-                                .font(.system(size: 40))
-                                .foregroundColor(.gray)
-
                             Text("Listen to the audio first")
-                                .font(.headline)
-                                .foregroundColor(.secondary)
+                                .font(.app(.subheadSemiBold))
+                                .fontWeight(.semibold)
+                                .foregroundColor(.Default._950)
 
                             Text(
                                 "Please play and listen to the complete audio before answering"
