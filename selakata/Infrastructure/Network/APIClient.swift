@@ -201,7 +201,6 @@ class APIClient: APIClientProtocol {
         }
     }
 
-
     func uploadFile<T: Decodable>(
         url: URL,
         fileURL: URL,

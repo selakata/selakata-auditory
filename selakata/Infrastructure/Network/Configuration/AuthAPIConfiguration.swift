@@ -1,9 +1,4 @@
-//
-//  AuthAPIConfiguration.swift
-//  selakata
-//
 //  Created by ais on 07/11/25.
-//
 
 import Foundation
 
@@ -27,6 +22,18 @@ public class AuthAPIConfiguration : BaseAPIConfiguration{
         request.httpMethod = "POST"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         request.httpBody = makeLoginRequestBody(username, appleId, email, name)
+        
+        return request
+    }
+    
+    func makeGetMeURLRequest() -> URLRequest? {
+        guard let url = URL(string: configuration.baseURL + "/auth/me") else {
+            return nil
+        }
+        
+        var request = URLRequest(url: url)
+        request.httpMethod = "GET"
+        request.setValue("application/json", forHTTPHeaderField: "Accept")
         
         return request
     }
