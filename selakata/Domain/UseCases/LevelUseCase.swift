@@ -17,12 +17,7 @@ public class LevelUseCase {
     }
     
     public func fetchDetailLevel(levelId: String, voiceId: String?, completion: @escaping (Result<APIResponse<Level>, Error>) -> Void) {
-        if voiceId == nil {
-            repository.fetchDetailLevel(levelId: levelId, completion: completion)
-        }else {
-            repository.fetchDetailLevel(levelId: levelId, voiceId: voiceId, completion: completion)
-        }
-        
+        repository.fetchDetailLevel(levelId: levelId, voiceId: voiceId, completion: completion)
     }
     
     public func updateLevelScore(levelId: String, score: Int, completion: @escaping (Result<String, Error>) -> Void) {

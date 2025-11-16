@@ -3,129 +3,177 @@ import SwiftUI
 struct QuizResultsView: View {
     let score: Int
     let totalQuestions: Int
+    let repetitions: Int
     let onRestart: () -> Void
     let onDismiss: () -> Void
-
-    private var percentage: Double {
-        Double(score) / Double(totalQuestions) * 100
+    
+    private var perfectHits: Int {
+        score
     }
-
-    private var resultMessage: String {
-        switch percentage {
-        case 90...100:
-            return "Excellent!"
-        case 70..<90:
-            return "Great job!"
-        case 50..<70:
-            return "Good effort!"
-        default:
-            return "Keep practicing!"
-        }
+    
+    private var oopsMoments: Int {
+        totalQuestions - score
     }
-
-    private var resultColor: Color {
-//        switch percentage {
-//        case 90...100:
-//            return .green
-//        case 70..<90:
-//            return .blue
-//        case 50..<70:
-//            return .orange
-//        default:
-//            return .red
-//        }
-        return .gray
+    
+    private var averageResponseTime: String {
+        "2.5s" // Mock data - can be calculated later
     }
 
     var body: some View {
-        VStack(spacing: 24) {
-            // Header with drag indicator space
-            VStack(spacing: 16) {
-                // Result Icon and Message
-                HStack(spacing: 16) {
-                    Image(systemName: percentage >= 70 ? "checkmark.circle.fill" : "xmark.circle.fill")
-                        .font(.system(size: 50))
-                        .foregroundColor(resultColor)
-                    
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text(resultMessage)
-                            .font(.title2)
-                            .fontWeight(.bold)
-//                            .foregroundColor(resultColor)
-                        
-                        Text("Score: \(score)/\(totalQuestions) (\(Int(percentage))%)")
-                            .font(.subheadline)
-//                            .foregroundColor(.secondary)
-                    }
-                    
-                    Spacer()
-                }
+        ScrollView {
+            VStack(spacing: 32) {
+                // Title
+                Text("Level has completed!")
+                    .font(.title)
+                    .fontWeight(.bold)
+                    .padding(.top, 20)
                 
-                // Compact Progress Bar
+                // Brain illustration
+                Image("quiz_completed")
+                    .font(.system(size: 120))
+                    .foregroundColor(.pink.opacity(0.6))
+                    .padding(.vertical, 20)
+                
+                // Score
                 VStack(spacing: 8) {
-                    HStack {
-                        Text("Your Progress")
+                    Text("Score:")
+                        .font(.title3)
+                        .foregroundColor(.secondary)
+                    
+                    Text("\(score)")
+                        .font(.system(size: 72, weight: .bold))
+                        .foregroundColor(.primary)
+                }
+                .padding(.vertical, 10)
+                
+                // Stats Card
+                HStack(spacing: 0) {
+                    // Perfect hits
+                    VStack(spacing: 12) {
+                        ZStack {
+                            Circle()
+                                .fill(Color.yellow.opacity(0.2))
+                                .frame(width: 50, height: 50)
+                            Image(systemName: "star.fill")
+                                .font(.title3)
+                                .foregroundColor(.yellow)
+                        }
+                        
+                        Text("Perfect hits")
                             .font(.caption)
                             .foregroundColor(.secondary)
-                        Spacer()
-                        Text("\(Int(percentage))%")
-                            .font(.caption)
-                            .fontWeight(.semibold)
-                            .foregroundColor(resultColor)
+                        
+                        Text("\(perfectHits)")
+                            .font(.title2)
+                            .fontWeight(.bold)
                     }
-                    
-                    ProgressView(value: percentage / 100)
-                        .progressViewStyle(LinearProgressViewStyle(tint: resultColor))
-                        .frame(height: 8)
-                        .background(Color.gray.opacity(0.2))
-                        .cornerRadius(4)
-                }
-            }
-            
-            // Action Buttons
-            VStack(spacing: 12) {
-                Button(action: onRestart) {
-                    HStack {
-                        Image(systemName: "arrow.clockwise")
-                        Text("Try Again")
-                    }
-                    .font(.headline)
-                    .foregroundStyle(.white)
                     .frame(maxWidth: .infinity)
-                    .padding(.vertical, 14)
+                    
+                    Divider()
+                        .frame(height: 80)
+                    
+                    // Oops moments
+                    VStack(spacing: 12) {
+                        ZStack {
+                            Circle()
+                                .fill(Color.red.opacity(0.2))
+                                .frame(width: 50, height: 50)
+                            Image(systemName: "xmark.circle.fill")
+                                .font(.title3)
+                                .foregroundColor(.red)
+                        }
+                        
+                        Text("Oops moments")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                        
+                        Text("\(oopsMoments)")
+                            .font(.title2)
+                            .fontWeight(.bold)
+                    }
+                    .frame(maxWidth: .infinity)
+                    
+                    Divider()
+                        .frame(height: 80)
+                    
+                    // Repetition
+                    VStack(spacing: 12) {
+                        ZStack {
+                            Circle()
+                                .fill(Color.blue.opacity(0.2))
+                                .frame(width: 50, height: 50)
+                            Image(systemName: "arrow.clockwise")
+                                .font(.title3)
+                                .foregroundColor(.blue)
+                        }
+                        
+                        Text("Repetition")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                        
+                        Text("\(repetitions)")
+                            .font(.title2)
+                            .fontWeight(.bold)
+                    }
+                    .frame(maxWidth: .infinity)
                 }
+                .padding(.vertical, 20)
+                .padding(.horizontal, 16)
                 .background(
-//                    Capsule().fill(Color(.systemIndigo))
-                    Capsule().fill(Color(.darkGray))
+                    RoundedRectangle(cornerRadius: 20)
+                        .fill(Color(.white).opacity(0))
+                        .border(Color(.secondarySystemBackground), width: 1)
                 )
                 
-                Button(action: onDismiss) {
-                    HStack {
-                        Image(systemName: "house.fill")
-                        Text("Back to Menu")
-                    }
-                    .font(.headline)
-                    .foregroundStyle(Color(.darkGray))
-//                    .foregroundStyle(Color(.systemIndigo))
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, 14)
+                .padding(.horizontal, 24)
+                
+                // Response time
+                HStack(spacing: 4) {
+                    Text("Your response times")
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
+                    Text(averageResponseTime)
+                        .font(.subheadline)
+                        .fontWeight(.semibold)
+                        .foregroundColor(.orange)
                 }
-                .background(
-//                    Capsule().stroke(Color(.systemIndigo), lineWidth: 2)
-                    Capsule().stroke(Color(.darkGray), lineWidth: 2)
+                .padding(.top, 8)
+                
+                // Go to Module Detail Button
+                UtilsButton(
+                    title: "Go to Module Detail",
+                    leftIcon: nil,
+                    isLoading: false,
+                    variant: .primary,
+                    action: onDismiss
                 )
+                .padding(.horizontal, 24)
+                .padding(.bottom, 40)
+                
+//                Button(action: onDismiss) {
+//                    Text("Continue")
+//                        .font(.headline)
+//                        .foregroundStyle(.white)
+//                        .frame(maxWidth: .infinity)
+//                        .padding(.vertical, 16)
+//                }
+//                .background(
+//                    RoundedRectangle(cornerRadius: 16)
+//                        .fill(Color.purple)
+//                )
+//                .padding(.horizontal, 24)
+//                .padding(.bottom, 40)
             }
         }
-        .padding(.horizontal, 24)
-        .padding(.vertical, 20)
         .background(Color(.systemBackground))
     }
 }
 
 #Preview {
     QuizResultsView(
-        score: 2,
-        totalQuestions: 3,
+        score: 13,
+        totalQuestions: 15,
+        repetitions: 5,
         onRestart: {},
         onDismiss: {}
     )

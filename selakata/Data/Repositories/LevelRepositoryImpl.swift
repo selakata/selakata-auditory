@@ -17,13 +17,9 @@ public class LevelRepositoryImpl: LevelRepository {
     public func fetchLevel(moduleId: String, completion: @escaping (Result<APIResponse<[Level]>, Error>) -> Void) {
         dataSource.fetchLevel (moduleId: moduleId, completion: completion)
     }
-    
-    public func fetchDetailLevel(levelId: String, completion: @escaping (Result<APIResponse<Level>, Error>) -> Void) {
-        dataSource.fetchDetailLevel (levelId: levelId, completion: completion)
-    }
-    
+  
     public func fetchDetailLevel(levelId: String, voiceId: String?, completion: @escaping (Result<APIResponse<Level>, Error>) -> Void) {
-        dataSource.fetchDetailLevel (levelId: levelId, completion: completion)
+        dataSource.fetchDetailLevel (levelId: levelId, voiceId: voiceId, completion: completion)
     }
     
     public func updateLevelScore(levelId: String, score: Int, completion: @escaping (Result<String, Error>) -> Void) {
