@@ -11,4 +11,8 @@ public class VoiceAPIConfiguration: BaseAPIConfiguration {
     func makeTeamAddVoiceURL() -> URL? {
         return makeURL(path: "/voice/add")
     }
+    
+    func makeGetVoicesRequest() -> URL? {
+        return makeURL(path: "/voice")
+    }
 }

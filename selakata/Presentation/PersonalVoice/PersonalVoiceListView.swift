@@ -41,10 +41,18 @@ struct PersonalVoiceListView: View {
                     .padding(.bottom, 20)
 
                 if savedVoices.isEmpty {
-                    emptyStateView
-                        .frame(maxHeight: .infinity)
-                        .disabled(!isPersonalVoiceOn)
-                        .opacity(isPersonalVoiceOn ? 1.0 : 0.5)
+                    if viewModel.isSyncing {
+                        Spacer()
+                        ProgressView()
+                        Text("Loading voices...")
+                            .foregroundStyle(.secondary)
+                        Spacer()
+                    } else {
+                         emptyStateView
+                            .frame(maxHeight: .infinity)
+                            .disabled(!isPersonalVoiceOn)
+                            .opacity(isPersonalVoiceOn ? 1.0 : 0.5)
+                    }
                 } else {
                     List {
                         voiceListView
@@ -81,6 +89,7 @@ struct PersonalVoiceListView: View {
                         isPresented: $viewModel.shouldNavigateToRecorder,
                         useCase: viewModel.useCase
                     )
+                    .environment(\.modelContext, modelContext)
                 }
             }
             .onChange(of: isPersonalVoiceOn) { _, isOn in
@@ -91,6 +100,13 @@ struct PersonalVoiceListView: View {
                 } else {
                     selectedVoiceID = nil
                     expandedVoiceID = nil
+                }
+            }
+            .onChange(of: selectedVoiceID) { _, newVoiceID in
+                if newVoiceID != nil && newVoiceID != expandedVoiceID {
+                    withAnimation {
+                        expandedVoiceID = newVoiceID
+                    }
                 }
             }
             .sheet(isPresented: $showingConfirmationSheet) {
@@ -110,6 +126,10 @@ struct PersonalVoiceListView: View {
                 )
                 .presentationDetents([.fraction(0.3)])
             }
+            .onAppear {
+                viewModel.setup(with: modelContext)
+                viewModel.syncVoiceList()
+            }
         }
     }
     
@@ -118,9 +138,10 @@ struct PersonalVoiceListView: View {
             Spacer()
             
             Image("emptyVoice")
-                .font(.system(size: 150))
+                .resizable()
+                .scaledToFit()
                 .foregroundStyle(Color(.systemGray4))
-                .frame(maxWidth: .infinity, alignment: .center)
+                .frame(width: 315, height: 296, alignment: .center)
             
             Text("No personalized voice yet")
                 .font(.title2.weight(.bold))
@@ -131,6 +152,7 @@ struct PersonalVoiceListView: View {
                 .foregroundStyle(.secondary)
                 .frame(maxWidth: .infinity, alignment: .center)
             
+            Spacer()
             Spacer()
         }
         .padding()
