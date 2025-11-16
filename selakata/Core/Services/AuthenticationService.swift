@@ -129,8 +129,7 @@ final class AuthenticationService: NSObject, ObservableObject {
                 case .authorized:
                     let cachedName = UserDefaults.standard.string(forKey: "user_name")
                     let cachedEmail = UserDefaults.standard.string(forKey: "user_email")
-                    
-                    if cachedName == nil || cachedEmail == nil {
+                    if (cachedName ?? "").isEmpty || (cachedEmail ?? "").isEmpty {
                         print("Missing profile cache — calling getMyProfile()")
                         self.getMyProfile()
                     } else {
@@ -147,10 +146,6 @@ final class AuthenticationService: NSObject, ObservableObject {
                 }
             }
         }
-    }
-    
-    func getUserFullName() -> String {
-        return self.userFullName ?? "Learner"
     }
 }
 
@@ -174,9 +169,6 @@ extension AuthenticationService: ASAuthorizationControllerDelegate {
             nameComponents?.givenName,
             nameComponents?.familyName
         ].compactMap { $0 }.joined(separator: " ")
-        let finalName = fullName.isEmpty
-        ? (UserDefaults.standard.string(forKey: "user_name") ?? "Learner")
-        : fullName
         
         let email = credential.email
         ?? UserDefaults.standard.string(forKey: "user_email")
@@ -184,20 +176,20 @@ extension AuthenticationService: ASAuthorizationControllerDelegate {
         
         print("🍏 Apple Sign In success:")
         print(" - userId:", userId)
-        print(" - fullName:", finalName)
+        print(" - fullName:", fullName)
         print(" - email:", email)
         
         saveToKeychain(value: userId, for: keychainKey)
         
         self.userAuthId = userId
         self.userEmail = email
-        self.userFullName = finalName
+        self.userFullName = fullName
         self.isAuthenticated = true
         
         UserDefaults.standard.set(email, forKey: "user_email")
-        UserDefaults.standard.set(finalName, forKey: "user_name")
+        UserDefaults.standard.set(fullName, forKey: "user_name")
         
-        authenticateWithServer(userId: userId, email: email, name: finalName)
+        authenticateWithServer(userId: userId, email: email, name: fullName.isEmpty ? "Learner" : fullName)
     }
     
     func authorizationController(
