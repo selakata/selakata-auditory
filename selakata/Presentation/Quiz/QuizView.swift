@@ -8,6 +8,7 @@ struct QuizView: View {
     @State private var audioCompleted: Bool = false
     @State private var hasPlayedOnce: Bool = false
     @State private var triggerReplay: Bool = false
+    @State private var showExitConfirmation: Bool = false
 
     //    let category: Level
     @StateObject private var viewModel: QuizViewModel
@@ -86,7 +87,9 @@ struct QuizView: View {
             VStack(spacing: 16) {
                 // Top bar: Back button
                 HStack(alignment: .center) {
-                    Button(action: { dismiss() }) {
+                    Button(action: { 
+                        showExitConfirmation = true
+                    }) {
                         HStack(spacing: 6) {
                             Image(systemName: "chevron.left")
                             Text("Back")
@@ -121,6 +124,7 @@ struct QuizView: View {
                             audioCompleted = false
                         }
                         hasPlayedOnce = false
+                        viewModel.incrementReplayCount()
                     },
                     shouldReplay: triggerReplay,
                     autoPlay: true
@@ -172,19 +176,16 @@ struct QuizView: View {
 
                 // Next button - only show when answered
                 if viewModel.hasAnswered {
-                    Button(action: {
-                        withAnimation(.easeInOut(duration: 0.5)) {
-                            viewModel.nextQuestion()
+                    UtilsButton(
+                        title: viewModel.nextButtonText,
+                        leftIcon: nil,
+                        isLoading: false,
+                        variant: .primary,
+                        action: {
+                            withAnimation(.easeInOut(duration: 0.5)) {
+                                viewModel.nextQuestion()
+                            }
                         }
-                    }) {
-                        Text(viewModel.nextButtonText)
-                            .font(.headline)
-                            .foregroundStyle(.white)
-                            .frame(maxWidth: .infinity)
-                            .padding(.vertical, 16)
-                    }
-                    .background(
-                        Capsule().fill(Color(.darkGray))
                     )
                     .padding(.horizontal, 24)
                     .padding(.bottom)
@@ -201,10 +202,11 @@ struct QuizView: View {
                 audioCompleted = false
                 hasPlayedOnce = false
             }
-            .sheet(isPresented: $viewModel.showResults) {
+            .fullScreenCover(isPresented: $viewModel.showResults) {
                 QuizResultsView(
                     score: viewModel.score,
                     totalQuestions: viewModel.totalQuestions,
+                    repetitions: viewModel.totalReplayCount,
                     onRestart: {
                         viewModel.dismissResults()
                         viewModel.restartQuiz()
@@ -214,9 +216,14 @@ struct QuizView: View {
                         dismiss()
                     }
                 )
-                .presentationDetents([.height(280), .medium])
-                .presentationDragIndicator(.visible)
-                .presentationCornerRadius(20)
+            }
+            .alert("Exit Quiz?", isPresented: $showExitConfirmation) {
+                Button("Cancel", role: .cancel) {}
+                Button("Exit", role: .destructive) {
+                    dismiss()
+                }
+            } message: {
+                Text("Your progress will be lost if you exit now.")
             }
         }
     }

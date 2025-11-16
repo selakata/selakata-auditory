@@ -9,6 +9,7 @@ class QuizViewModel: ObservableObject {
     @Published var hasAnswered: Bool = false
     @Published var score: Int = 0
     @Published var showResults: Bool = false
+    @Published var totalReplayCount: Int = 0
 
     private let levelUseCase: LevelUseCase
     private let levelId: String
@@ -235,11 +236,16 @@ class QuizViewModel: ObservableObject {
         selectedAnswer = nil
         hasAnswered = false
         score = 0
+        totalReplayCount = 0
         showResults = false
     }
 
     func dismissResults() {
         showResults = false
+    }
+    
+    func incrementReplayCount() {
+        totalReplayCount += 1
     }
     
     func clearAudioCache() {
