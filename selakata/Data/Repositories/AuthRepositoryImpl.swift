@@ -1,10 +1,4 @@
-//
-//  AuthRepositoryImpl.swift
-//  selakata
-//
 //  Created by ais on 07/11/25.
-//
-
 
 import Foundation
 
@@ -17,5 +11,11 @@ public class AuthRepositoryImpl: AuthRepository {
     
     public func auth(username: String, appleId: String, email: String, name: String, completion: @escaping (Result<APIResponse<AuthData>, Error>) -> Void) {
         dataSource.auth(username: username, appleId: appleId, email: email, name: name, completion: completion)
+    }
+    
+    public func getMe(
+        completion: @escaping (Result<APIResponse<User>, Error>) -> Void
+    ) {
+        dataSource.getMe(completion: completion)
     }
 }

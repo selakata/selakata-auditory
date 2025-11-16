@@ -1,6 +1,5 @@
 //  Created by ais on 07/11/25.
 
-
 public class AuthUseCase {
     private let repository: AuthRepository
     
@@ -22,5 +21,11 @@ public class AuthUseCase {
             name: name,
             completion: completion
         )
+    }
+    
+    public func getMe(
+        completion: @escaping (Result<APIResponse<User>, Error>) -> Void
+    ) {
+        repository.getMe(completion: completion)
     }
 }

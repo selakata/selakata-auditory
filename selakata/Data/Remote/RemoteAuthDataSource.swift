@@ -1,9 +1,4 @@
-//
-//  RemoteAuthDataSource.swift
-//  selakata
-//
 //  Created by ais on 07/11/25.
-//
 
 import Foundation
 
@@ -37,6 +32,34 @@ public class RemoteAuthDataSource: AuthDataSource {
                     let decoder = JSONDecoder()
                     decoder.dateDecodingStrategy = .iso8601
                     let response = try decoder.decode(APIResponse<AuthData>.self, from: data)
+                    completion(.success(response))
+                } catch {
+                    completion(.failure(error))
+                }
+                
+            case .failure(let error):
+                completion(.failure(error))
+            }
+        }
+    }
+    
+    public func getMe(
+        completion: @escaping (Result<APIResponse<User>, Error>) -> Void
+    ) {
+        guard let request = apiConfiguration.makeGetMeURLRequest() else {
+            completion(.failure(
+                NSError(domain: "", code: -1, userInfo: [NSLocalizedDescriptionKey: "Invalid Request"])
+            ))
+            return
+        }
+        
+        apiClient.request(request: request) { result in
+            switch result {
+            case .success(let data):
+                do {
+                    let decoder = JSONDecoder()
+                    decoder.dateDecodingStrategy = .iso8601
+                    let response = try decoder.decode(APIResponse<User>.self, from: data)
                     completion(.success(response))
                 } catch {
                     completion(.failure(error))

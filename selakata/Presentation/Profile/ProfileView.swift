@@ -7,10 +7,12 @@ struct ProfileView: View {
     @StateObject private var viewModel = DependencyContainer.shared.makeProfileViewModel()
     @Environment(\.modelContext) private var modelContext
     @AppStorage("selectedVoiceID") private var selectedVoiceID: String?
-
+    
     @EnvironmentObject var authService: AuthenticationService
     @Query private var savedVoices: [LocalAudioFile]
-
+    
+    @State private var showLogoutConfirmation = false
+    
     private var currentVoiceName: String {
         guard let selectedID = selectedVoiceID else {
             return "Default"
@@ -20,7 +22,7 @@ struct ProfileView: View {
         }
         return "Default"
     }
-
+    
     var body: some View {
         NavigationStack {
             List {
@@ -37,7 +39,7 @@ struct ProfileView: View {
                     .frame(maxWidth: .infinity)
                 }
                 .listRowBackground(Color.clear)
-
+                
                 
                 VStack(alignment: .leading, spacing: 8) {
                     Text("Bring familiar voices into your training!")
@@ -82,13 +84,26 @@ struct ProfileView: View {
                     .disabled(!viewModel.hasHearingTestResult)
                 }
                 
-            
+                
                 Section("Legal") {
                     NavigationLink(destination: PrivacyNoticeView()) {
                         HStack(spacing: 13) {
                             Image(systemName: "checkmark.shield.fill")
                                 .foregroundStyle(.secondary)
                             Text("Privacy notice")
+                        }
+                    }
+                }
+                
+                Section {
+                    Button(role: .destructive) {
+                        showLogoutConfirmation = true
+                    } label: {
+                        HStack(spacing: 13) {
+                            Image(systemName: "rectangle.portrait.and.arrow.right")
+                                .foregroundStyle(.red)
+                            Text("Log out")
+                                .foregroundStyle(.red)
                         }
                     }
                 }
@@ -99,10 +114,17 @@ struct ProfileView: View {
             .onAppear {
                 viewModel.onAppear()
             }
+            .confirmationDialog(
+                "Are you sure you want to log out?",
+                isPresented: $showLogoutConfirmation,
+                titleVisibility: .visible
+            ) {
+                Button("Log out", role: .destructive) {
+                    authService.signOut()
+                }
+                Button("Cancel", role: .cancel) { }
+            }
+
         }
     }
-}
-
-#Preview {
-    ProfileView()
 }
