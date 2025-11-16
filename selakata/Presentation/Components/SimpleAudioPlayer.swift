@@ -71,10 +71,15 @@ struct SimpleAudioPlayer: View {
             engine.stopAll()
             loadAudio()
             
-            // Autoplay if enabled
+            // Autoplay if enabled - wait for audio to load
             if autoPlay {
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                    handlePlay()
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                    if audioLoaded {
+                        print("🎵 Autoplay triggered")
+                        handlePlay()
+                    } else {
+                        print("⚠️ Autoplay skipped - audio not loaded")
+                    }
                 }
             }
         }
@@ -125,15 +130,21 @@ struct SimpleAudioPlayer: View {
 
     private func loadAudio() {
         audioLoaded = false
+        
+        print("🎵 Loading audio: \(fileName)")
 
         if let url = resolveURL(for: fileName) {
+            print("✅ Main audio URL resolved: \(url)")
             engine.loadMainAudio(url: url)
             audioLoaded = true
+        } else {
+            print("❌ Failed to resolve main audio URL for: \(fileName)")
         }
 
         if let noise = noiseFileName,
             let url = resolveURL(for: noise)
         {
+            print("✅ Noise audio URL resolved: \(url)")
             engine.loadNoiseAudio(url: url)
         }
     }

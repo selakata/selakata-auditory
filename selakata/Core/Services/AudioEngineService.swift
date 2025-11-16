@@ -19,6 +19,10 @@ class AudioEngineService: NSObject, ObservableObject, AVAudioPlayerDelegate {
 
     private var noiseDelayBeforeMain: TimeInterval = 1.0
     private var noiseDelayAfterMain: TimeInterval = 1.0
+    
+    // Fade settings
+    private let fadeDuration: TimeInterval = 1.0
+    private var fadeTimer: Timer?
 
     // Callbacks
     var onMainAudioWillFinish: (() -> Void)?
@@ -27,15 +31,29 @@ class AudioEngineService: NSObject, ObservableObject, AVAudioPlayerDelegate {
     // MARK: - Loading
 
     func loadMainAudio(url: URL) {
-        mainPlayer = try? AVAudioPlayer(contentsOf: url)
-        mainPlayer?.delegate = self
-        mainPlayer?.prepareToPlay()
+        do {
+            // Configure audio session
+            try AVAudioSession.sharedInstance().setCategory(.playback, mode: .default)
+            try AVAudioSession.sharedInstance().setActive(true)
+            
+            mainPlayer = try AVAudioPlayer(contentsOf: url)
+            mainPlayer?.delegate = self
+            mainPlayer?.prepareToPlay()
+            print("✅ Main audio loaded successfully")
+        } catch {
+            print("❌ Error loading main audio: \(error.localizedDescription)")
+        }
     }
 
     func loadNoiseAudio(url: URL) {
-        noisePlayer = try? AVAudioPlayer(contentsOf: url)
-        noisePlayer?.numberOfLoops = -1   // Endless background noise
-        noisePlayer?.prepareToPlay()
+        do {
+            noisePlayer = try AVAudioPlayer(contentsOf: url)
+            noisePlayer?.numberOfLoops = -1   // Endless background noise
+            noisePlayer?.prepareToPlay()
+            print("✅ Noise audio loaded successfully")
+        } catch {
+            print("❌ Error loading noise audio: \(error.localizedDescription)")
+        }
     }
 
     // MARK: - Play Sequence
@@ -43,11 +61,15 @@ class AudioEngineService: NSObject, ObservableObject, AVAudioPlayerDelegate {
     func playSequence() {
         stopAll()
 
-        // 1. Play noise first (if exists)
+        // 1. Play noise first (if exists) with fade in
         if let noisePlayer = noisePlayer {
             noisePlayer.currentTime = 0
+            noisePlayer.volume = 0.0
             noisePlayer.play()
             isNoisePlaying = true
+            
+            // Fade in noise
+            fadeIn(player: noisePlayer)
             
             // 2. After delay, play main audio (only if noise exists)
             DispatchQueue.main.asyncAfter(deadline: .now() + noiseDelayBeforeMain) {
@@ -60,10 +82,14 @@ class AudioEngineService: NSObject, ObservableObject, AVAudioPlayerDelegate {
     }
 
     func startMainAudio() {
-        guard let mainPlayer = mainPlayer else { return }
+        guard let mainPlayer = mainPlayer else {
+            print("❌ Main player is nil")
+            return
+        }
 
         mainPlayer.currentTime = 0
-        mainPlayer.play()
+        let success = mainPlayer.play()
+        print("🎵 Main audio play called - success: \(success), volume: \(mainPlayer.volume)")
         isMainPlaying = true
 
         // NOTIF 1: 1 detik sebelum selesai
@@ -84,12 +110,50 @@ class AudioEngineService: NSObject, ObservableObject, AVAudioPlayerDelegate {
             // NOTIF 2: main audio selesai
             onMainAudioFinished?()
 
-            // Stop noise after delay (only if noise exists)
-            if noisePlayer != nil {
-                DispatchQueue.main.asyncAfter(deadline: .now() + noiseDelayAfterMain) {
+            // Fade out and stop noise (only if noise exists)
+            if let noisePlayer = noisePlayer {
+                fadeOut(player: noisePlayer) {
                     self.noisePlayer?.stop()
                     self.isNoisePlaying = false
                 }
+            }
+        }
+    }
+    
+    // MARK: - Fade Effects
+    
+    private func fadeIn(player: AVAudioPlayer) {
+        player.volume = 0.0
+        let steps = 20
+        let stepDuration = fadeDuration / Double(steps)
+        let volumeIncrement = 1.0 / Float(steps)
+        
+        var currentStep = 0
+        fadeTimer = Timer.scheduledTimer(withTimeInterval: stepDuration, repeats: true) { [weak self] timer in
+            currentStep += 1
+            player.volume = min(volumeIncrement * Float(currentStep), 1.0)
+            
+            if currentStep >= steps {
+                timer.invalidate()
+                self?.fadeTimer = nil
+            }
+        }
+    }
+    
+    private func fadeOut(player: AVAudioPlayer, completion: @escaping () -> Void) {
+        let steps = 20
+        let stepDuration = fadeDuration / Double(steps)
+        let volumeDecrement = player.volume / Float(steps)
+        
+        var currentStep = 0
+        fadeTimer = Timer.scheduledTimer(withTimeInterval: stepDuration, repeats: true) { [weak self] timer in
+            currentStep += 1
+            player.volume = max(player.volume - volumeDecrement, 0.0)
+            
+            if currentStep >= steps || player.volume <= 0.0 {
+                timer.invalidate()
+                self?.fadeTimer = nil
+                completion()
             }
         }
     }
@@ -104,6 +168,8 @@ class AudioEngineService: NSObject, ObservableObject, AVAudioPlayerDelegate {
     }
 
     func stopAll() {
+        fadeTimer?.invalidate()
+        fadeTimer = nil
         mainPlayer?.stop()
         noisePlayer?.stop()
         isMainPlaying = false
