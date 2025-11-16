@@ -84,10 +84,18 @@ final class AuthenticationService: NSObject, ObservableObject {
        }
     
     private func checkAuthenticationState() {
-        guard let userId = getFromKeychain(for: keychainKey) else {
+        guard
+            let userId = getFromKeychain(for: keychainKey),
+            let token = getFromKeychain(for: tokenKey),
+            !userId.isEmpty,
+            !token.isEmpty
+        else {
+            print("Automatic signout: missing userId or token in Keychain")
             signOut()
             return
         }
+        
+        self.token = token
         
         let provider = ASAuthorizationAppleIDProvider()
         provider.getCredentialState(forUserID: userId) { [weak self] (state, _) in
@@ -97,6 +105,7 @@ final class AuthenticationService: NSObject, ObservableObject {
                 switch state {
                 case .authorized:
                     self.isAuthenticated = true
+                    self.isServerAuthenticated = true
                     self.userFullName = UserDefaults.standard.string(forKey: "user_name") ?? "Learner"
                     self.userEmail = UserDefaults.standard.string(forKey: "user_email")
                 case .revoked, .notFound:

@@ -9,14 +9,14 @@ struct selakataApp: App {
     var body: some Scene {
         WindowGroup {
             Group {
-                if hasSeenOnboarding {
-                    if (authService.isAuthenticated && authService.isServerAuthenticated) {
-                        MainView()
-                    } else {
-                        LoginView()
-                    }
+                if authService.isAuthenticated && authService.isServerAuthenticated {
+                    MainView()
                 } else {
-                    OnboardingView()
+                    if hasSeenOnboarding {
+                        LoginView()
+                    } else {
+                        OnboardingView()
+                    }
                 }
             }
             .environmentObject(authService)
