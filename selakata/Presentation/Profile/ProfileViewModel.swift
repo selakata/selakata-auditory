@@ -1,9 +1,4 @@
-//
-//  ProfileViewModel.swift
-//  selakata
-//
 //  Created by Anisa Amalia on 07/11/25.
-//
 
 import Foundation
 
@@ -22,7 +17,6 @@ class ProfileViewModel: ObservableObject {
     }
     
     func onAppear() {
-        self.userName = getProfileDataUseCase.getUserFullName()
         self.hasHearingTestResult = getProfileDataUseCase.hasCompletedHearingTest()
     }
 }

@@ -3,19 +3,19 @@
 import SwiftUI
 
 struct LoginView: View {
-    @StateObject private var viewModel = DependencyContainer.shared.makeLoginViewModel()
+    @EnvironmentObject var authService: AuthenticationService
     
     var body: some View {
-        SingleOnBoardingView(action: viewModel.signInWithApple,
-                             isLoading: viewModel.isLoading,
-                             errorMessage: viewModel.errorMessage)
+        SingleOnBoardingView(action: authService.signInWithApple,
+                             isLoading: authService.isLoading,
+                             errorMessage: authService.errorMessage)
         .padding(36)
         .background(Color(.systemBackground))
         
         // MARK: - Loading Overlay
         .overlay(
             Group {
-                if viewModel.isLoading {
+                if authService.isLoading {
                     Color.black.opacity(0.3)
                         .ignoresSafeArea()
 
@@ -31,13 +31,13 @@ struct LoginView: View {
         // MARK: - Alert Handling
         .alert(
             "Authentication Error",
-            isPresented: .constant(viewModel.errorMessage != nil)
+            isPresented: .constant(authService.errorMessage != nil)
         ) {
             Button("OK") {
-                viewModel.errorMessage = nil
+                authService.errorMessage = nil
             }
         } message: {
-            if let errorMessage = viewModel.errorMessage {
+            if let errorMessage = authService.errorMessage {
                 Text(errorMessage)
             }
         }

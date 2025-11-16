@@ -25,7 +25,7 @@ struct HomeView: View {
                     yourJourneyCard
                     
                     yourProgressCard
-
+                    
                 }
                 .padding(.bottom, 100)
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -54,7 +54,7 @@ struct HomeView: View {
             Text("Good to see you,\n")
                 .font(.body)
             
-            + Text("\(viewModel.userName)!")
+            + Text("\(authService.userFullName ?? "Learner")!")
                 .font(.headline)
                 .fontWeight(.semibold)
         )

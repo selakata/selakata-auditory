@@ -1,10 +1,3 @@
-//
-//  DependencyContainer.swift
-//  selakata
-//
-//  Created by Kiro on 11/11/25.
-//
-
 import Foundation
 import SwiftData
 
@@ -105,22 +98,15 @@ class DependencyContainer {
         )
     }()
     
-    // MARK: - Profile Dependencies
-    lazy var authenticationService: AuthenticationService = {
-        AuthenticationService()
-    }()
-    
     lazy var getProfileDataUseCase: GetProfileDataUseCase = {
         GetProfileDataUseCase(
-            hearingRepo: hearingTestRepository,
-            profileRepo: authenticationService
+            hearingRepo: hearingTestRepository
         )
     }()
     
     // MARK: - Factory Methods for ViewModels
     func makeHomeViewModel() -> HomeViewModel {
         return HomeViewModel(
-            authService: authenticationService,
             moduleUseCase: moduleUseCase
         )
     }
@@ -137,10 +123,6 @@ class DependencyContainer {
         return QuizViewModel(levelUseCase: levelUseCase, levelId: levelId)
     }
     
-    func makeLoginViewModel() -> LoginViewModel {
-        return LoginViewModel(authUseCase: authUseCase)
-    }
-    
     func makeProfileViewModel() -> ProfileViewModel {
         return ProfileViewModel(
             getProfileDataUseCase: getProfileDataUseCase,
@@ -150,6 +132,10 @@ class DependencyContainer {
     
     func makePersonalVoiceViewModel() -> PersonalVoiceViewModel {
         return PersonalVoiceViewModel()
+    }
+    
+    func makeAuthenticationService() -> AuthenticationService {
+        return AuthenticationService(authUseCase: authUseCase)
     }
     
     private init() {}

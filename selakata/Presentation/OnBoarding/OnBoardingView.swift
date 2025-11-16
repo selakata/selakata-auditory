@@ -7,7 +7,7 @@ struct OnboardingView: View {
     @State private var hasReachedLastPage = false
     @State private var timerCancellable: Cancellable?
     
-    @StateObject private var viewModel = DependencyContainer.shared.makeLoginViewModel()
+    @EnvironmentObject var authService: AuthenticationService
     
     private let pages: [OnboardingPage] = [
         OnboardingPage(
@@ -80,7 +80,7 @@ struct OnboardingView: View {
             
             Spacer()
             
-            if let errorMessage = viewModel.errorMessage {
+            if let errorMessage = authService.errorMessage {
                 Text(errorMessage)
                     .font(.caption)
                     .foregroundColor(.red)
@@ -91,11 +91,11 @@ struct OnboardingView: View {
                 title: "Continue with Apple",
                 leftIcon: Image("icon-apple"),
                 isDisabled: !hasReachedLastPage,
-                isLoading: viewModel.isLoading,
+                isLoading: authService.isLoading,
                 variant: .primary,
                 action: {
                     hasSeenOnboarding = true
-                    viewModel.signInWithApple()
+                    authService.signInWithApple()
                 }
             )
             .padding(.horizontal, 24)
