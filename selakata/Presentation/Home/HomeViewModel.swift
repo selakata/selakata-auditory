@@ -49,21 +49,16 @@ class HomeViewModel: ObservableObject {
     @Published var journeyState: JourneyCardState = .loading
     @Published var progressStats: ProgressStats = .init()
 
-    private let authService: AuthenticationService
     private let moduleUseCase: ModuleUseCase
     
     private var cancellables = Set<AnyCancellable>()
 
     
-    init(authService: AuthenticationService, moduleUseCase: ModuleUseCase) {
-        self.authService = authService
+    init(moduleUseCase: ModuleUseCase) {
         self.moduleUseCase = moduleUseCase
-        
-        updateUserName()
     }
     
     func loadData(localVoices: [LocalAudioFile], selectedVoiceID: String?) {
-        updateUserName()
         updateVoiceState(localVoices: localVoices, selectedVoiceID: selectedVoiceID)
         fetchModules()
         loadProgressData()
@@ -82,10 +77,6 @@ class HomeViewModel: ObservableObject {
         }
     }
     
-    private func updateUserName() {
-        self.userName = authService.getUserFullName()
-    }
-
     func fetchModules() {
         self.journeyState = .loading
         

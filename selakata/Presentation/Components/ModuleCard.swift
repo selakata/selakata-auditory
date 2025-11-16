@@ -30,7 +30,6 @@ struct ModuleCard: View {
                             .foregroundColor(Color.Default._700)
                     }
                     
-                    
                     Text(module.description)
                         .font(.subheadline)
                         .foregroundColor(Color.Default._700)
@@ -42,7 +41,7 @@ struct ModuleCard: View {
                 Spacer()
                 
                 Color.clear
-                    .frame(width: 110)
+                    .frame(width: 100)
                 
             }
             .padding(padding)

@@ -4,13 +4,13 @@ import SwiftData
 @main
 struct selakataApp: App {
     @AppStorage("hasSeenOnboarding") var hasSeenOnboarding = false
-    @StateObject private var authService = AuthenticationService()
+    @StateObject private var authService = DependencyContainer.shared.makeAuthenticationService()
     
     var body: some Scene {
         WindowGroup {
             Group {
                 if hasSeenOnboarding {
-                    if (authService.isAuthenticated) {
+                    if (authService.isAuthenticated && authService.isServerAuthenticated) {
                         MainView()
                     } else {
                         LoginView()
