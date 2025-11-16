@@ -63,11 +63,11 @@ struct ProfileView: View {
                         }
                     }
                     
-                    NavigationLink(destination: Text("Progress Page")) {
+                    NavigationLink(destination: Text("Report")) {
                         HStack(spacing: 13) {
                             Image(systemName: "progress.indicator")
                                 .foregroundStyle(.secondary)
-                            Text("Progress")
+                            Text("Report")
                         }
                     }
                     

@@ -6,11 +6,13 @@
 //
 
 import Foundation
+import SwiftData
 
 /// Centralized dependency injection container for the app
 @MainActor
 class DependencyContainer {
     static let shared = DependencyContainer()
+    var modelContext: ModelContext?
     
     // MARK: - Shared Infrastructure
     private lazy var apiClient: APIClientProtocol = {
@@ -116,6 +118,13 @@ class DependencyContainer {
     }()
     
     // MARK: - Factory Methods for ViewModels
+    func makeHomeViewModel() -> HomeViewModel {
+        return HomeViewModel(
+            authService: authenticationService,
+            moduleUseCase: moduleUseCase
+        )
+    }
+    
     func makeModulesViewModel() -> ModulesViewModel {
         return ModulesViewModel(moduleUseCase: moduleUseCase)
     }
