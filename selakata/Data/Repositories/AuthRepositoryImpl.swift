@@ -15,7 +15,7 @@ public class AuthRepositoryImpl: AuthRepository {
         self.dataSource = dataSource
     }
     
-    public func auth(username: String, appleId: String, email: String, name: String, completion: @escaping (Result<AuthResponse, Error>) -> Void) {
+    public func auth(username: String, appleId: String, email: String, name: String, completion: @escaping (Result<APIResponse<AuthData>, Error>) -> Void) {
         dataSource.auth(username: username, appleId: appleId, email: email, name: name, completion: completion)
     }
 }

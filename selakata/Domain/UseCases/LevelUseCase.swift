@@ -12,7 +12,15 @@ public class LevelUseCase {
         self.repository = repository
     }
     
-    public func fetchLevel(completion: @escaping (Result<LevelResponse, Error>) -> Void) {
-        repository.fetchLevel(completion: completion)
+    public func fetchLevel(moduleId: String, completion: @escaping (Result<APIResponse<[Level]>, Error>) -> Void) {
+        repository.fetchLevel(moduleId: moduleId, completion: completion)
+    }
+    
+    public func fetchDetailLevel(levelId: String, voiceId: String?, completion: @escaping (Result<APIResponse<Level>, Error>) -> Void) {
+        repository.fetchDetailLevel(levelId: levelId, voiceId: voiceId, completion: completion)
+    }
+    
+    public func updateLevelScore(levelId: String, score: Int, completion: @escaping (Result<String, Error>) -> Void) {
+        repository.updateLevelScore(levelId: levelId, score: score, completion: completion)
     }
 }

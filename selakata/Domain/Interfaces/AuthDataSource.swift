@@ -8,6 +8,6 @@
 import Foundation
 
 public protocol AuthDataSource {
-    func auth(username: String, appleId: String, email: String, name: String, completion: @escaping (Result<AuthResponse, Error>) -> Void)
+    func auth(username: String, appleId: String, email: String, name: String, completion: @escaping (Result<APIResponse<AuthData>, Error>) -> Void)
 }
 

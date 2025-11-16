@@ -1,18 +1,26 @@
-//
-//  selakataApp.swift
-//  selakata
-//
-//  Created by Fachry Anwar on 13/10/25.
-//
-
 import SwiftUI
 import SwiftData
 
 @main
 struct selakataApp: App {
+    @AppStorage("hasSeenOnboarding") var hasSeenOnboarding = false
+    @StateObject private var authService = DependencyContainer.shared.makeAuthenticationService()
+    
     var body: some Scene {
         WindowGroup {
-            LoginView()
+            Group {
+                if hasSeenOnboarding {
+                    if (authService.isAuthenticated && authService.isServerAuthenticated) {
+                        MainView()
+                    } else {
+                        LoginView()
+                    }
+                } else {
+                    OnboardingView()
+                }
+            }
+            .environmentObject(authService)
+            .preferredColorScheme(.light)
         }
     }
 }

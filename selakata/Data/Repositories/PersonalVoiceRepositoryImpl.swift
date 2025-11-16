@@ -12,6 +12,8 @@ class PersonalVoiceRepositoryImpl: PersonalVoiceRepository {
     
     func saveNewVoice(
         name: String,
+        voiceId: String,
+        urlPreview: String,
         tempRecordingURL: URL,
         duration: TimeInterval,
         context: ModelContext
@@ -30,10 +32,12 @@ class PersonalVoiceRepositoryImpl: PersonalVoiceRepository {
         } catch {
             throw error
         }
-        let newAudioFile = AudioFile(
+        let newAudioFile = LocalAudioFile(
             voiceName: name,
             fileName: permanentFileName,
-            duration: Int(duration.rounded())
+            duration: Int(duration.rounded()),
+            voiceId: voiceId,
+            urlPreview: urlPreview
         )
         
         context.insert(newAudioFile)

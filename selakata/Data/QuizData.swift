@@ -25,9 +25,9 @@ struct AnswerDummy: Identifiable {
 
 struct QuizData {
     //dummy for Module - Complete with all quiz data
-    static let dummyModule: [Module] = [
+    static let dummyModule: [LocalModule] = [
         // Audio Identification Module
-        Module(
+        LocalModule(
             id: UUID(),
             label: "Identification",
             desc: "Test kemampuan identifikasi suara dan kata",
@@ -37,7 +37,7 @@ struct QuizData {
             updatedBy: "system",
             levelList: [
                 // Easy Level
-                Level(
+                LocalLevel(
                     id: UUID(),
                     label: "Easy",
                     value: 1,
@@ -46,7 +46,7 @@ struct QuizData {
                     updatedAt: "2024-11-02",
                     updatedBy: "system",
                     question: identificationQuestions[0].enumerated().map { index, question in
-                        Question(
+                        LocalQuestion(
                             id: UUID(),
                             text: question.text,
                             urutan: index + 1,
@@ -55,7 +55,7 @@ struct QuizData {
                             createdAt: "2024-11-02",
                             updatedAt: "2024-11-02",
                             updatedBy: "system",
-                            audioFile: AudioFile(
+                            audioFile: LocalAudioFile(
                                 id: UUID(),
                                 fileName: "\(audioIdentification[0][index]).mp3",
                                 fileURL: audioIdentification[0][index],
@@ -74,7 +74,7 @@ struct QuizData {
                                 updatedBy: "system"
                             ),
                             answer: question.answers.enumerated().map { answerIndex, answer in
-                                Answer(
+                                LocalAnswer(
                                     id: UUID(),
                                     text: answer.title,
                                     urutan: answerIndex + 1,
@@ -87,7 +87,7 @@ struct QuizData {
                     }
                 ),
                 // Medium Level
-                Level(
+                LocalLevel(
                     id: UUID(),
                     label: "Medium",
                     value: 2,
@@ -96,7 +96,7 @@ struct QuizData {
                     updatedAt: "2024-11-02",
                     updatedBy: "system",
                     question: identificationQuestions[1].enumerated().map { index, question in
-                        Question(
+                        LocalQuestion(
                             id: UUID(),
                             text: question.text,
                             urutan: index + 1,
@@ -105,7 +105,7 @@ struct QuizData {
                             createdAt: "2024-11-02",
                             updatedAt: "2024-11-02",
                             updatedBy: "system",
-                            audioFile: AudioFile(
+                            audioFile: LocalAudioFile(
                                 id: UUID(),
                                 fileName: "\(audioIdentification[1][index]).mp3",
                                 fileURL: audioIdentification[1][index],
@@ -124,7 +124,7 @@ struct QuizData {
                                 updatedBy: "system"
                             ),
                             answer: question.answers.enumerated().map { answerIndex, answer in
-                                Answer(
+                                LocalAnswer(
                                     id: UUID(),
                                     text: answer.title,
                                     urutan: answerIndex + 1,
@@ -137,7 +137,7 @@ struct QuizData {
                     }
                 ),
                 // Hard Level
-                Level(
+                LocalLevel(
                     id: UUID(),
                     label: "Hard",
                     value: 3,
@@ -146,7 +146,7 @@ struct QuizData {
                     updatedAt: "2024-11-02",
                     updatedBy: "system",
                     question: identificationQuestions[2].enumerated().map { index, question in
-                        Question(
+                        LocalQuestion(
                             id: UUID(),
                             text: question.text,
                             urutan: index + 1,
@@ -155,7 +155,7 @@ struct QuizData {
                             createdAt: "2024-11-02",
                             updatedAt: "2024-11-02",
                             updatedBy: "system",
-                            audioFile: AudioFile(
+                            audioFile: LocalAudioFile(
                                 id: UUID(),
                                 fileName: "\(audioIdentification[2][index]).mp3",
                                 fileURL: audioIdentification[2][index],
@@ -174,7 +174,7 @@ struct QuizData {
                                 updatedBy: "system"
                             ),
                             answer: question.answers.enumerated().map { answerIndex, answer in
-                                Answer(
+                                LocalAnswer(
                                     id: UUID(),
                                     text: answer.title,
                                     urutan: answerIndex + 1,
@@ -190,7 +190,7 @@ struct QuizData {
         ),
         
         // Audio Discrimination Module
-        Module(
+        LocalModule(
             id: UUID(),
             label: "Discrimination",
             desc: "Test kemampuan diskriminasi suara",
@@ -200,7 +200,7 @@ struct QuizData {
             updatedBy: "system",
             levelList: [
                 // Easy Level
-                Level(
+                LocalLevel(
                     id: UUID(),
                     label: "Easy",
                     value: 1,
@@ -209,7 +209,7 @@ struct QuizData {
                     updatedAt: "2024-11-02",
                     updatedBy: "system",
                     question: discriminationQuestions[0].enumerated().map { index, question in
-                        Question(
+                        LocalQuestion(
                             id: UUID(),
                             text: question.text,
                             urutan: index + 1,
@@ -218,7 +218,7 @@ struct QuizData {
                             createdAt: "2024-11-02",
                             updatedAt: "2024-11-02",
                             updatedBy: "system",
-                            audioFile: AudioFile(
+                            audioFile: LocalAudioFile(
                                 id: UUID(),
                                 fileName: "\(audioDiscrimintion[0][index]).mp3",
                                 fileURL: audioDiscrimintion[0][index],
@@ -237,7 +237,7 @@ struct QuizData {
                                 updatedBy: "system"
                             ),
                             answer: question.answers.enumerated().map { answerIndex, answer in
-                                Answer(
+                                LocalAnswer(
                                     id: UUID(),
                                     text: answer.title,
                                     urutan: answerIndex + 1,
@@ -250,7 +250,7 @@ struct QuizData {
                     }
                 ),
                 // Medium Level
-                Level(
+                LocalLevel(
                     id: UUID(),
                     label: "Medium",
                     value: 2,
@@ -259,7 +259,7 @@ struct QuizData {
                     updatedAt: "2024-11-02",
                     updatedBy: "system",
                     question: discriminationQuestions[1].enumerated().map { index, question in
-                        Question(
+                        LocalQuestion(
                             id: UUID(),
                             text: question.text,
                             urutan: index + 1,
@@ -268,7 +268,7 @@ struct QuizData {
                             createdAt: "2024-11-02",
                             updatedAt: "2024-11-02",
                             updatedBy: "system",
-                            audioFile: AudioFile(
+                            audioFile: LocalAudioFile(
                                 id: UUID(),
                                 fileName: "\(audioDiscrimintion[1][index]).mp3",
                                 fileURL: audioDiscrimintion[1][index],
@@ -287,7 +287,7 @@ struct QuizData {
                                 updatedBy: "system"
                             ),
                             answer: question.answers.enumerated().map { answerIndex, answer in
-                                Answer(
+                                LocalAnswer(
                                     id: UUID(),
                                     text: answer.title,
                                     urutan: answerIndex + 1,
@@ -300,7 +300,7 @@ struct QuizData {
                     }
                 ),
                 // Hard Level
-                Level(
+                LocalLevel(
                     id: UUID(),
                     label: "Hard",
                     value: 3,
@@ -309,7 +309,7 @@ struct QuizData {
                     updatedAt: "2024-11-02",
                     updatedBy: "system",
                     question: discriminationQuestions[2].enumerated().map { index, question in
-                        Question(
+                        LocalQuestion(
                             id: UUID(),
                             text: question.text,
                             urutan: index + 1,
@@ -318,7 +318,7 @@ struct QuizData {
                             createdAt: "2024-11-02",
                             updatedAt: "2024-11-02",
                             updatedBy: "system",
-                            audioFile: AudioFile(
+                            audioFile: LocalAudioFile(
                                 id: UUID(),
                                 fileName: "\(audioDiscrimintion[2][index]).mp3",
                                 fileURL: audioDiscrimintion[2][index],
@@ -337,7 +337,7 @@ struct QuizData {
                                 updatedBy: "system"
                             ),
                             answer: question.answers.enumerated().map { answerIndex, answer in
-                                Answer(
+                                LocalAnswer(
                                     id: UUID(),
                                     text: answer.title,
                                     urutan: answerIndex + 1,
@@ -353,7 +353,7 @@ struct QuizData {
         ),
         
         // Audio Comprehension Module
-        Module(
+        LocalModule(
             id: UUID(),
             label: "Comprehension",
             desc: "Test kemampuan pemahaman audio",
@@ -363,7 +363,7 @@ struct QuizData {
             updatedBy: "system",
             levelList: [
                 // Easy Level
-                Level(
+                LocalLevel(
                     id: UUID(),
                     label: "Easy",
                     value: 1,
@@ -372,7 +372,7 @@ struct QuizData {
                     updatedAt: "2024-11-02",
                     updatedBy: "system",
                     question: comprehensionQuestions[0].enumerated().map { index, question in
-                        Question(
+                        LocalQuestion(
                             id: UUID(),
                             text: question.text,
                             urutan: index + 1,
@@ -381,7 +381,7 @@ struct QuizData {
                             createdAt: "2024-11-02",
                             updatedAt: "2024-11-02",
                             updatedBy: "system",
-                            audioFile: AudioFile(
+                            audioFile: LocalAudioFile(
                                 id: UUID(),
                                 fileName: "\(audioComprehension[0][index]).mp3",
                                 fileURL: audioComprehension[0][index],
@@ -400,7 +400,7 @@ struct QuizData {
                                 updatedBy: "system"
                             ),
                             answer: question.answers.enumerated().map { answerIndex, answer in
-                                Answer(
+                                LocalAnswer(
                                     id: UUID(),
                                     text: answer.title,
                                     urutan: answerIndex + 1,
@@ -413,7 +413,7 @@ struct QuizData {
                     }
                 ),
                 // Medium Level
-                Level(
+                LocalLevel(
                     id: UUID(),
                     label: "Medium",
                     value: 2,
@@ -422,7 +422,7 @@ struct QuizData {
                     updatedAt: "2024-11-02",
                     updatedBy: "system",
                     question: comprehensionQuestions[1].enumerated().map { index, question in
-                        Question(
+                        LocalQuestion(
                             id: UUID(),
                             text: question.text,
                             urutan: index + 1,
@@ -431,7 +431,7 @@ struct QuizData {
                             createdAt: "2024-11-02",
                             updatedAt: "2024-11-02",
                             updatedBy: "system",
-                            audioFile: AudioFile(
+                            audioFile: LocalAudioFile(
                                 id: UUID(),
                                 fileName: "\(audioComprehension[1][index]).mp3",
                                 fileURL: audioComprehension[1][index],
@@ -450,7 +450,7 @@ struct QuizData {
                                 updatedBy: "system"
                             ),
                             answer: question.answers.enumerated().map { answerIndex, answer in
-                                Answer(
+                                LocalAnswer(
                                     id: UUID(),
                                     text: answer.title,
                                     urutan: answerIndex + 1,
@@ -463,7 +463,7 @@ struct QuizData {
                     }
                 ),
                 // Hard Level
-                Level(
+                LocalLevel(
                     id: UUID(),
                     label: "Hard",
                     value: 3,
@@ -472,7 +472,7 @@ struct QuizData {
                     updatedAt: "2024-11-02",
                     updatedBy: "system",
                     question: comprehensionQuestions[2].enumerated().map { index, question in
-                        Question(
+                        LocalQuestion(
                             id: UUID(),
                             text: question.text,
                             urutan: index + 1,
@@ -481,7 +481,7 @@ struct QuizData {
                             createdAt: "2024-11-02",
                             updatedAt: "2024-11-02",
                             updatedBy: "system",
-                            audioFile: AudioFile(
+                            audioFile: LocalAudioFile(
                                 id: UUID(),
                                 fileName: "\(audioComprehension[2][index]).mp3",
                                 fileURL: audioComprehension[2][index],
@@ -500,7 +500,7 @@ struct QuizData {
                                 updatedBy: "system"
                             ),
                             answer: question.answers.enumerated().map { answerIndex, answer in
-                                Answer(
+                                LocalAnswer(
                                     id: UUID(),
                                     text: answer.title,
                                     urutan: answerIndex + 1,
@@ -516,7 +516,7 @@ struct QuizData {
         ),
         
         // Competing Speaker Module
-        Module(
+        LocalModule(
             id: UUID(),
             label: "Competing Speaker",
             desc: "Test kemampuan mendengar dalam lingkungan bising",
@@ -526,7 +526,7 @@ struct QuizData {
             updatedBy: "system",
             levelList: [
                 // Level II
-                Level(
+                LocalLevel(
                     id: UUID(),
                     label: "Level II",
                     value: 2,
@@ -535,7 +535,7 @@ struct QuizData {
                     updatedAt: "2024-11-02",
                     updatedBy: "system",
                     question: computationSpeakerQuestions[0].enumerated().map { index, question in
-                        Question(
+                        LocalQuestion(
                             id: UUID(),
                             text: question.text,
                             urutan: index + 1,
@@ -544,7 +544,7 @@ struct QuizData {
                             createdAt: "2024-11-02",
                             updatedAt: "2024-11-02",
                             updatedBy: "system",
-                            audioFile: AudioFile(
+                            audioFile: LocalAudioFile(
                                 id: UUID(),
                                 fileName: "\(audioCompetingSpeaker[0][index]).mp3",
                                 fileURL: audioCompetingSpeaker[0][index],
@@ -563,7 +563,7 @@ struct QuizData {
                                 updatedBy: "system"
                             ),
                             answer: question.answers.enumerated().map { answerIndex, answer in
-                                Answer(
+                                LocalAnswer(
                                     id: UUID(),
                                     text: answer.title,
                                     urutan: answerIndex + 1,
@@ -576,7 +576,7 @@ struct QuizData {
                     }
                 ),
                 // Level III
-                Level(
+                LocalLevel(
                     id: UUID(),
                     label: "Level III",
                     value: 3,
@@ -585,7 +585,7 @@ struct QuizData {
                     updatedAt: "2024-11-02",
                     updatedBy: "system",
                     question: computationSpeakerQuestions[1].enumerated().map { index, question in
-                        Question(
+                        LocalQuestion(
                             id: UUID(),
                             text: question.text,
                             urutan: index + 1,
@@ -594,7 +594,7 @@ struct QuizData {
                             createdAt: "2024-11-02",
                             updatedAt: "2024-11-02",
                             updatedBy: "system",
-                            audioFile: AudioFile(
+                            audioFile: LocalAudioFile(
                                 id: UUID(),
                                 fileName: "\(audioCompetingSpeaker[1][index]).mp3",
                                 fileURL: audioCompetingSpeaker[1][index],
@@ -613,7 +613,7 @@ struct QuizData {
                                 updatedBy: "system"
                             ),
                             answer: question.answers.enumerated().map { answerIndex, answer in
-                                Answer(
+                                LocalAnswer(
                                     id: UUID(),
                                     text: answer.title,
                                     urutan: answerIndex + 1,

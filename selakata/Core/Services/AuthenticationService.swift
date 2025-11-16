@@ -1,35 +1,34 @@
-//
-//  AuthenticationService.swift
-//  selakata
-//
 //  Created by ais on 02/11/25.
-//
 
 import AuthenticationServices
 import Foundation
-import SwiftUI
+import Combine
 
 @MainActor
-final class AuthenticationService: NSObject, ObservableObject, ProfileRepository {
+final class AuthenticationService: NSObject, ObservableObject {
     // MARK: - Published states
     @Published var isAuthenticated = false
-    @Published var userAuthId: String?
-    @Published var userFullName: String?
-    @Published var userEmail: String?
+    @Published var isServerAuthenticated = false
     @Published var isLoading = false
     @Published var errorMessage: String?
     
-    // MARK: - Keychain
-    private let keychainService = "com.selakata.auth"
-    private let keychainAccount = "appleUserId"
+    @Published var userAuthId: String?
+    @Published var userFullName: String?
+    @Published var userEmail: String?
+    @Published var token: String?
     
-    // MARK: - Init
-    override init() {
+    private let authUseCase: AuthUseCase
+    private var cancellables = Set<AnyCancellable>()
+    
+    private let keychainKey = "appleUserId"
+    private let tokenKey = "token"
+    
+    init(authUseCase: AuthUseCase) {
+        self.authUseCase = authUseCase
         super.init()
         checkAuthenticationState()
     }
     
-    // MARK: - Sign In
     func signInWithApple() {
         isLoading = true
         errorMessage = nil
@@ -37,63 +36,69 @@ final class AuthenticationService: NSObject, ObservableObject, ProfileRepository
         let request = ASAuthorizationAppleIDProvider().createRequest()
         request.requestedScopes = [.fullName, .email]
         
-        let controller = ASAuthorizationController(authorizationRequests: [
-            request
-        ])
+        let controller = ASAuthorizationController(authorizationRequests: [request])
         controller.delegate = self
         controller.presentationContextProvider = self
         controller.performRequests()
     }
     
-    // MARK: - Sign Out
     func signOut() {
         isAuthenticated = false
+        isServerAuthenticated = false
         userAuthId = nil
-        userFullName = ""
+        userFullName = nil
         userEmail = nil
         
-        // Hapus data dari Keychain dan UserDefaults
-        KeychainHelper.shared.delete(
-            service: keychainService,
-            account: keychainAccount
-        )
+        deleteFromKeychain(for: keychainKey)
+        deleteFromKeychain(for: tokenKey)
         UserDefaults.standard.removeObject(forKey: "user_name")
         UserDefaults.standard.removeObject(forKey: "user_email")
-        
-        print("🚪 User signed out and data cleared.")
     }
     
-    // MARK: - Check state (auto login)
+    private func authenticateWithServer(userId: String, email: String, name: String) {
+           isLoading = true
+
+           authUseCase.execute(
+               username: userId,
+               appleId: userId,
+               email: email,
+               name: name
+           ) { [weak self] result in
+               guard let self else { return }
+               DispatchQueue.main.async {
+                   self.isLoading = false
+
+                   switch result {
+                   case .success(let response):
+                       self.isServerAuthenticated = true
+                       self.userFullName = response.data.user.name
+                       saveToKeychain(value: response.data.token, for: "token")
+                       print("Server auth success. Token saved.")
+
+                   case .failure(let error):
+                       self.errorMessage = error.localizedDescription
+                       print("Server auth failed:", error.localizedDescription)
+                   }
+               }
+           }
+       }
+    
     private func checkAuthenticationState() {
-        // Cek apakah userId tersimpan di Keychain
-        guard
-            let data = KeychainHelper.shared.read(
-                service: keychainService,
-                account: keychainAccount
-            ),
-            let userId = String(data: data, encoding: .utf8)
-        else {
-            print(
-                "❌ Tidak ada Apple ID tersimpan di Keychain, tampilkan LoginView"
-            )
+        guard let userId = getFromKeychain(for: keychainKey) else {
+            signOut()
             return
         }
         
         let provider = ASAuthorizationAppleIDProvider()
-        provider.getCredentialState(forUserID: userId) {
-            [weak self] (state, error) in
+        provider.getCredentialState(forUserID: userId) { [weak self] (state, _) in
             DispatchQueue.main.async {
                 guard let self = self else { return }
+                
                 switch state {
                 case .authorized:
                     self.isAuthenticated = true
-                    self.userFullName = UserDefaults.standard.string(
-                        forKey: "user_name"
-                    ) ?? "Learner"
-                    self.userEmail = UserDefaults.standard.string(
-                        forKey: "user_email"
-                    )
-                    print("✅ Apple ID valid, langsung masuk Home (\(userId))")
+                    self.userFullName = UserDefaults.standard.string(forKey: "user_name") ?? "Learner"
+                    self.userEmail = UserDefaults.standard.string(forKey: "user_email")
                 case .revoked, .notFound:
                     self.signOut()
                 default:
@@ -116,84 +121,60 @@ extension AuthenticationService: ASAuthorizationControllerDelegate {
     ) {
         isLoading = false
         
-        guard
-            let credential = authorization.credential
-                as? ASAuthorizationAppleIDCredential
-        else {
+        guard let credential = authorization.credential as? ASAuthorizationAppleIDCredential else {
             self.errorMessage = "Invalid Apple credential"
             return
         }
         
-        let authId = credential.user
-        let fullName = credential.fullName
+        let userId = credential.user
+
+        let nameComponents = credential.fullName
+        let fullName = [
+            nameComponents?.givenName,
+            nameComponents?.familyName
+        ].compactMap { $0 }.joined(separator: " ")
+        let finalName = fullName.isEmpty
+            ? (UserDefaults.standard.string(forKey: "user_name") ?? "Learner")
+            : fullName
+        
         let email = credential.email
+        ?? UserDefaults.standard.string(forKey: "user_email")
+        ?? "\(userId)@privaterelay.appleid.com"
         
         print("🍏 Apple Sign In success:")
-        print(" - userId:", authId)
-        print(" - fullName:", fullName?.formatted() ?? "nil")
-        print(" - email:", email ?? "nil")
+        print(" - userId:", userId)
+        print(" - fullName:", finalName)
+        print(" - email:", email)
         
-        let data = Data(authId.utf8)
-        KeychainHelper.shared.save(
-            data,
-            service: keychainService,
-            account: keychainAccount
-        )
+        saveToKeychain(value: userId, for: keychainKey)
         
-        self.userAuthId = authId
-        
-        if let email = email {
-            UserDefaults.standard.set(email, forKey: "user_email")
-            self.userEmail = email
-        }
-        
-        if let fullName = fullName {
-            let displayName = PersonNameComponentsFormatter().string(
-                from: fullName
-            )
-            if !displayName.isEmpty {
-                UserDefaults.standard.set(displayName, forKey: "user_name")
-                self.userFullName = displayName
-            }
-        }
-        
-        // Mark as authenticated
+        self.userAuthId = userId
+        self.userEmail = email
+        self.userFullName = finalName
         self.isAuthenticated = true
+        
+        UserDefaults.standard.set(email, forKey: "user_email")
+        UserDefaults.standard.set(finalName, forKey: "user_name")
+                
+        authenticateWithServer(userId: userId, email: email, name: finalName)
     }
     
     func authorizationController(
         controller: ASAuthorizationController,
         didCompleteWithError error: Error
     ) {
-        isLoading = false
+        self.errorMessage = error.localizedDescription
+        self.isLoading = false
         
-        if let authError = error as? ASAuthorizationError {
-            switch authError.code {
-            case .canceled: errorMessage = "Sign in was canceled"
-            case .failed: errorMessage = "Sign in failed"
-            case .invalidResponse: errorMessage = "Invalid response"
-            case .notHandled: errorMessage = "Sign in not handled"
-            case .unknown: errorMessage = "Unknown error occurred"
-            @unknown default: errorMessage = "An error occurred"
-            }
-        } else {
-            errorMessage = error.localizedDescription
-        }
-        
-        print("❌ Apple Sign In error:", errorMessage ?? "unknown error")
+        print("Apple Sign-In error:", error.localizedDescription)
     }
 }
 
 // MARK: - Presentation Context
-extension AuthenticationService:
-    ASAuthorizationControllerPresentationContextProviding
-{
-    func presentationAnchor(for controller: ASAuthorizationController)
-    -> ASPresentationAnchor
-    {
+extension AuthenticationService: ASAuthorizationControllerPresentationContextProviding {
+    func presentationAnchor(for controller: ASAuthorizationController) -> ASPresentationAnchor {
         guard
-            let windowScene = UIApplication.shared.connectedScenes.first
-                as? UIWindowScene,
+            let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
             let window = windowScene.windows.first
         else {
             return ASPresentationAnchor()

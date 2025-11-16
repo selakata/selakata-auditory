@@ -1,15 +1,25 @@
-//
-//  ProfileView.swift
-//  selakata
-//
 //  Created by Anisa Amalia on 07/11/25.
-//
 
 import SwiftUI
+import SwiftData
 
 struct ProfileView: View {
-    
-    @StateObject private var viewModel = ProfileViewModel()
+    @StateObject private var viewModel = DependencyContainer.shared.makeProfileViewModel()
+    @Environment(\.modelContext) private var modelContext
+    @AppStorage("selectedVoiceID") private var selectedVoiceID: String?
+
+    @EnvironmentObject var authService: AuthenticationService
+    @Query private var savedVoices: [LocalAudioFile]
+
+    private var currentVoiceName: String {
+        guard let selectedID = selectedVoiceID else {
+            return "Default"
+        }
+        if let voice = savedVoices.first(where: { $0.voiceId == selectedID }) {
+            return voice.voiceName
+        }
+        return "Default"
+    }
 
     var body: some View {
         NavigationStack {
@@ -20,7 +30,7 @@ struct ProfileView: View {
                             .font(.system(size: 90))
                             .foregroundStyle(Color(.systemGray4))
                         
-                        Text(viewModel.userName)
+                        Text(authService.userFullName ?? "Learner")
                             .font(.system(size: 30).weight(.bold))
                             .foregroundStyle(.primary)
                     }
@@ -43,22 +53,25 @@ struct ProfileView: View {
                         HStack {
                             Image(systemName: "mic"); Text("Personalized voice")
                             Spacer()
-                            Text("Flavia") // tar ganti based on the current active personal voice
+                            Text(currentVoiceName)
                                 .foregroundStyle(.secondary)
                         }
                     }
                     
-                    NavigationLink(destination: Text("Progress Page")) {
+                    NavigationLink(destination: Text("Report")) {
                         HStack(spacing: 13) {
                             Image(systemName: "progress.indicator")
                                 .foregroundStyle(.secondary)
-                            Text("Progress")
+                            Text("Report")
                         }
                     }
                     
+                    let submitUseCase = DependencyContainer.shared.submitEarlyTestUseCase
+                    
                     NavigationLink(destination: HearingTestResultsView(
                         isFromProfile: true,
-                        repository: viewModel.hearingTestRepository
+                        repository: viewModel.hearingTestRepository,
+                        submitEarlyTestUseCase: submitUseCase
                     )) {
                         HStack(spacing: 13) {
                             Image(systemName: "doc.badge.clock")

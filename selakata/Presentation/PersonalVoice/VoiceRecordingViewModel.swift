@@ -12,18 +12,20 @@ import SwiftUI
 @MainActor
 class VoiceRecordingViewModel: ObservableObject {
     
-    enum RecordingState { case idle, recording, review }
+    enum RecordingState { case idle, recording, review, saving }
     @Published var recordingState: RecordingState = .idle
     @Published var voiceName: String = ""
     @Published var validationError: String? = nil
     @Published var recordingTimeDisplay: String = "00:00"
+    @Published var audioLevels: [Float] = []
 
     private let useCase: PersonalVoiceUseCase
     private let modelContext: ModelContext
     private var recordingTimer: Timer?
-    
+
+    @ObservedObject var playerService: AudioPlayerService
+
     var promptText: String { useCase.promptText }
-    var isPlaying: Bool { useCase.isPlaying }
 
     var formattedDuration: String {
         guard let duration = useCase.lastRecordingResult?.duration else {
@@ -37,10 +39,13 @@ class VoiceRecordingViewModel: ObservableObject {
     init(useCase: PersonalVoiceUseCase, modelContext: ModelContext) {
         self.useCase = useCase
         self.modelContext = modelContext
+        self.playerService = useCase.player
     }
     
     func startRecording() {
         validationError = nil
+        audioLevels = []
+        
         do {
             try useCase.startRecording()
             recordingState = .recording
@@ -69,12 +74,14 @@ class VoiceRecordingViewModel: ObservableObject {
             validationError = nil
             recordingState = .review
         case .failure(let error):
+            useCase.retakeRecording()
+            
             if let recError = error as? RecordingError, case .recorderError(let msg) = recError {
                 validationError = msg
             } else {
                 validationError = error.localizedDescription
             }
-            recordingState = .idle
+            recordingState = .review
         }
     }
     
@@ -83,11 +90,13 @@ class VoiceRecordingViewModel: ObservableObject {
         let minutes = Int(time) / 60
         let seconds = Int(time) % 60
         recordingTimeDisplay = String(format: "%02d:%02d", minutes, seconds)
+        self.audioLevels.append(useCase.getAudioLevel())
     }
     
     func retakeRecording() {
         useCase.retakeRecording()
         validationError = nil
+        audioLevels = []
         recordingState = .idle
     }
     
@@ -95,24 +104,34 @@ class VoiceRecordingViewModel: ObservableObject {
         useCase.playRecording()
     }
     
-    func saveRecording() -> Bool {
+    func handleDoneButtonTap(completion: @escaping (Bool) -> Void) {
         validationError = nil
         
-        let result = useCase.saveRecording(
-            name: voiceName,
-            context: modelContext
-        )
+        guard !voiceName.trimmingCharacters(in: .whitespaces).isEmpty else {
+            validationError = "Please enter a name for your voice."
+            completion(false)
+            return
+        }
+    
+        guard useCase.lastRecordingResult != nil else {
+            validationError = "Recording is invalid. Please retake."
+            completion(false)
+            return
+        }
         
-        switch result {
-        case .success:
-            return true
-        case .failure(let error):
-            if case RecordingError.recorderError(let msg) = error, msg == "Name is empty." {
-                validationError = "Please enter a name for your voice."
-                return false
+        recordingState = .saving
+        
+        useCase.saveAndCloneRecording(name: voiceName, context: modelContext) { result in
+            switch result {
+            case .success(let voiceData):
+                UserDefaults.standard.set(voiceData.voiceId, forKey: "selectedVoiceID")
+                self.recordingState = .idle
+                completion(true)
+            case .failure(let error):
+                self.validationError = "Save failed: \(error.localizedDescription)"
+                self.recordingState = .review
+                completion(false)
             }
-            validationError = error.localizedDescription
-            return false
         }
     }
     

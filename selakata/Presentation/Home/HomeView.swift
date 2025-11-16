@@ -1,78 +1,116 @@
-//
-//  HomeView.swift
-//  selakata
-//
-//  Created by Anisa Amalia on 18/10/25.
-//
-
 import SwiftUI
 import SwiftData
 
 struct HomeView: View {
-    @StateObject private var viewModel = HomeViewModel()
-    @State private var isStartingTest = false
+    @StateObject private var viewModel = DependencyContainer.shared.makeHomeViewModel()
     
-    @Query(sort: \Module.orderIndex) private var allModules: [Module]
-
+    @AppStorage("selectedVoiceID") private var selectedVoiceID: String?
+    @Query private var allLocalVoices: [LocalAudioFile]
+    
+    @EnvironmentObject var authService: AuthenticationService
+    
+    init() {
+        _viewModel = StateObject(wrappedValue: DependencyContainer.shared.makeHomeViewModel())
+    }
+    
     var body: some View {
         NavigationStack {
             ScrollView {
-                VStack(spacing: 32) {
-                    // buat mascot, sekarang placeholder pake icon aja ya
-                    Image(systemName: "progress.indicator")
-                        .font(.system(size: 150))
-                        .foregroundStyle(.purple)
-                        .padding(.top)
-
-                    ReminderCard()
-                        .padding(.horizontal, 24)
+                VStack(alignment: .leading, spacing: 32) {
                     
-                    progressCardSection
+                    greeting
                     
-                    Button(action: {
-                        isStartingTest = true
-                    }) {
-                        HearingTestCard()
-                    }
-                    .buttonStyle(.plain)
-                    .padding(.horizontal, 24)
+                    personalizedVoiceCard
+                    
+                    yourJourneyCard
+                    
+                    yourProgressCard
+                    
                 }
-                .padding(.vertical)
+                .padding(.bottom, 100)
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .background(Color.white)
             }
             .navigationTitle("Home")
             .navigationBarHidden(true)
-            .navigationDestination(isPresented: $isStartingTest) {
-                HearingTestOnboardingView(isStartingTest: $isStartingTest)
+            .background(Color.clear)
+            .onAppear {
+                viewModel.loadData(
+                    localVoices: allLocalVoices,
+                    selectedVoiceID: selectedVoiceID
+                )
             }
-        }
-        .onChange(of: allModules) {
-            viewModel.processModules(allModules)
-        }
-        .onAppear {
-            viewModel.processModules(allModules)
+            .onChange(of: allLocalVoices) {
+                viewModel.updateVoiceState(localVoices: allLocalVoices, selectedVoiceID: selectedVoiceID)
+            }
+            .onChange(of: selectedVoiceID) {
+                viewModel.updateVoiceState(localVoices: allLocalVoices, selectedVoiceID: selectedVoiceID)
+            }
         }
     }
     
-    private var progressCardSection: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            if let moduleToDisplay = viewModel.mostRecentModule ?? viewModel.firstAvailableModule {
-                Text(moduleToDisplay.progress == 0.0 ? "Start your journey" : "Continue exercise")
-                    .font(.headline)
-                    .padding(.horizontal, 24)
-
-                //TO DO:DEBUGGING
-//                NavigationLink(destination: Text("Question Page")) {
-//                    ModuleCard(module: moduleToDisplay, showProgressBar: true)
-//                }
-                .buttonStyle(.plain)
-                .padding(.horizontal, 24)
-            } else {
-                Text("Module not found")
-                    .padding()
-                    .background(.thinMaterial)
-                    .cornerRadius(20)
-            }
+    private var greeting: some View {
+        (
+            Text("Good to see you,\n")
+                .font(.body)
+            
+            + Text("\(authService.userFullName ?? "Learner")!")
+                .font(.headline)
+                .fontWeight(.semibold)
+        )
+        .lineSpacing(4)
+        .padding(.horizontal, 24)
+        .padding(.top, 16)
+    }
+    
+    private var personalizedVoiceCard: some View {
+        NavigationLink(destination: PersonalVoiceListView()) {
+            PersonalizedVoiceCard(state: viewModel.voiceState)
         }
+        .buttonStyle(.plain)
+        .padding(.horizontal, 24)
+    }
+    
+    private var yourJourneyCard: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text("Your journey")
+                .font(.subheadline)
+                .fontWeight(.semibold)
+                .foregroundStyle(.secondary)
+            
+            YourJourneyCard(
+                state: viewModel.journeyState,
+                onRetry: {
+                    viewModel.fetchModules()
+                }
+            )
+        }
+        .padding(.horizontal, 24)
+    }
+    
+    private var yourProgressCard: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            HStack {
+                Text("Your progress")
+                    .font(.subheadline)
+                    .fontWeight(.semibold)
+                    .foregroundStyle(.secondary)
+                
+                Spacer()
+                
+                NavigationLink(destination: { Text("Report") }, label: {
+                    Text("View all")
+                        .font(.footnote)
+                        .foregroundStyle(.accent)
+                })
+            }
+            
+            ProgressCardView(stats: viewModel.progressStats, isLoading: {
+                if case .loading = viewModel.journeyState { return true }
+                return false
+            }())
+        }
+        .padding(.horizontal, 24)
     }
 }
 

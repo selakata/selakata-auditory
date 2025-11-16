@@ -14,7 +14,7 @@ public class ModuleRepositoryImpl: ModuleRepository {
         self.dataSource = dataSource
     }
     
-    public func fetchModule(completion: @escaping (Result<ModuleResponse, Error>) -> Void) {
+    public func fetchModule(completion: @escaping (Result<APIResponse<[Module]>, Error>) -> Void) {
         dataSource.fetchModule (completion: completion)
     }
 }

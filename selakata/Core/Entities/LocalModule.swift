@@ -1,15 +1,10 @@
-//
-//  Module.swift
-//  selakata
-//
 //  Created by ais on 30/10/25.
-//
 
 import Foundation
 import SwiftData
 
 @Model
-final class Module{
+final class LocalModule{
     @Attribute(.unique) var id: UUID
     var label : String
     var desc: String
@@ -17,11 +12,11 @@ final class Module{
     var createdAt: String
     var updatedAt: String
     var updatedBy: String
-    var levelList: [Level]
+    var levelList: [LocalLevel]
     var progress: Double
     var orderIndex: Int
     
-    init(id: UUID, label: String, desc: String, isActive: Bool, createdAt: String, updatedAt: String, updatedBy: String, levelList: [Level]) {
+    init(id: UUID, label: String, desc: String, isActive: Bool, createdAt: String, updatedAt: String, updatedBy: String, levelList: [LocalLevel]) {
         self.id = id
         self.label = label
         self.desc = desc

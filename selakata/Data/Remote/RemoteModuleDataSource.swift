@@ -16,7 +16,7 @@ public class RemoteModuleDataSource: ModuleDataSource {
         self.apiConfiguration = apiConfiguration
     }
     
-    public func fetchModule(completion: @escaping (Result<ModuleResponse, Error>) -> Void) {
+    public func fetchModule(completion: @escaping (Result<APIResponse<[Module]>, Error>) -> Void) {
         guard let url = apiConfiguration.makeModuleURL() else {
             completion(.failure(NSError(domain: "", code: -1, userInfo: [NSLocalizedDescriptionKey: "Invalid URL"])))
             return

@@ -1,10 +1,4 @@
-//
-//  AuthUseCase.swift
-//  selakata
-//
 //  Created by ais on 07/11/25.
-//
-
 
 
 public class AuthUseCase {
@@ -19,9 +13,8 @@ public class AuthUseCase {
         appleId: String,
         email: String,
         name: String,
-        completion: @escaping (Result<AuthResponse, Error>) -> Void
+        completion: @escaping (Result<APIResponse<AuthData>, Error>) -> Void
     ) {
-        print("AISDEBUG:AuthUseCase.execute: \(appleId) \(username) \(email) \(name)")
         repository.auth(
             username: username,
             appleId: appleId,

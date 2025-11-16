@@ -8,6 +8,6 @@
 import Foundation
 
 public protocol ModuleDataSource {
-    func fetchModule(completion: @escaping (Result<ModuleResponse, Error>) -> Void)
+    func fetchModule(completion: @escaping (Result<APIResponse<[Module]>, Error>) -> Void)
 }
 

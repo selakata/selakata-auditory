@@ -9,7 +9,7 @@ import Foundation
 import SwiftData
 
 @Model
-final class Answer {
+final class LocalAnswer {
     @Attribute(.unique) var id: UUID
     var text: String
     var urutan: Int

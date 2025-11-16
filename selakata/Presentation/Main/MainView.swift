@@ -1,46 +1,47 @@
-//
-//  MainView.swift
-//  selakata
-//
 //  Created by ais on 05/11/25.
-//
 
 import SwiftUI
 import SwiftData
 
 struct MainView: View {
-    @StateObject private var viewModel: ModulesViewModel
-    
-    init() {
-        let apiClient = APIClient()
-        let appConfiguration = AppConfiguration()
-        let apiConfiguration = ModuleAPIConfiguration(configuration: appConfiguration)
-        let dataSource: ModuleDataSource = RemoteModuleDataSource(apiClient: apiClient, apiConfiguration: apiConfiguration)
-        let repository = ModuleRepositoryImpl(dataSource: dataSource)
-        let moduleUseCase = ModuleUseCase(repository: repository)
-        
-        // Buat ViewModel sekali di init
-        _viewModel = StateObject(wrappedValue: ModulesViewModel(moduleUseCase: moduleUseCase))
-    }
+    @StateObject private var mainVM = MainViewModel()
+    @StateObject private var viewModel = DependencyContainer.shared.makeModulesViewModel()
     
     var body: some View {
-        TabView {
-            HomeView()
-                .tabItem {
-                    Label("Home", systemImage: "house.fill")
-                }
+        ZStack {
+            TabView {
+                HomeView()
+                    .tabItem {
+                        Label("Home", systemImage: "house.fill")
+                    }
+                
+                ModulesView(viewModel: viewModel)
+                    .tabItem {
+                        Label("Journey", systemImage: "flag")
+                    }
+                
+                ProfileView()
+                    .tabItem {
+                        Label("Profile", systemImage: "person.fill")
+                    }
+            }
+            .environmentObject(mainVM)
             
-            ModulesView(viewModel: viewModel)
-                .tabItem {
-                    Label("Modules", systemImage: "ear.fill")
-                }
-            
-            ProfileView()
-                .tabItem {
-                    Label("Profile", systemImage: "person.fill")
-                }
+            if mainVM.isModalVisible {
+                Modal(
+                    image: mainVM.modalData.image ?? Image("mascot"),
+                    title: mainVM.modalData.title,
+                    description: mainVM.modalData.description,
+                    ctaText: mainVM.modalData.ctaText,
+                    onCtaTap: {
+                        mainVM.hideModal()
+                    }
+                )
+                .transition(.opacity)
+                .zIndex(10)
+            }
         }
-        .modelContainer(for: [AudioFile.self, Module.self, Level.self])
+        .modelContainer(for: [LocalAudioFile.self, LocalModule.self, LocalLevel.self])
     }
 }
 

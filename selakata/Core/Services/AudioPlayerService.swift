@@ -3,12 +3,19 @@ import Foundation
 
 class AudioPlayerService: NSObject, ObservableObject {
     private var audioPlayer: AVAudioPlayer?
+    private var remotePlayer: AVPlayer?
+    
+    private var playerItem: AVPlayerItem?
+    private var statusObserver: NSKeyValueObservation?
+    private var didPlayToEndObserver: Any?
+    
     private var isSessionSetup = false
     
     @Published var isPlaying = false
     @Published var currentTime: TimeInterval = 0
     @Published var duration: TimeInterval = 0
     @Published var playbackRate: Float = 1.0
+    @Published var isReady = false
     
     private var timer: Timer?
     
@@ -78,16 +85,50 @@ class AudioPlayerService: NSObject, ObservableObject {
     }
     
     func loadAudioFromURL(_ url: URL) {
-        do {
-            audioPlayer = try AVAudioPlayer(contentsOf: url)
-            audioPlayer?.delegate = self
-            audioPlayer?.prepareToPlay()
-            audioPlayer?.enableRate = true
-            duration = audioPlayer?.duration ?? 0
-            currentTime = 0
-        } catch {
-            print("Error loading audio from URL: \(error)")
-            duration = 30.0
+        setupPlayer()
+        stop()
+
+        if url.isFileURL {
+            do {
+                audioPlayer = try AVAudioPlayer(contentsOf: url)
+                audioPlayer?.delegate = self
+                audioPlayer?.prepareToPlay()
+                audioPlayer?.enableRate = true
+                duration = audioPlayer?.duration ?? 0
+                currentTime = 0
+            } catch {
+                print("Error loading audio from URL: \(error)")
+                duration = 0
+            }
+        } else {
+            let asset = AVURLAsset(url: url)
+            playerItem = AVPlayerItem(asset: asset)
+            
+            statusObserver = playerItem?.observe(\.status, options: [.new, .initial]) { [weak self] item, _ in
+                guard let self = self else { return }
+                if item.status == .readyToPlay {
+                    DispatchQueue.main.async {
+                        self.duration = item.duration.seconds
+                        self.currentTime = 0
+                    }
+                } else if item.status == .failed {
+                    print("AudioPlayerService: Error loading remote stream: \(item.error?.localizedDescription ?? "Unknown error")")
+                    DispatchQueue.main.async {
+                        self.duration = 0
+                    }
+                }
+            }
+            
+            didPlayToEndObserver = NotificationCenter.default.addObserver(
+                forName: AVPlayerItem.didPlayToEndTimeNotification,
+                object: playerItem,
+                queue: .main
+            ) { [weak self] _ in
+                self?.handlePlaybackFinished()
+            }
+
+            remotePlayer = AVPlayer(playerItem: playerItem)
+            remotePlayer?.rate = playbackRate
         }
     }
     
@@ -118,40 +159,81 @@ class AudioPlayerService: NSObject, ObservableObject {
     
     func play() {
         setupPlayer()
-        if audioPlayer?.play() == true {
+        
+        if let audioPlayer = audioPlayer {
+            // Prepare to play if not already prepared
+            if !audioPlayer.prepareToPlay() {
+                print("⚠️ AudioPlayerService: Failed to prepare audio player")
+            }
+            
+            if audioPlayer.play() {
+                isPlaying = true
+                isReady = true
+                startTimer()
+                print("✅ Audio playing successfully")
+            } else {
+                print("❌ AudioPlayerService: play() returned false")
+            }
+        } else if let remotePlayer = remotePlayer {
+            remotePlayer.play()
             isPlaying = true
+            isReady = true
             startTimer()
+            print("✅ Remote audio playing successfully")
         } else {
-            print("AudioPlayerService: play() failed. Player not ready or file not loaded.")
+            print("❌ AudioPlayerService: play() failed. Player not ready or file not loaded.")
+            isReady = false
         }
     }
     
     func pause() {
-        audioPlayer?.pause()
+        if let audioPlayer = audioPlayer, audioPlayer.isPlaying {
+            audioPlayer.pause()
+        } else if let remotePlayer = remotePlayer, remotePlayer.rate > 0 {
+            remotePlayer.pause()
+        }
+        
         isPlaying = false
         stopTimer()
     }
     
     func stop() {
         audioPlayer?.stop()
-        audioPlayer?.currentTime = 0
+        audioPlayer = nil
+        remotePlayer?.pause()
+        remotePlayer?.seek(to: .zero)
+        remotePlayer = nil
+        
+        statusObserver?.invalidate()
+        statusObserver = nil
+        if let observer = didPlayToEndObserver {
+            NotificationCenter.default.removeObserver(observer)
+            didPlayToEndObserver = nil
+        }
+        playerItem = nil
+        
         isPlaying = false
         currentTime = 0
+        duration = 0
         stopTimer()
     }
     
     func seek(to time: TimeInterval) {
-        audioPlayer?.currentTime = time
-        currentTime = time
+        let seekTime = CMTime(seconds: time, preferredTimescale: 600)
+        
+        if let audioPlayer = audioPlayer {
+            audioPlayer.currentTime = time
+            self.currentTime = time
+        } else if let remotePlayer = remotePlayer {
+            remotePlayer.seek(to: seekTime)
+            self.currentTime = time
+        }
     }
     
     func setPlaybackRate(_ rate: Float) {
         playbackRate = rate
         audioPlayer?.rate = rate
-    }
-    
-    var isReady: Bool {
-        return audioPlayer != nil && duration > 0
+        remotePlayer?.rate = rate
     }
     
     func debugAudioFiles() {
@@ -183,14 +265,30 @@ class AudioPlayerService: NSObject, ObservableObject {
     }
     
     private func startTimer() {
-        timer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { _ in
-            self.currentTime = self.audioPlayer?.currentTime ?? 0
+        timer?.invalidate()
+        timer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { [weak self] _ in
+            guard let self = self else { return }
+            
+            if let audioPlayer = self.audioPlayer {
+                self.currentTime = audioPlayer.currentTime
+            } else if let remotePlayer = self.remotePlayer,
+                      let item = remotePlayer.currentItem,
+                      item.status == .readyToPlay {
+                self.currentTime = remotePlayer.currentTime().seconds
+            }
         }
     }
     
     private func stopTimer() {
         timer?.invalidate()
         timer = nil
+    }
+    
+    private func handlePlaybackFinished() {
+        isPlaying = false
+        currentTime = 0
+        stopTimer()
+        remotePlayer?.seek(to: .zero)
     }
     
     deinit {
@@ -203,5 +301,6 @@ extension AudioPlayerService: AVAudioPlayerDelegate {
         isPlaying = false
         currentTime = 0
         stopTimer()
+        handlePlaybackFinished()
     }
 }

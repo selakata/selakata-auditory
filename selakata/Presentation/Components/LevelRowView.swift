@@ -20,12 +20,9 @@ struct LevelRowView: View {
     }
 
     var body: some View {
-        NavigationLink(
-            destination: QuizView(
-                level: level,
-                questionCategory: questionCategory
-            )
-        ) {
+        NavigationLink{
+            QuizView(levelId: level.id)
+        }label: {
             HStack {
                 ZStack {
                     Rectangle()
@@ -43,7 +40,7 @@ struct LevelRowView: View {
                         .fill(Color.white)
                         .frame(width: 8, height: 8).padding(16)
                 }.frame(maxWidth: 24)
-                
+
                 Spacer().frame(width: 8)
 
                 HStack(spacing: 16) {
@@ -81,13 +78,13 @@ struct LevelRowView: View {
         }
     }
 }
-
-#Preview {
-    VStack(spacing: 12) {
-        LevelRowView(
-            level: QuizData.dummyModule[0].levelList[0],
-            moduleLabel: "Identification"
-        )
-    }
-    .padding()
-}
+//
+//#Preview {
+//    VStack(spacing: 12) {
+//        LevelRowView(
+//            level: QuizData.dummyModule[0].levelList[0],
+//            moduleLabel: "Identification"
+//        )
+//    }
+//    .padding()
+//}

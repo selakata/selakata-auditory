@@ -1,249 +1,178 @@
-import SwiftUI
 import AVFoundation
+import SwiftUI
 
 struct SimpleAudioPlayer: View {
-    let title: String
+
     let fileName: String
+    let noiseFileName: String?
     let onAudioCompleted: (() -> Void)?
     let onReplayRequested: (() -> Void)?
     let shouldReplay: Bool
-    @StateObject private var audioPlayer = AudioPlayerService()
-    @State private var hasAudio = false
+    let autoPlay: Bool
+
+    @StateObject private var engine = AudioEngineService()
+    @State private var showNoiseIndicator = false
     @State private var hasCompletedOnce = false
-    @State private var timer: Timer?
     @State private var hasPlayedOnce = false
-    
-    init(title: String, fileName: String, onAudioCompleted: (() -> Void)? = nil, onReplayRequested: (() -> Void)? = nil, shouldReplay: Bool = false) {
-        self.title = title
-        self.fileName = fileName
-        self.onAudioCompleted = onAudioCompleted
-        self.onReplayRequested = onReplayRequested
-        self.shouldReplay = shouldReplay
-    }
-    
+    @State private var audioLoaded = false
+
     var body: some View {
         VStack(spacing: 16) {
-            // Audio Icon
-            
-//            Text(title)
-//                .font(.headline)
-            
-            if hasAudio {
-                // Progress
-                VStack(spacing: 8) {
-                    HStack {
-                        Text(formatTime(audioPlayer.currentTime))
-                            .font(.caption)
-                        Spacer()
-                        Text(formatTime(audioPlayer.duration))
-                            .font(.caption)
+
+            if audioLoaded {
+                if showNoiseIndicator {
+                    HStack(spacing: 4) {
+                        Image(systemName: "waveform")
+                        Text("Background noise active")
                     }
-                    .foregroundColor(.secondary)
-                    
-                    ProgressView(value: audioPlayer.duration > 0 ? audioPlayer.currentTime / audioPlayer.duration : 0)
-                        .progressViewStyle(LinearProgressViewStyle(tint: .blue))
+                    .font(.caption2)
+                    .foregroundColor(.orange)
+                    .padding(6)
+                    .background(Color.orange.opacity(0.1))
+                    .cornerRadius(6)
                 }
-                
-                // Controls
-                HStack(spacing: 20) {
-                    Button(action: {
-                        if audioPlayer.isPlaying {
-                            audioPlayer.pause()
+
+                Button(action: handlePlay) {
+                    ZStack {
+                        if hasPlayedOnce && hasCompletedOnce
+                            && !engine.isMainPlaying
+                        {
+                            Image(systemName: "arrow.clockwise")
+                                .font(.system(size: 20))
                         } else {
-                            // Check if this is a replay attempt
-                            if hasPlayedOnce && hasCompletedOnce {
-                                onReplayRequested?()
-                            } else {
-                                audioPlayer.play()
-                                hasPlayedOnce = true
-                            }
+                            Image(
+                                systemName: engine.isMainPlaying
+                                    ? "pause" : "speaker.wave.2.fill"
+                            )
+                            .font(.system(size: 20))
                         }
-                    }) {
-                        Image(systemName: audioPlayer.isPlaying ? "pause.circle.fill" : "play.circle.fill")
-                            .font(.system(size: 50))
-                            .foregroundColor(.blue)
                     }
-                    
-//                    Button(action: {
-//                        let rates: [Float] = [0.5, 1.0, 1.5, 2.0]
-//                        if let currentIndex = rates.firstIndex(of: audioPlayer.playbackRate) {
-//                            let nextIndex = (currentIndex + 1) % rates.count
-//                            audioPlayer.setPlaybackRate(rates[nextIndex])
-//                        }
-//                    }) {
-//                        Text("\(String(format: "%.1f", audioPlayer.playbackRate))x")
-//                            .font(.caption)
-//                            .padding(.horizontal, 8)
-//                            .padding(.vertical, 4)
-//                            .background(Color.blue.opacity(0.2))
-//                            .cornerRadius(4)
-//                    }
-                    
-                    // Debug button for testing completion
-//                    Button(action: {
-//                        print("🧪 Manual completion trigger")
-//                        hasCompletedOnce = true
-//                        onAudioCompleted?()
-//                    }) {
-//                        Text("Done")
-//                            .font(.caption)
-//                            .padding(.horizontal, 8)
-//                            .padding(.vertical, 4)
-//                            .background(Color.green.opacity(0.2))
-//                            .foregroundColor(.green)
-//                            .cornerRadius(4)
-//                    }
+                    .frame(width: 28, height: 28)
+                    .padding()
+                    .background(Color.Primary._200)
+                    .clipShape(RoundedRectangle(cornerRadius: 8))
                 }
+
             } else {
                 Text("Audio tidak tersedia")
                     .font(.caption)
-                    .foregroundColor(.secondary)
-                
-                Button("Coba Lagi") {
-                    loadAudio()
-                }
-                .font(.caption)
-                .padding(.horizontal, 12)
-                .padding(.vertical, 6)
-                .background(Color.blue)
-                .foregroundColor(.white)
-                .cornerRadius(8)
+                Button("Coba Lagi") { loadAudio() }
             }
         }
-        .padding()
-        .background(Color(.systemGray6))
-        .cornerRadius(12)
         .onAppear {
+            setupCallbacks()
             loadAudio()
         }
-        .onDisappear {
-            stopTimer()
-        }
-        .onChange(of: shouldReplay) { oldValue, newValue in
-            if newValue {
-                // Reset states and replay
-                hasCompletedOnce = false
-                hasPlayedOnce = false
-                audioPlayer.stop()
-                audioPlayer.play()
-            }
-        }
-        .onChange(of: fileName) { oldValue, newValue in
-            print("🔄 Audio file changed from '\(oldValue)' to '\(newValue)'")
-            audioPlayer.stop() // Stop current audio
-            hasCompletedOnce = false // Reset completion flag
-            stopTimer()
-            loadAudio() // Load new audio
-        }
-        .onChange(of: audioPlayer.isPlaying) { oldValue, newValue in
-            if newValue {
-                // Audio started playing, start monitoring
-                startCompletionTimer()
-            } else {
-                // Audio stopped, stop monitoring
-                stopTimer()
-            }
-        }
-    }
-    
-    private func loadAudio() {
-        print("🎵 Loading audio file: \(fileName)")
-        
-        // Stop current audio if playing
-        if audioPlayer.isPlaying {
-            audioPlayer.stop()
-        }
-        
-        // Try to load audio from Resources/Audio subdirectory
-        let subdirectory = "Resources/Audio"
-        
-        if let audioURL = Bundle.main.url(forResource: fileName, withExtension: "mp3", subdirectory: subdirectory) {
-            // Load audio using AudioPlayerService
-            audioPlayer.loadAudioFromPath(fileName: fileName, subdirectory: subdirectory)
-            hasAudio = true
-            print("✅ Successfully loaded: \(fileName).mp3 from \(subdirectory)")
-            print("   Full path: \(audioURL.path)")
-        } else {
-            // Fallback: try root bundle
-            if let audioURL = Bundle.main.url(forResource: fileName, withExtension: "mp3") {
-                audioPlayer.loadAudio(fileName: fileName)
-                hasAudio = true
-                print("✅ Successfully loaded: \(fileName).mp3 from root bundle")
-                print("   Full path: \(audioURL.path)")
-            } else {
-                hasAudio = false
-                print("❌ Audio file not found: \(fileName).mp3")
-                print("   Tried locations:")
-                print("   - \(subdirectory)/\(fileName).mp3")
-                print("   - \(fileName).mp3 (root)")
-                
-                // Debug: List all available MP3 files
-                if let mp3Files = Bundle.main.urls(forResourcesWithExtension: "mp3", subdirectory: subdirectory) {
-                    print("   Available files in \(subdirectory):")
-                    for file in mp3Files {
-                        print("     - \(file.lastPathComponent)")
+        .onChange(of: fileName) { _, _ in
+            // Reload audio when fileName changes (new question)
+            hasCompletedOnce = false
+            hasPlayedOnce = false
+            showNoiseIndicator = false
+            engine.stopAll()
+            loadAudio()
+            
+            // Autoplay if enabled - wait for audio to load
+            if autoPlay {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                    if audioLoaded {
+                        print("🎵 Autoplay triggered")
+                        handlePlay()
+                    } else {
+                        print("⚠️ Autoplay skipped - audio not loaded")
                     }
                 }
             }
         }
-    }
-    
-    private func handleAudioError(_ error: Error) {
-        switch error {
-        case let error as AudioError:
-            print("❌ Audio Error:", error.localizedDescription)
-            
-        default:
-            print("❌ Unexpected Error:", error.localizedDescription)
-        }
-        
-        // Optional: tampilkan alert atau fallback
-        // showAlert(title: "Audio Error", message: error.localizedDescription)
+        .onChange(of: shouldReplay) { _, newValue in if newValue { replay() } }
     }
 
-    private func formatTime(_ time: TimeInterval) -> String {
-        let minutes = Int(time) / 60
-        let seconds = Int(time) % 60
-        return String(format: "%d:%02d", minutes, seconds)
+    // MARK: - Actions
+
+    private func handlePlay() {
+        if engine.isMainPlaying {
+            engine.pause()
+            showNoiseIndicator = false
+            return
+        }
+
+        if hasPlayedOnce && hasCompletedOnce {
+            onReplayRequested?()
+        }
+
+        hasCompletedOnce = false
+        hasPlayedOnce = true
+
+        showNoiseIndicator = noiseFileName != nil
+        engine.playSequence()
     }
-    
-    private func startCompletionTimer() {
-        stopTimer() // Stop any existing timer
-        
-        timer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) { _ in
-            // Check if audio has completed
-            if audioPlayer.duration > 0 && 
-               audioPlayer.currentTime >= audioPlayer.duration - 0.5 && 
-               !hasCompletedOnce {
-                
-                print("🎵 Audio completed! Duration: \(audioPlayer.duration), Current: \(audioPlayer.currentTime)")
-                hasCompletedOnce = true
-                stopTimer()
-                
-                // Call completion callback
-                DispatchQueue.main.async {
-                    onAudioCompleted?()
-                }
+
+    private func replay() {
+        hasCompletedOnce = false
+        hasPlayedOnce = false
+        showNoiseIndicator = noiseFileName != nil
+        engine.playSequence()
+    }
+
+    private func setupCallbacks() {
+        engine.onMainAudioWillFinish = {
+            self.hasCompletedOnce = true
+            self.onAudioCompleted?()
+        }
+
+        engine.onMainAudioFinished = {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+                self.showNoiseIndicator = false
             }
         }
     }
-    
-    private func stopTimer() {
-        timer?.invalidate()
-        timer = nil
+
+    // MARK: - Load Files
+
+    private func loadAudio() {
+        audioLoaded = false
+        
+        print("🎵 Loading audio: \(fileName)")
+
+        if let url = resolveURL(for: fileName) {
+            print("✅ Main audio URL resolved: \(url)")
+            engine.loadMainAudio(url: url)
+            audioLoaded = true
+        } else {
+            print("❌ Failed to resolve main audio URL for: \(fileName)")
+        }
+
+        if let noise = noiseFileName,
+            let url = resolveURL(for: noise)
+        {
+            print("✅ Noise audio URL resolved: \(url)")
+            engine.loadNoiseAudio(url: url)
+        }
+    }
+
+    private func resolveURL(for name: String) -> URL? {
+        if name.hasPrefix("/") { return URL(fileURLWithPath: name) }
+        if let url = URL(string: name), url.scheme != nil { return url }
+        return Bundle.main.url(
+            forResource: name,
+            withExtension: "mp3",
+            subdirectory: "Resources/Audio"
+        )
+            ?? Bundle.main.url(forResource: name, withExtension: "mp3")
     }
 }
 
 #Preview {
     SimpleAudioPlayer(
-        title: "Dengarkan Audio Ini", 
-        fileName: "identification1",
+        fileName: "comprehension-easy-1",
+        noiseFileName: "comprehension-easy-1",
         onAudioCompleted: {
-            print("Audio completed in preview")
+            print("Preview: Main audio will finish soon!")
         },
         onReplayRequested: {
-            print("Replay requested in preview")
-        }
+            print("Preview: Replay button tapped!")
+        },
+        shouldReplay: false,
+        autoPlay: false
     )
     .padding()
 }
