@@ -9,6 +9,7 @@ struct QuizView: View {
     @State private var hasPlayedOnce: Bool = false
     @State private var triggerReplay: Bool = false
     @State private var showExitConfirmation: Bool = false
+    @State private var audioEngine: AudioEngineService?
 
     //    let category: Level
     @StateObject private var viewModel: QuizViewModel
@@ -24,62 +25,61 @@ struct QuizView: View {
     }
 
     var body: some View {
-        quizContent
-//        if viewModel.isLoading {
-//            VStack(spacing: 16) {
-//                ProgressView()
-//                    .scaleEffect(1.2)
-//
-//                if viewModel.isDownloadingAudio {
-//                    Text(viewModel.downloadProgress)
-//                        .font(.subheadline)
-//                        .foregroundColor(.secondary)
-//                } else {
-//                    Text("Loading questions...")
-//                        .font(.subheadline)
-//                        .foregroundColor(.secondary)
-//                }
-//            }
-//            .frame(maxWidth: .infinity, maxHeight: .infinity)
-//        } else if let errorMessage = viewModel.errorMessage {
-//            VStack(spacing: 16) {
-//                Image(systemName: "exclamationmark.triangle")
-//                    .font(.system(size: 50))
-//                    .foregroundColor(.orange)
-//
-//                Text("Error loading questions")
-//                    .font(.headline)
-//
-//                Text(errorMessage)
-//                    .font(.subheadline)
-//                    .foregroundColor(.secondary)
-//                    .multilineTextAlignment(.center)
-//                    .padding(.horizontal)
-//
-//                Button("Go Back") {
-//                    dismiss()
-//                }
-//                .buttonStyle(.bordered)
-//            }
-//            .frame(maxWidth: .infinity, maxHeight: .infinity)
-//        } else if viewModel.questions.isEmpty {
-//            VStack(spacing: 16) {
-//                Image(systemName: "questionmark.circle")
-//                    .font(.system(size: 50))
-//                    .foregroundColor(.gray)
-//
-//                Text("No questions available")
-//                    .font(.headline)
-//
-//                Button("Go Back") {
-//                    dismiss()
-//                }
-//                .buttonStyle(.bordered)
-//            }
-//            .frame(maxWidth: .infinity, maxHeight: .infinity)
-//        } else {
-//            quizContent
-//        }
+        if viewModel.isLoading {
+            VStack(spacing: 16) {
+                ProgressView()
+                    .scaleEffect(1.2)
+
+                if viewModel.isDownloadingAudio {
+                    Text(viewModel.downloadProgress)
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
+                } else {
+                    Text("Loading questions...")
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
+                }
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+        } else if let errorMessage = viewModel.errorMessage {
+            VStack(spacing: 16) {
+                Image(systemName: "exclamationmark.triangle")
+                    .font(.system(size: 50))
+                    .foregroundColor(.orange)
+
+                Text("Error loading questions")
+                    .font(.headline)
+
+                Text(errorMessage)
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
+                    .multilineTextAlignment(.center)
+                    .padding(.horizontal)
+
+                Button("Go Back") {
+                    dismiss()
+                }
+                .buttonStyle(.bordered)
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+        } else if viewModel.questions.isEmpty {
+            VStack(spacing: 16) {
+                Image(systemName: "questionmark.circle")
+                    .font(.system(size: 50))
+                    .foregroundColor(.gray)
+
+                Text("No questions available")
+                    .font(.headline)
+
+                Button("Go Back") {
+                    dismiss()
+                }
+                .buttonStyle(.bordered)
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+        } else {
+            quizContent
+        }
     }
 
     private var quizContent: some View {
@@ -127,7 +127,10 @@ struct QuizView: View {
                         viewModel.incrementReplayCount()
                     },
                     shouldReplay: triggerReplay,
-                    autoPlay: true
+                    autoPlay: !viewModel.isLoading && viewModel.isAudioReady,
+                    onEngineReady: { engine in
+                        audioEngine = engine
+                    }
                 )
                 .padding(.horizontal, 32)
                 .frame(height: geo.size.height * 0.3)
@@ -220,10 +223,15 @@ struct QuizView: View {
             .alert("Exit Quiz?", isPresented: $showExitConfirmation) {
                 Button("Cancel", role: .cancel) {}
                 Button("Exit", role: .destructive) {
+                    audioEngine?.stopAll()
                     dismiss()
                 }
             } message: {
                 Text("Your progress will be lost if you exit now.")
+            }
+            .onDisappear {
+                // Stop audio when view disappears
+                audioEngine?.stopAll()
             }
         }
     }

@@ -9,6 +9,7 @@ struct SimpleAudioPlayer: View {
     let onReplayRequested: (() -> Void)?
     let shouldReplay: Bool
     let autoPlay: Bool
+    let onEngineReady: ((AudioEngineService) -> Void)?
 
     @StateObject private var engine = AudioEngineService()
     @State private var showNoiseIndicator = false
@@ -37,7 +38,7 @@ struct SimpleAudioPlayer: View {
                         if hasPlayedOnce && hasCompletedOnce
                             && !engine.isMainPlaying
                         {
-                            Image(systemName: "arrow.clockwise")
+                            Image(systemName: "speaker.wave.2.fill")
                                 .font(.system(size: 20))
                         } else {
                             Image(
@@ -62,6 +63,7 @@ struct SimpleAudioPlayer: View {
         .onAppear {
             setupCallbacks()
             loadAudio()
+            onEngineReady?(engine)
         }
         .onChange(of: fileName) { _, _ in
             // Reload audio when fileName changes (new question)
@@ -172,7 +174,8 @@ struct SimpleAudioPlayer: View {
             print("Preview: Replay button tapped!")
         },
         shouldReplay: false,
-        autoPlay: false
+        autoPlay: false,
+        onEngineReady: nil
     )
     .padding()
 }
