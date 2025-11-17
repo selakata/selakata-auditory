@@ -102,11 +102,17 @@ struct QuizView: View {
                 .padding(.horizontal)
                 .padding(.top, 8)
 
+//                ProgressView(value: viewModel.progress)
+//                    .tint(.Primary._500)
+//                    .progressViewStyle(.linear)
+//                    .frame(height: 8)
+//                    .padding(.horizontal, 32)
+                
                 ProgressView(value: viewModel.progress)
-                    .tint(Color(.darkGray))
-                    .progressViewStyle(.linear)
-                    .frame(height: 8)
-                    .padding(.horizontal, 32)
+                    .progressViewStyle(
+                        ThickProgressViewStyle(height: 10, tint: .Primary._500)
+                    )
+                    .padding(.horizontal, 26)
 
                 // Simple Audio Player
                 SimpleAudioPlayer(
