@@ -123,6 +123,8 @@ struct QuizView: View {
                         withAnimation(.easeInOut(duration: 0.5)) {
                             audioCompleted = true
                         }
+                        // Start response timer when audio completes
+                        viewModel.startResponseTimer()
                     },
                     onReplayRequested: {
                         // Reset audio state for replay
@@ -216,6 +218,7 @@ struct QuizView: View {
                     correctAnswer: viewModel.correctAnswer,
                     totalQuestions: viewModel.totalQuestions,
                     repetitions: viewModel.totalReplayCount,
+                    averageResponseTime: viewModel.averageResponseTime,
                     onRestart: {
                         viewModel.dismissResults()
                         viewModel.restartQuiz()

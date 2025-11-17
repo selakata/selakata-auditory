@@ -10,6 +10,10 @@ class QuizViewModel: ObservableObject {
     @Published var correctAnswer: Int = 0
     @Published var showResults: Bool = false
     @Published var totalReplayCount: Int = 0
+    
+    // Response time tracking
+    private var audioCompletedTime: Date?
+    private var responseTimes: [TimeInterval] = []
 
     private let levelUseCase: LevelUseCase
     private let levelId: String
@@ -30,8 +34,8 @@ class QuizViewModel: ObservableObject {
         self.levelId = levelId
         
         // Clear cache before fetching new questions
-        print("🗑️ Clearing audio cache before starting quiz")
-        cacheService.clearAllCache()
+        // print("🗑️ Clearing audio cache before starting quiz")
+        // cacheService.clearAllCache()
         
         fetchQuestions()
     }
@@ -217,6 +221,24 @@ class QuizViewModel: ObservableObject {
         if answer.isCorrect {
             correctAnswer += 1
         }
+        
+        // Calculate response time
+        if let startTime = audioCompletedTime {
+            let responseTime = Date().timeIntervalSince(startTime)
+            responseTimes.append(responseTime)
+            print("⏱️ Response time: \(String(format: "%.2f", responseTime))s")
+        }
+    }
+    
+    func startResponseTimer() {
+        audioCompletedTime = Date()
+        print("⏱️ Started response timer")
+    }
+    
+    var averageResponseTime: String {
+        guard !responseTimes.isEmpty else { return "0.0s" }
+        let average = responseTimes.reduce(0, +) / Double(responseTimes.count)
+        return String(format: "%.1fs", average)
     }
 
     func nextQuestion() {
@@ -226,6 +248,7 @@ class QuizViewModel: ObservableObject {
             currentQuestionIndex += 1
             selectedAnswer = nil
             hasAnswered = false
+            audioCompletedTime = nil // Reset timer for next question
         }
     }
 
@@ -251,6 +274,8 @@ class QuizViewModel: ObservableObject {
         totalReplayCount = 0
         isAudioReady = false
         showResults = false
+        audioCompletedTime = nil
+        responseTimes = []
         
         // Re-download audio files
         downloadAudioFiles()

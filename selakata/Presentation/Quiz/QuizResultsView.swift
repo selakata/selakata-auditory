@@ -4,6 +4,7 @@ struct QuizResultsView: View {
     let correctAnswer: Int
     let totalQuestions: Int
     let repetitions: Int
+    let averageResponseTime: String
     let onRestart: () -> Void
     let onDismiss: () -> Void
 
@@ -17,10 +18,6 @@ struct QuizResultsView: View {
 
     private var totalScore: Int {
         Int((Double(correctAnswer) / Double(totalQuestions)) * 100)
-    }
-
-    private var averageResponseTime: String {
-        "2.5s"  // Mock data - can be calculated later
     }
 
     var body: some View {
@@ -163,6 +160,7 @@ struct QuizResultsView: View {
         correctAnswer: 13,
         totalQuestions: 15,
         repetitions: 5,
+        averageResponseTime: "2.5s",
         onRestart: {},
         onDismiss: {}
     )
