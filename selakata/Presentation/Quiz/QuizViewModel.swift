@@ -219,7 +219,7 @@ class QuizViewModel: ObservableObject {
 
     func showQuizResults() {
         showResults = true
-        levelUseCase.updateLevelScore(levelId: levelId, score: score){ [weak self] result in
+        levelUseCase.updateLevelScore(levelId: levelId, score: score * 10){ [weak self] result in
             DispatchQueue.main.async {
                 switch result {
                 case .success(let result):

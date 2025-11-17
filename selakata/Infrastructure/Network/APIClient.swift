@@ -43,12 +43,12 @@ class APIClient: APIClientProtocol {
                 return
             }
 
-//            if let jsonString = String(data: data, encoding: .utf8) {
-//                print("📦 [APIClient] Response JSON:")
-//                print(jsonString)
-//            } else {
-//                print("⚠️ [APIClient] No readable JSON response.")
-//            }
+            if let jsonString = String(data: data, encoding: .utf8) {
+                print("📦 [APIClient] Response JSON:")
+                print(jsonString)
+            } else {
+                print("⚠️ [APIClient] No readable JSON response.")
+            }
 
             do {
                 let decodedResponse = try JSONDecoder().decode(
@@ -105,12 +105,12 @@ class APIClient: APIClientProtocol {
                 return
             }
 
-//            if let jsonString = String(data: data, encoding: .utf8), !jsonString.isEmpty {
-//                 print("📦 [APIClient] Response JSON:")
-//                 print(jsonString)
-//             } else {
-//                 print("📦 [APIClient] Success: (Code: \((response as? HTTPURLResponse)?.statusCode ?? 0)) with empty response.")
-//             }
+            if let jsonString = String(data: data, encoding: .utf8), !jsonString.isEmpty {
+                 print("📦 [APIClient] Response JSON:")
+                 print(jsonString)
+             } else {
+                 print("📦 [APIClient] Success: (Code: \((response as? HTTPURLResponse)?.statusCode ?? 0)) with empty response.")
+             }
 
             completion(.success(data))
         }

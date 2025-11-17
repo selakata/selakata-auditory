@@ -1,9 +1,4 @@
-//
-//  Level.swift
-//  selakata
-//
 //  Created by ais on 12/11/25.
-//
 
 import Foundation
 
