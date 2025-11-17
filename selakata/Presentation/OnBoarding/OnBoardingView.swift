@@ -12,15 +12,15 @@ struct OnboardingView: View {
     private let pages: [OnboardingPage] = [
         OnboardingPage(
             title: "Imagine train with a voice that feels familiar, comforting, and truly yours",
-            imageName: "photo"
+            imageName: "onboarding-3"
         ),
         OnboardingPage(
             title: "With SelaKata’s Personalized Voice, you can make it happen!",
-            imageName: "photo"
+            imageName: "onboarding-2"
         ),
         OnboardingPage(
             title: "Start your journey today with your own voice",
-            imageName: "photo"
+            imageName: "onboarding-3"
         )
     ]
     
@@ -44,7 +44,7 @@ struct OnboardingView: View {
                             .foregroundColor(.black)
                             .padding(.horizontal, 24)
                         
-                        Image(systemName: pages[index].imageName)
+                        Image(pages[index].imageName)
                             .resizable()
                             .scaledToFit()
                             .frame(height: 200)
@@ -113,8 +113,4 @@ struct OnboardingView: View {
 struct OnboardingPage {
     let title: String
     let imageName: String
-}
-
-#Preview {
-    OnboardingView()
 }

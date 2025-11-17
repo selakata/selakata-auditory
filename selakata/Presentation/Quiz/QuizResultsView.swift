@@ -22,33 +22,28 @@ struct QuizResultsView: View {
     var body: some View {
         ScrollView {
             VStack(spacing: 32) {
-                // Title
                 Text("Level has completed!")
                     .font(.title)
                     .fontWeight(.bold)
-                    .padding(.top, 20)
+                    .padding(.top, 16)
                 
-                // Brain illustration
-                Image("quiz_completed")
-                    .font(.system(size: 120))
-                    .foregroundColor(.pink.opacity(0.6))
-                    .padding(.vertical, 20)
+                Image(score * 10 >= 80 ? "quiz_completed" : "quiz_notpass")
+                    .resizable()
+                    .scaledToFit()
+                    .foregroundColor(.white)
+                    .frame(height: 220)
                 
-                // Score
                 VStack(spacing: 8) {
                     Text("Score:")
                         .font(.title3)
                         .foregroundColor(.secondary)
                     
-                    Text("\(score)")
+                    Text("\(score * 10)")
                         .font(.system(size: 72, weight: .bold))
                         .foregroundColor(.primary)
                 }
-                .padding(.vertical, 10)
                 
-                // Stats Card
                 HStack(spacing: 0) {
-                    // Perfect hits
                     VStack(spacing: 12) {
                         ZStack {
                             Circle()
@@ -72,7 +67,6 @@ struct QuizResultsView: View {
                     Divider()
                         .frame(height: 80)
                     
-                    // Oops moments
                     VStack(spacing: 12) {
                         ZStack {
                             Circle()
@@ -137,9 +131,7 @@ struct QuizResultsView: View {
                         .fontWeight(.semibold)
                         .foregroundColor(.orange)
                 }
-                .padding(.top, 8)
                 
-                // Go to Module Detail Button
                 UtilsButton(
                     title: "Go to Module Detail",
                     leftIcon: nil,
@@ -171,7 +163,7 @@ struct QuizResultsView: View {
 
 #Preview {
     QuizResultsView(
-        score: 13,
+        score: 7,
         totalQuestions: 15,
         repetitions: 5,
         onRestart: {},
