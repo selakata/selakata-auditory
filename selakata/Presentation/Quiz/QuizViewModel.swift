@@ -7,7 +7,7 @@ class QuizViewModel: ObservableObject {
     @Published var currentQuestionIndex: Int = 0
     @Published var selectedAnswer: Answer? = nil
     @Published var hasAnswered: Bool = false
-    @Published var score: Int = 0
+    @Published var correctAnswer: Int = 0
     @Published var showResults: Bool = false
     @Published var totalReplayCount: Int = 0
 
@@ -190,7 +190,7 @@ class QuizViewModel: ObservableObject {
 
     var scoreText: String {
         guard !questions.isEmpty else { return "Score: 0/0" }
-        return "Score: \(score)/\(questions.count)"
+        return "Score: \(correctAnswer)/\(questions.count)"
     }
 
     var nextButtonText: String {
@@ -204,6 +204,10 @@ class QuizViewModel: ObservableObject {
     var audioSubdirectory: String {
         return "Resources/Audio"
     }
+    
+    private var totalScore: Int{
+        Int((Double(correctAnswer) / Double(totalQuestions)) * 100)
+    }
 
     // MARK: - Public Methods
     func selectAnswer(_ answer: Answer) {
@@ -211,7 +215,7 @@ class QuizViewModel: ObservableObject {
         hasAnswered = true
 
         if answer.isCorrect {
-            score += 1
+            correctAnswer += 1
         }
     }
 
@@ -227,7 +231,7 @@ class QuizViewModel: ObservableObject {
 
     func showQuizResults() {
         showResults = true
-        levelUseCase.updateLevelScore(levelId: levelId, score: score * 10){ [weak self] result in
+        levelUseCase.updateLevelScore(levelId: levelId, score: totalScore){ [weak self] result in
             DispatchQueue.main.async {
                 switch result {
                 case .success(let result):
@@ -243,7 +247,7 @@ class QuizViewModel: ObservableObject {
         currentQuestionIndex = 0
         selectedAnswer = nil
         hasAnswered = false
-        score = 0
+        correctAnswer = 0
         totalReplayCount = 0
         isAudioReady = false
         showResults = false

@@ -207,7 +207,7 @@ struct QuizView: View {
             }
             .fullScreenCover(isPresented: $viewModel.showResults) {
                 QuizResultsView(
-                    score: viewModel.score,
+                    correctAnswer: viewModel.correctAnswer,
                     totalQuestions: viewModel.totalQuestions,
                     repetitions: viewModel.totalReplayCount,
                     onRestart: {

@@ -1,18 +1,22 @@
 import SwiftUI
 
 struct QuizResultsView: View {
-    let score: Int
+    let correctAnswer: Int
     let totalQuestions: Int
     let repetitions: Int
     let onRestart: () -> Void
     let onDismiss: () -> Void
 
     private var perfectHits: Int {
-        score
+        correctAnswer
     }
 
     private var oopsMoments: Int {
-        totalQuestions - score
+        totalQuestions - correctAnswer
+    }
+
+    private var totalScore: Int {
+        Int((Double(correctAnswer) / Double(totalQuestions)) * 100)
     }
 
     private var averageResponseTime: String {
@@ -21,7 +25,7 @@ struct QuizResultsView: View {
 
     var body: some View {
         Spacer().frame(height: 100)
-        VStack(spacing: 16) {
+        VStack {
             // Title
             Text("Level has completed!")
                 .font(.title)
@@ -29,19 +33,19 @@ struct QuizResultsView: View {
                 .padding(.top, 20)
 
             // Brain illustration
-            Image(score * 10 >= 80 ? "quiz_completed" : "quiz_notpass")
+            Image(totalScore >= 80 ? "quiz_completed" : "quiz_notpass")
                 .resizable()
                 .scaledToFit()
                 .foregroundColor(.white)
                 .frame(height: 220)
 
             // Score
-            VStack() {
+            VStack {
                 Text("Score:")
                     .font(.title3)
                     .foregroundColor(.secondary)
 
-                Text("\(score * 10)")
+                Text("\(totalScore)")
                     .font(.system(size: 72, weight: .bold))
                     .foregroundColor(.primary)
             }
@@ -128,7 +132,7 @@ struct QuizResultsView: View {
 
             .padding(.horizontal, 24)
 
-            // Response time
+            Spacer().frame(height: 24)
             HStack(spacing: 4) {
                 Text("Your response times")
                     .font(.subheadline)
@@ -139,8 +143,7 @@ struct QuizResultsView: View {
                     .foregroundColor(.orange)
             }
 
-            Spacer().frame(height: 16)
-            // Go to Module Detail Button
+            Spacer().frame(height: 48)
             UtilsButton(
                 title: "Go to Module Detail",
                 leftIcon: nil,
@@ -149,18 +152,15 @@ struct QuizResultsView: View {
                 action: onDismiss
             )
             .padding(.horizontal, 24)
-            
-            Spacer().frame(height: 100)
-            Spacer().frame(height: 100)
 
-
-        .background(Color(.systemBackground))
+            Spacer().frame(height: 100)
+        }
     }
 }
 
 #Preview {
-        score: 13,
-        score: 7,
+    QuizResultsView(
+        correctAnswer: 13,
         totalQuestions: 15,
         repetitions: 5,
         onRestart: {},
