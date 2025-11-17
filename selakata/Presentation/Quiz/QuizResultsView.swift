@@ -1,19 +1,23 @@
 import SwiftUI
 
 struct QuizResultsView: View {
-    let score: Int
+    let correctAnswer: Int
     let totalQuestions: Int
     let repetitions: Int
+    let averageResponseTime: String
     let onRestart: () -> Void
     let onDismiss: () -> Void
     
     private var perfectHits: Int {
-        score
+        correctAnswer
     }
     
     private var oopsMoments: Int {
-        totalQuestions - score
+        totalQuestions - correctAnswer
     }
+
+    private var totalScore: Int {
+        Int((Double(correctAnswer) / Double(totalQuestions)) * 100)
     
     private var averageResponseTime: String {
         "2.5s"  // Mock data - can be calculated later
@@ -21,7 +25,7 @@ struct QuizResultsView: View {
     
     var body: some View {
         Spacer().frame(height: 100)
-        VStack(spacing: 16) {
+        VStack {
             // Title
             Text("Level has completed!")
                 .font(.title)
@@ -29,19 +33,19 @@ struct QuizResultsView: View {
                 .padding(.top, 20)
             
             // Brain illustration
-            Image(score * 10 >= 80 ? "quiz_completed" : "quiz_notpass")
+            Image(totalScore >= 80 ? "quiz_completed" : "quiz_notpass")
                 .resizable()
                 .scaledToFit()
                 .foregroundColor(.white)
                 .frame(height: 220)
             
             // Score
-            VStack() {
+            VStack {
                 Text("Score:")
                     .font(.title3)
                     .foregroundColor(.secondary)
-                
-                Text("\(score * 10)")
+
+                Text("\(totalScore)")
                     .font(.system(size: 72, weight: .bold))
                     .foregroundColor(.primary)
             }
