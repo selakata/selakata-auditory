@@ -21,7 +21,7 @@ struct SingleOnBoardingView: View {
                     .foregroundColor(.black)
                     .padding(.horizontal, 24)
                 
-                Image(systemName: "photo")
+                Image("onboarding-3")
                     .resizable()
                     .scaledToFit()
                     .frame(height: 200)
