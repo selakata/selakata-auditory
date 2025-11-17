@@ -21,12 +21,18 @@ class QuizViewModel: ObservableObject {
     @Published var errorMessage: String?
     @Published var downloadProgress: String = ""
     @Published var isDownloadingAudio: Bool = false
+    @Published var isAudioReady: Bool = false
     
     private var resultUpdateScore: String = ""
 
     init(levelUseCase: LevelUseCase, levelId: String) {
         self.levelUseCase = levelUseCase
         self.levelId = levelId
+        
+        // Clear cache before fetching new questions
+        print("🗑️ Clearing audio cache before starting quiz")
+        cacheService.clearAllCache()
+        
         fetchQuestions()
     }
 
@@ -100,9 +106,11 @@ class QuizViewModel: ObservableObject {
                 switch result {
                 case .success:
                     print("✅ All audio files (main + noise) downloaded successfully")
+                    self?.isAudioReady = true
                 case .failure(let error):
                     print("⚠️ Some audio files failed to download: \(error.localizedDescription)")
                     // Continue anyway, will try to stream if cache fails
+                    self?.isAudioReady = true
                 }
             }
         }
@@ -237,7 +245,11 @@ class QuizViewModel: ObservableObject {
         hasAnswered = false
         score = 0
         totalReplayCount = 0
+        isAudioReady = false
         showResults = false
+        
+        // Re-download audio files
+        downloadAudioFiles()
     }
 
     func dismissResults() {

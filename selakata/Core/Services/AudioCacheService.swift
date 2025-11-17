@@ -121,10 +121,15 @@ class AudioCacheService {
     }
     
     /// Clear all cached audio files
-    func clearCache() {
+    func clearAllCache() {
         try? fileManager.removeItem(at: cacheDirectory)
         try? fileManager.createDirectory(at: cacheDirectory, withIntermediateDirectories: true)
-        print("🗑️ Audio cache cleared")
+        print("🗑️ All audio cache cleared")
+    }
+    
+    /// Clear all cached audio files (alias for backward compatibility)
+    func clearCache() {
+        clearAllCache()
     }
     
     /// Clear specific cached file
