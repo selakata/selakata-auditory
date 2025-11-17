@@ -7,19 +7,22 @@ struct QuizResultsView: View {
     let averageResponseTime: String
     let onRestart: () -> Void
     let onDismiss: () -> Void
-
+    
     private var perfectHits: Int {
         correctAnswer
     }
-
+    
     private var oopsMoments: Int {
         totalQuestions - correctAnswer
     }
 
     private var totalScore: Int {
         Int((Double(correctAnswer) / Double(totalQuestions)) * 100)
+    
+    private var averageResponseTime: String {
+        "2.5s"  // Mock data - can be calculated later
     }
-
+    
     var body: some View {
         Spacer().frame(height: 100)
         VStack {
@@ -28,14 +31,14 @@ struct QuizResultsView: View {
                 .font(.title)
                 .fontWeight(.bold)
                 .padding(.top, 20)
-
+            
             // Brain illustration
             Image(totalScore >= 80 ? "quiz_completed" : "quiz_notpass")
                 .resizable()
                 .scaledToFit()
                 .foregroundColor(.white)
                 .frame(height: 220)
-
+            
             // Score
             VStack {
                 Text("Score:")
@@ -47,7 +50,7 @@ struct QuizResultsView: View {
                     .foregroundColor(.primary)
             }
             .padding(.vertical, 10)
-
+            
             // Stats Card
             HStack(spacing: 0) {
                 // Perfect hits
@@ -60,20 +63,20 @@ struct QuizResultsView: View {
                             .font(.title3)
                             .foregroundColor(.yellow)
                     }
-
+                    
                     Text("Perfect hits")
                         .font(.caption)
                         .foregroundColor(.secondary)
-
+                    
                     Text("\(perfectHits)")
                         .font(.title2)
                         .fontWeight(.bold)
                 }
                 .frame(maxWidth: .infinity)
-
+                
                 Divider()
                     .frame(height: 80)
-
+                
                 // Oops moments
                 VStack(spacing: 12) {
                     ZStack {
@@ -84,20 +87,20 @@ struct QuizResultsView: View {
                             .font(.title3)
                             .foregroundColor(.red)
                     }
-
+                    
                     Text("Oops moments")
                         .font(.caption)
                         .foregroundColor(.secondary)
-
+                    
                     Text("\(oopsMoments)")
                         .font(.title2)
                         .fontWeight(.bold)
                 }
                 .frame(maxWidth: .infinity)
-
+                
                 Divider()
                     .frame(height: 80)
-
+                
                 // Repetition
                 VStack(spacing: 12) {
                     ZStack {
@@ -108,11 +111,11 @@ struct QuizResultsView: View {
                             .font(.title3)
                             .foregroundColor(.blue)
                     }
-
+                    
                     Text("Repetition")
                         .font(.caption)
                         .foregroundColor(.secondary)
-
+                    
                     Text("\(repetitions)")
                         .font(.title2)
                         .fontWeight(.bold)
@@ -126,10 +129,10 @@ struct QuizResultsView: View {
                     .fill(Color(.white).opacity(0))
                     .border(Color(.secondarySystemBackground), width: 1)
             )
-
+            
             .padding(.horizontal, 24)
-
-            Spacer().frame(height: 24)
+            
+            // Response time
             HStack(spacing: 4) {
                 Text("Your response times")
                     .font(.subheadline)
@@ -139,8 +142,9 @@ struct QuizResultsView: View {
                     .fontWeight(.semibold)
                     .foregroundColor(.orange)
             }
-
-            Spacer().frame(height: 48)
+            
+            Spacer().frame(height: 16)
+            // Go to Module Detail Button
             UtilsButton(
                 title: "Go to Module Detail",
                 leftIcon: nil,
@@ -149,19 +153,12 @@ struct QuizResultsView: View {
                 action: onDismiss
             )
             .padding(.horizontal, 24)
-
+            
             Spacer().frame(height: 100)
+            Spacer().frame(height: 100)
+            
+            
+                .background(Color(.systemBackground))
         }
     }
-}
-
-#Preview {
-    QuizResultsView(
-        correctAnswer: 13,
-        totalQuestions: 15,
-        repetitions: 5,
-        averageResponseTime: "2.5s",
-        onRestart: {},
-        onDismiss: {}
-    )
 }
