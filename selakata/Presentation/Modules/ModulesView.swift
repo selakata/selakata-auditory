@@ -35,7 +35,7 @@ struct ModulesView: View {
                                 } else {
                                     Button {
                                         mainVM.showModal(
-                                            image: Image("icon-time-flies"),
+                                            image: Image("icon-love"),
                                             title: "Complete Previous Module",
                                             description: "Finish the previous module to unlock this one!",
                                             ctaText: "Continue"

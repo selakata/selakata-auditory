@@ -80,7 +80,7 @@ struct ModuleDetailView: View {
                                         } else {
                                             Button {
                                                 mainVM.showModal(
-                                                    image: Image("icon-time-flies"),
+                                                    image: Image("icon-love"),
                                                     title: "Complete Previous Level",
                                                     description: "Finish the previous level to unlock this one!",
                                                     ctaText: "Continue"
@@ -108,6 +108,9 @@ struct ModuleDetailView: View {
                     )
                 }
             }
+        }
+        .onAppear {
+            viewModel.fetchLevels()
         }
     }
 }

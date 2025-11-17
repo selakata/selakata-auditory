@@ -29,10 +29,11 @@ struct QuizResultsView: View {
                 .padding(.top, 20)
 
             // Brain illustration
-            Image("quiz_completed")
-                .font(.system(size: 120))
-                .foregroundColor(.pink.opacity(0.6))
-                .padding(.vertical, 20)
+            Image(score * 10 >= 80 ? "quiz_completed" : "quiz_notpass")
+                .resizable()
+                .scaledToFit()
+                .foregroundColor(.white)
+                .frame(height: 220)
 
             // Score
             VStack() {
@@ -40,7 +41,7 @@ struct QuizResultsView: View {
                     .font(.title3)
                     .foregroundColor(.secondary)
 
-                Text("\(score)")
+                Text("\(score * 10)")
                     .font(.system(size: 72, weight: .bold))
                     .foregroundColor(.primary)
             }
@@ -150,15 +151,16 @@ struct QuizResultsView: View {
             .padding(.horizontal, 24)
             
             Spacer().frame(height: 100)
-        }
+            Spacer().frame(height: 100)
+
 
         .background(Color(.systemBackground))
     }
 }
 
 #Preview {
-    QuizResultsView(
         score: 13,
+        score: 7,
         totalQuestions: 15,
         repetitions: 5,
         onRestart: {},
