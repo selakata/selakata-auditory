@@ -42,9 +42,14 @@ struct YourJourneyCard: View {
                                 .foregroundStyle(.black)
                                 .multilineTextAlignment(.leading)
                             
-                            UtilsButton(title: "Start", variant: .primary) {}
-                                .frame(width: 100, height: 30)
-                                .cornerRadius(10)
+                            NavigationLink(destination: ModuleDetailView(module: firstModule)) {
+                                Text("Start")
+                                    .fontWeight(.semibold)
+                                    .frame(width: 100, height: 30)
+                                    .foregroundColor(.white)
+                                    .background(Color.accentColor)
+                                    .cornerRadius(10)
+                            }
                         }
                         .padding(.leading, 24)
                         
