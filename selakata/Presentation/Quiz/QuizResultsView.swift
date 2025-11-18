@@ -25,7 +25,6 @@ struct QuizResultsView: View {
             Text("Level has completed!")
                 .font(.title)
                 .fontWeight(.bold)
-                .padding(.top, 20)
             
             Image(totalScore >= 80 ? "quiz_completed" : "quiz_notpass")
                 .resizable()
@@ -36,82 +35,71 @@ struct QuizResultsView: View {
             VStack {
                 Text("Score:")
                     .font(.title3)
-                    .foregroundColor(.secondary)
+                    .foregroundColor(Color.Default._400)
                 
                 Text("\(totalScore)")
                     .font(.system(size: 72, weight: .bold))
-                    .foregroundColor(.primary)
+                    .foregroundColor(Color.Default._950)
             }
             .padding(.vertical, 10)
             
-            // Stats Card
             HStack(spacing: 0) {
-                // Perfect hits
                 VStack(spacing: 12) {
-                    ZStack {
-                        Circle()
-                            .fill(Color.yellow.opacity(0.2))
-                            .frame(width: 50, height: 50)
-                        Image(systemName: "star.fill")
-                            .font(.title3)
-                            .foregroundColor(.yellow)
-                    }
+                    Image("icon-hits")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 50, height: 50)
                     
                     Text("Perfect hits")
                         .font(.caption)
-                        .foregroundColor(.secondary)
+                        .foregroundColor(Color.Default._600)
                     
                     Text("\(perfectHits)")
                         .font(.title2)
                         .fontWeight(.bold)
+                        .foregroundColor(Color.Default._950)
                 }
                 .frame(maxWidth: .infinity)
                 
                 Divider()
-                    .frame(height: 80)
+                    .frame(height: 120)
+                    .padding(.horizontal)
                 
-                // Oops moments
                 VStack(spacing: 12) {
-                    ZStack {
-                        Circle()
-                            .fill(Color.red.opacity(0.2))
-                            .frame(width: 50, height: 50)
-                        Image(systemName: "xmark.circle.fill")
-                            .font(.title3)
-                            .foregroundColor(.red)
-                    }
+                    Image("icon-oops")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 50, height: 50)
                     
                     Text("Oops moments")
                         .font(.caption)
-                        .foregroundColor(.secondary)
+                        .foregroundColor(Color.Default._600)
                     
                     Text("\(oopsMoments)")
                         .font(.title2)
                         .fontWeight(.bold)
+                        .foregroundColor(Color.Default._950)
                 }
                 .frame(maxWidth: .infinity)
                 
                 Divider()
-                    .frame(height: 80)
+                    .frame(height: 120)
+                    .padding(.horizontal)
                 
-                // Repetition
                 VStack(spacing: 12) {
-                    ZStack {
-                        Circle()
-                            .fill(Color.blue.opacity(0.2))
-                            .frame(width: 50, height: 50)
-                        Image(systemName: "arrow.clockwise")
-                            .font(.title3)
-                            .foregroundColor(.blue)
-                    }
+                    Image("icon-repeat")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 50, height: 50)
                     
                     Text("Repetition")
                         .font(.caption)
-                        .foregroundColor(.secondary)
+                        .foregroundColor(Color.Default._600)
                     
                     Text("\(repetitions)")
                         .font(.title2)
                         .fontWeight(.bold)
+                        .foregroundColor(Color.Default._950)
                 }
                 .frame(maxWidth: .infinity)
             }
@@ -119,37 +107,45 @@ struct QuizResultsView: View {
             .padding(.horizontal, 16)
             .background(
                 RoundedRectangle(cornerRadius: 20)
-                    .fill(Color(.white).opacity(0))
-                    .border(Color(.secondarySystemBackground), width: 1)
+                    .fill(Color(.systemBackground))
+            )
+            .overlay(
+                RoundedRectangle(cornerRadius: 20)
+                    .stroke(Color(.secondarySystemBackground), lineWidth: 1)
             )
             
-            .padding(.horizontal, 24)
-            
-            // Response time
             HStack(spacing: 4) {
-                Text("Your response times")
+                Text("Your average responses time")
                     .font(.subheadline)
-                    .foregroundColor(.secondary)
+                    .foregroundColor(Color.Default._500)
                 Text(averageResponseTime)
                     .font(.subheadline)
-                    .fontWeight(.semibold)
-                    .foregroundColor(.orange)
+                    .fontWeight(.bold)
+                    .foregroundColor(Color.Tertiary._600)
             }
+            .padding(10)
+            .background(Color.Tertiary._50)
+            .cornerRadius(20)
+            .padding()
             
-            Spacer().frame(height: 16)
+            Spacer()
             
             UtilsButton(
-                title: "Go to Module Detail",
-                leftIcon: nil,
-                isLoading: false,
-                variant: .primary,
+                title: "Continue",
                 action: onDismiss
             )
-            .padding(.horizontal, 24)
-            
-            Spacer().frame(height: 100)
-            Spacer().frame(height: 100)
-                .background(Color(.systemBackground))
         }
+        .padding(.horizontal, 24)
     }
+}
+
+#Preview {
+    QuizResultsView(
+        correctAnswer: 9,
+        totalQuestions: 10,
+        repetitions: 2,
+        averageResponseTime: "1.2s",
+        onRestart: {},
+        onDismiss: {}
+    )
 }
