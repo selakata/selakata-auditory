@@ -25,6 +25,7 @@ struct QuizResultsView: View {
             Text("Level has completed!")
                 .font(.title)
                 .fontWeight(.bold)
+                .padding(.top, 20)
             
             Image(totalScore >= 80 ? "quiz_completed" : "quiz_notpass")
                 .resizable()
