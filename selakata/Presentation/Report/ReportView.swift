@@ -103,6 +103,7 @@ struct ReportView: View {
             .sheet(isPresented: $isShowingShareSheet) {
                 
             }
+            .toolbar(.hidden, for: .tabBar)
         }
     }
 }
