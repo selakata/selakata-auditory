@@ -7,11 +7,11 @@ struct QuizResultsView: View {
     let averageResponseTime: String
     let onRestart: () -> Void
     let onDismiss: () -> Void
-    
+
     private var perfectHits: Int {
         correctAnswer
     }
-    
+
     private var oopsMoments: Int {
         totalQuestions - correctAnswer
     }
@@ -61,7 +61,7 @@ struct QuizResultsView: View {
                         .foregroundColor(Color.Default._950)
                 }
                 .frame(maxWidth: .infinity)
-                
+
                 Divider()
                     .frame(height: 120)
                     .padding(.horizontal)
@@ -82,7 +82,7 @@ struct QuizResultsView: View {
                         .foregroundColor(Color.Default._950)
                 }
                 .frame(maxWidth: .infinity)
-                
+
                 Divider()
                     .frame(height: 120)
                     .padding(.horizontal)
