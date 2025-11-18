@@ -69,7 +69,7 @@ struct ModuleDetailView: View {
                                     ForEach(viewModel.levels.indices, id: \.self) { index in
                                         if viewModel.levels[index].isUnlocked {
                                             NavigationLink {
-                                                QuizView(levelId: viewModel.levels[index].id)
+                                                HeadphoneCheckView(levelId: viewModel.levels[index].id)
                                             } label: {
                                                 LevelRowView(
                                                     index: index,
@@ -112,6 +112,7 @@ struct ModuleDetailView: View {
         .onAppear {
             viewModel.fetchLevels()
         }
+        .toolbar(.hidden, for: .tabBar)
     }
 }
 
