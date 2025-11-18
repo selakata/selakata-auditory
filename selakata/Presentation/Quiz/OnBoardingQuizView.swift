@@ -9,7 +9,30 @@ import SwiftUI
 
 struct OnBoardingQuizView: View {
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        ZStack {
+            Color.gray.opacity(0.8)
+                .ignoresSafeArea()
+            
+            ZStack {
+                Image("mascot-bubble")
+                    .resizable()
+                    .frame(width: 260, height: 120)
+            }
+            
+            VStack {
+                Spacer()
+                HStack {
+                    Image("mascot-tell")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 250)
+                    Spacer()
+                }
+                .padding(.bottom, 40)
+            }
+            
+            
+        }
     }
 }
 
