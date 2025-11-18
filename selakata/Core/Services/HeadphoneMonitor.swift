@@ -14,7 +14,7 @@ class HeadphoneMonitor: ObservableObject {
         try? session.setCategory(
             .playAndRecord,
             mode: .default,
-            options: [.allowBluetoothHFP, .allowBluetoothA2DP]
+            options: [.allowBluetooth]
         )
         try? session.setActive(true)
 

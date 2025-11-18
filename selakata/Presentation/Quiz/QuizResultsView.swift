@@ -15,36 +15,29 @@ struct QuizResultsView: View {
     private var oopsMoments: Int {
         totalQuestions - correctAnswer
     }
-
+    
     private var totalScore: Int {
         Int((Double(correctAnswer) / Double(totalQuestions)) * 100)
-    
-    private var averageResponseTime: String {
-        "2.5s"  // Mock data - can be calculated later
     }
     
     var body: some View {
-        Spacer().frame(height: 100)
         VStack {
-            // Title
             Text("Level has completed!")
                 .font(.title)
                 .fontWeight(.bold)
                 .padding(.top, 20)
             
-            // Brain illustration
             Image(totalScore >= 80 ? "quiz_completed" : "quiz_notpass")
                 .resizable()
                 .scaledToFit()
                 .foregroundColor(.white)
                 .frame(height: 220)
             
-            // Score
             VStack {
                 Text("Score:")
                     .font(.title3)
                     .foregroundColor(.secondary)
-
+                
                 Text("\(totalScore)")
                     .font(.system(size: 72, weight: .bold))
                     .foregroundColor(.primary)
@@ -144,7 +137,7 @@ struct QuizResultsView: View {
             }
             
             Spacer().frame(height: 16)
-            // Go to Module Detail Button
+            
             UtilsButton(
                 title: "Go to Module Detail",
                 leftIcon: nil,
@@ -156,8 +149,6 @@ struct QuizResultsView: View {
             
             Spacer().frame(height: 100)
             Spacer().frame(height: 100)
-            
-            
                 .background(Color(.systemBackground))
         }
     }
