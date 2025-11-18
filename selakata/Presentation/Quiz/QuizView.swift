@@ -102,11 +102,17 @@ struct QuizView: View {
                 .padding(.horizontal)
                 .padding(.top, 8)
 
+//                ProgressView(value: viewModel.progress)
+//                    .tint(.Primary._500)
+//                    .progressViewStyle(.linear)
+//                    .frame(height: 8)
+//                    .padding(.horizontal, 32)
+                
                 ProgressView(value: viewModel.progress)
-                    .tint(Color(.darkGray))
-                    .progressViewStyle(.linear)
-                    .frame(height: 8)
-                    .padding(.horizontal, 32)
+                    .progressViewStyle(
+                        ThickProgressViewStyle(height: 10, tint: .Primary._500)
+                    )
+                    .padding(.horizontal, 26)
 
                 // Simple Audio Player
                 SimpleAudioPlayer(
@@ -117,6 +123,8 @@ struct QuizView: View {
                         withAnimation(.easeInOut(duration: 0.5)) {
                             audioCompleted = true
                         }
+                        // Start response timer when audio completes
+                        viewModel.startResponseTimer()
                     },
                     onReplayRequested: {
                         // Reset audio state for replay
@@ -207,9 +215,10 @@ struct QuizView: View {
             }
             .fullScreenCover(isPresented: $viewModel.showResults) {
                 QuizResultsView(
-                    score: viewModel.score,
+                    correctAnswer: viewModel.correctAnswer,
                     totalQuestions: viewModel.totalQuestions,
                     repetitions: viewModel.totalReplayCount,
+                    averageResponseTime: viewModel.averageResponseTime,
                     onRestart: {
                         viewModel.dismissResults()
                         viewModel.restartQuiz()

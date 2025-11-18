@@ -70,6 +70,9 @@ struct ModulesView: View {
             }
             .padding(.top, 20)
             .navigationTitle("Journey")
+            .onAppear {
+                viewModel.refreshModules()
+            }
         }
     }
 }

@@ -7,9 +7,13 @@ class QuizViewModel: ObservableObject {
     @Published var currentQuestionIndex: Int = 0
     @Published var selectedAnswer: Answer? = nil
     @Published var hasAnswered: Bool = false
-    @Published var score: Int = 0
+    @Published var correctAnswer: Int = 0
     @Published var showResults: Bool = false
     @Published var totalReplayCount: Int = 0
+    
+    // Response time tracking
+    private var audioCompletedTime: Date?
+    private var responseTimes: [TimeInterval] = []
 
     private let levelUseCase: LevelUseCase
     private let levelId: String
@@ -30,8 +34,8 @@ class QuizViewModel: ObservableObject {
         self.levelId = levelId
         
         // Clear cache before fetching new questions
-        print("🗑️ Clearing audio cache before starting quiz")
-        cacheService.clearAllCache()
+        // print("🗑️ Clearing audio cache before starting quiz")
+        // cacheService.clearAllCache()
         
         fetchQuestions()
     }
@@ -190,7 +194,7 @@ class QuizViewModel: ObservableObject {
 
     var scoreText: String {
         guard !questions.isEmpty else { return "Score: 0/0" }
-        return "Score: \(score)/\(questions.count)"
+        return "Score: \(correctAnswer)/\(questions.count)"
     }
 
     var nextButtonText: String {
@@ -204,6 +208,10 @@ class QuizViewModel: ObservableObject {
     var audioSubdirectory: String {
         return "Resources/Audio"
     }
+    
+    private var totalScore: Int{
+        Int((Double(correctAnswer) / Double(totalQuestions)) * 100)
+    }
 
     // MARK: - Public Methods
     func selectAnswer(_ answer: Answer) {
@@ -211,8 +219,26 @@ class QuizViewModel: ObservableObject {
         hasAnswered = true
 
         if answer.isCorrect {
-            score += 1
+            correctAnswer += 1
         }
+        
+        // Calculate response time
+        if let startTime = audioCompletedTime {
+            let responseTime = Date().timeIntervalSince(startTime)
+            responseTimes.append(responseTime)
+            print("⏱️ Response time: \(String(format: "%.2f", responseTime))s")
+        }
+    }
+    
+    func startResponseTimer() {
+        audioCompletedTime = Date()
+        print("⏱️ Started response timer")
+    }
+    
+    var averageResponseTime: String {
+        guard !responseTimes.isEmpty else { return "0.0s" }
+        let average = responseTimes.reduce(0, +) / Double(responseTimes.count)
+        return String(format: "%.1fs", average)
     }
 
     func nextQuestion() {
@@ -222,12 +248,13 @@ class QuizViewModel: ObservableObject {
             currentQuestionIndex += 1
             selectedAnswer = nil
             hasAnswered = false
+            audioCompletedTime = nil // Reset timer for next question
         }
     }
 
     func showQuizResults() {
         showResults = true
-        levelUseCase.updateLevelScore(levelId: levelId, score: score * 10){ [weak self] result in
+        levelUseCase.updateLevelScore(levelId: levelId, score: totalScore){ [weak self] result in
             DispatchQueue.main.async {
                 switch result {
                 case .success(let result):
@@ -243,10 +270,12 @@ class QuizViewModel: ObservableObject {
         currentQuestionIndex = 0
         selectedAnswer = nil
         hasAnswered = false
-        score = 0
+        correctAnswer = 0
         totalReplayCount = 0
         isAudioReady = false
         showResults = false
+        audioCompletedTime = nil
+        responseTimes = []
         
         // Re-download audio files
         downloadAudioFiles()

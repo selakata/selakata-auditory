@@ -2,15 +2,7 @@
 
 import SwiftUI
 
-/// Kumpulan warna global yang digunakan di seluruh aplikasi.
-/// Contoh penggunaan:
-/// ```swift
-/// Text("Hello, Selakata!")
-///     .foregroundColor(.textPrimary)
-///     .background(.backgroundAlt)
-/// ```
 extension Color {
-    // MARK: - Brand Colors
     enum Primary {
         static let _100 = Color(hex: 0xF9F8FE)
         static let _200 = Color(hex: 0xF2EFFF)
@@ -21,7 +13,8 @@ extension Color {
     }
     
     enum Tertiary {
-        static let _100 = Color(hex: 0xFFF9EB)
+        static let _50 = Color(hex: 0xFFF9EB)
+        static let _100 = Color(hex: 0xFCEFCA)
         static let _200 = Color(hex: 0xFCECBD)
         static let _300 = Color(hex: 0xFFE7A6)
         static let _400 = Color(hex: 0xFFDD80)
@@ -42,17 +35,7 @@ extension Color {
         static let _900 = Color(hex: 0x3D3D3D)
         static let _950 = Color(hex: 0x1E1E1E)
     }
-    //
-    //    // MARK: - Backgrounds
-    //    static let background = Color.white
-    //    static let backgroundAlt = Color(hex: 0xF9F9F9)
-    //    static let headerBackground = Color(hex: 0xF5BC53)
-    //
-    //    // MARK: - Text
-    //    static let textPrimary = Color.primary
-    //    static let textSecondary = Color.secondary
-    //
-    //    // MARK: - Status
+    
     static let success = Color(hex: 0x44BA70)
     static let warning = Color(hex: 0xFFCC00)
     static let danger = Color(hex: 0xFF6363)
