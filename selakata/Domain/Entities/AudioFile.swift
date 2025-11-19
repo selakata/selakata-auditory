@@ -5,11 +5,11 @@ public struct AudioFile: Codable {
     let historyItemId: String?
     let fileName: String
     let fileURL: String
-    let rawText: String
+    let rawText: String?
     let size: Int
     let duration: Double
     let voiceId: String?
-    let voiceName: String
+    let voiceName: String?
     let similarityBoost: Double?
     let speed: Double?
     let stability: Double?
