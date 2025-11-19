@@ -41,16 +41,16 @@ struct SimpleAudioPlayer: View {
                             && !engine.isMainPlaying
                         {
                             Image(systemName: "speaker.wave.2.fill")
-                                .font(.system(size: 20))
+                                .font(.system(size: 30))
                         } else {
                             Image(
                                 systemName: engine.isMainPlaying
                                     ? "pause" : "speaker.wave.2.fill"
                             )
-                            .font(.system(size: 20))
+                            .font(.system(size: 30))
                         }
                     }
-                    .frame(width: 28, height: 28)
+                    .frame(width: 50, height: 50)
                     .padding()
                     .background(Color.Primary._200)
                     .clipShape(RoundedRectangle(cornerRadius: 8))

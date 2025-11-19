@@ -4,7 +4,8 @@ struct QuizView: View {
     //   var level: Level
     //   var questionCategory: QuestionCategory
     @Environment(\.dismiss) private var dismiss
-
+    
+    @State private var showTipScreen = true
     @State private var audioCompleted: Bool = false
     @State private var hasPlayedOnce: Bool = false
     @State private var triggerReplay: Bool = false
@@ -78,7 +79,29 @@ struct QuizView: View {
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
         } else {
-            quizContent
+            ZStack {
+                quizContent
+            
+                if showTipScreen {
+                    QuizTipView(
+                        levelValue: viewModel.level?.value ?? 1,
+                        onDismissHardTip: {
+                            showTipScreen = false
+                        }
+                    )
+                    .opacity(viewModel.currentQuestionIndex == 0 ? 1 : 0)
+                    .onAppear {
+                        if viewModel.level?.value == 2 {
+                            showTipScreen = false
+                        }
+                    }
+                }
+            }
+            .onAppear {
+                if viewModel.currentQuestionIndex == 0 {
+                    showTipScreen = true
+                }
+            }
         }
     }
 
@@ -135,6 +158,7 @@ struct QuizView: View {
                         }
                         hasPlayedOnce = false
                         viewModel.incrementReplayCount()
+                        triggerReplay.toggle()
                     },
                     shouldReplay: triggerReplay,
                     autoPlay: !viewModel.isLoading && viewModel.isAudioReady,
