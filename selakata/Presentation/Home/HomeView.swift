@@ -98,7 +98,7 @@ struct HomeView: View {
                 
                 Spacer()
                 
-                NavigationLink(destination: { Text("Report") }, label: {
+                NavigationLink(destination: { ReportView() }, label: {
                     Text("View all")
                         .font(.footnote)
                         .foregroundStyle(.accent)
