@@ -14,11 +14,27 @@ struct ModuleDetailView: View {
     @EnvironmentObject var mainVM: MainViewModel
     @Environment(\.dismiss) private var dismiss
     
+    @State private var showHeadphoneCheck = false
+    @State private var pendingLevelId: String? = nil
+    @State private var goToQuiz = false
+    
+    let backgrounds: [Int: String] = [
+        1: "0x5E43E8",
+        2: "0x277DFF",
+        3: "0xFAC53E",
+        4: "0xFF6363",
+    ]
+    var color: Color {
+        let value = backgrounds[module.value] ?? backgrounds[1]!
+        let hexValue = Int(value.replacingOccurrences(of: "0x", with: ""), radix: 16)!
+        return Color(hex: hexValue)
+    }
+    
     var body: some View {
         ZStack(alignment: .top) {
             
             VStack(spacing: 0) {
-                Color(hex: 0x6A4BFF)
+                Color(color)
                     .frame(height: UIScreen.main.bounds.height * 0.5)
                 
                 Color.white
@@ -65,36 +81,7 @@ struct ModuleDetailView: View {
                             }
                         } else {
                             if !viewModel.levels.isEmpty {
-                                VStack(alignment: .leading, spacing: 16) {
-                                    ForEach(viewModel.levels.indices, id: \.self) { index in
-                                        if viewModel.levels[index].isUnlocked {
-                                            NavigationLink {
-                                                HeadphoneCheckView(levelId: viewModel.levels[index].id)
-                                            } label: {
-                                                LevelRowView(
-                                                    index: index,
-                                                    level: viewModel.levels[index],
-                                                    isLast: index == viewModel.levels.count - 1
-                                                )
-                                            }
-                                        } else {
-                                            Button {
-                                                mainVM.showModal(
-                                                    image: Image("icon-love"),
-                                                    title: "Complete Previous Level",
-                                                    description: "Finish the previous level to unlock this one!",
-                                                    ctaText: "Continue"
-                                                )
-                                            } label: {
-                                                LevelRowView(
-                                                    index: index,
-                                                    level: viewModel.levels[index],
-                                                    isLast: index == viewModel.levels.count - 1
-                                                )
-                                            }
-                                        }
-                                    }
-                                }
+                                exerciseList
                             }
                         }
                         
@@ -109,29 +96,69 @@ struct ModuleDetailView: View {
                 }
             }
         }
+        .navigationBarBackButtonHidden(true)
+        .toolbar {
+            ToolbarItem(placement: .navigationBarLeading) {
+                Button(action: { dismiss() }) {
+                    Image(systemName: "chevron.left")
+                        .font(.system(size: 18, weight: .medium))
+                        .foregroundColor(.white)
+                }
+            }
+        }
         .onAppear {
             viewModel.fetchLevels()
         }
         .toolbar(.hidden, for: .tabBar)
+        .sheet(isPresented: $showHeadphoneCheck) {
+            HeadphoneCheckView(
+                levelId: pendingLevelId!,
+                onSuccess: {
+                    showHeadphoneCheck = false
+                    goToQuiz = true
+                }
+            )
+        }
+        .navigationDestination(isPresented: $goToQuiz) {
+            if let id = pendingLevelId {
+                QuizView(levelId: id)
+            } else {
+                EmptyView()
+            }
+        }
     }
-}
-
-#Preview {
-    let sample = Module(
-        id: "1",
-        label: "Comprehension",
-        value: 1,
-        description: "Listen to short audio clips and choose the correct one. This helps improve your sensitivity to subtle sound changes and background noise",
-        isActive: true,
-        createdAt: "2025-01-01T00:00:00Z",
-        updatedAt: "2025-01-02T00:00:00Z",
-        updatedBy: nil,
-        isUnlocked: true,
-        percentage: 75.0
-    )
     
-    return NavigationStack {
-        ModuleDetailView(module: sample)
+    private var exerciseList: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            ForEach(viewModel.levels.indices, id: \.self) { index in
+                if viewModel.levels[index].isUnlocked {
+                    Button {
+                        pendingLevelId = viewModel.levels[index].id
+                        showHeadphoneCheck = true
+                    } label: {
+                        LevelRowView(
+                            index: index,
+                            level: viewModel.levels[index],
+                            isLast: index == viewModel.levels.count - 1
+                        )
+                    }
+                } else {
+                    Button {
+                        mainVM.showModal(
+                            image: Image("icon-love"),
+                            title: "Complete Previous Level",
+                            description: "Finish the previous level to unlock this one!",
+                            ctaText: "Continue"
+                        )
+                    } label: {
+                        LevelRowView(
+                            index: index,
+                            level: viewModel.levels[index],
+                            isLast: index == viewModel.levels.count - 1
+                        )
+                    }
+                }
+            }
+        }
     }
 }
-

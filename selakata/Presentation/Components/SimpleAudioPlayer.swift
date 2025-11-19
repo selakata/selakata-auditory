@@ -5,6 +5,8 @@ struct SimpleAudioPlayer: View {
 
     let fileName: String
     let noiseFileName: String?
+    let mainRMS: Double
+    let noiseRMS: Double
     let onAudioCompleted: (() -> Void)?
     let onReplayRequested: (() -> Void)?
     let shouldReplay: Bool
@@ -134,10 +136,11 @@ struct SimpleAudioPlayer: View {
         audioLoaded = false
         
         print("🎵 Loading audio: \(fileName)")
+        print("📊 Main RMS: \(mainRMS), Noise RMS: \(noiseRMS)")
 
         if let url = resolveURL(for: fileName) {
             print("✅ Main audio URL resolved: \(url)")
-            engine.loadMainAudio(url: url)
+            engine.loadMainAudio(url: url, targetRMS: mainRMS)
             audioLoaded = true
         } else {
             print("❌ Failed to resolve main audio URL for: \(fileName)")
@@ -147,7 +150,7 @@ struct SimpleAudioPlayer: View {
             let url = resolveURL(for: noise)
         {
             print("✅ Noise audio URL resolved: \(url)")
-            engine.loadNoiseAudio(url: url)
+            engine.loadNoiseAudio(url: url, targetRMS: noiseRMS)
         }
     }
 
@@ -167,6 +170,8 @@ struct SimpleAudioPlayer: View {
     SimpleAudioPlayer(
         fileName: "comprehension-easy-1",
         noiseFileName: "comprehension-easy-1",
+        mainRMS: 0.8,
+        noiseRMS: 0.2,
         onAudioCompleted: {
             print("Preview: Main audio will finish soon!")
         },

@@ -108,16 +108,7 @@ private struct IdleView: View {
     
     var body: some View {
         VStack {
-            Spacer()
-            Text("Say the sentence below out loud")
-                .font(.headline)
-            
-            RoundedRectangle(cornerRadius: 10)
-                .frame(height: 100)
-                .padding(.horizontal)
-                .opacity(0)
-            
-            Spacer(minLength: 20)
+            Spacer(minLength: 40)
             
             Text(viewModel.promptText)
                 .font(.title3)
@@ -127,6 +118,16 @@ private struct IdleView: View {
                 .cornerRadius(16)
                 .padding(.horizontal)
             
+            RoundedRectangle(cornerRadius: 10)
+                .frame(height: 100)
+                .padding(.horizontal)
+                .opacity(0)
+            
+            Spacer(minLength: 20)
+            
+            Text("Tap the button to record and read the sentence loud")
+                .font(.headline)
+
             Spacer(minLength: 40)
             
             Button(action: {
@@ -185,13 +186,6 @@ private struct RecordingView: View {
         VStack(spacing: 0) {
             Spacer()
             
-            WaveformView(audioLevels: audioLevels, isRecording: true)
-            
-            Text(timeDisplay)
-                .font(.footnote.monospaced())
-            
-            Spacer(minLength: 20)
-
             Text(viewModel.promptText)
                 .font(.title3)
                 .multilineTextAlignment(.center)
@@ -199,6 +193,13 @@ private struct RecordingView: View {
                 .background(Color(.systemGray6))
                 .cornerRadius(16)
                 .padding(.horizontal)
+
+            Spacer(minLength: 20)
+
+            WaveformView(audioLevels: audioLevels, isRecording: true)
+            
+            Text(timeDisplay)
+                .font(.footnote.monospaced())
             
             Spacer(minLength: 40)
             
@@ -234,6 +235,17 @@ private struct ReviewView: View {
         VStack {
             Spacer()
             
+            Text(viewModel.promptText)
+                .font(.title3)
+                .multilineTextAlignment(.center)
+                .padding()
+                .background(Color(.systemGray6))
+                .cornerRadius(16)
+                .padding(.horizontal)
+
+            
+            Spacer(minLength: 20)
+
             WaveformView(audioLevels: audioLevels, isRecording: false)
 
             if hasError {
@@ -244,16 +256,6 @@ private struct ReviewView: View {
                     .font(.footnote.monospaced())
                     .padding(.top, 8)
             }
-            
-            Spacer(minLength: 20)
-
-            Text(viewModel.promptText)
-                .font(.title3)
-                .multilineTextAlignment(.center)
-                .padding()
-                .background(Color(.systemGray6))
-                .cornerRadius(16)
-                .padding(.horizontal)
             
             Spacer(minLength: 40)
             

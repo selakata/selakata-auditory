@@ -3,7 +3,7 @@ import SwiftUI
 struct HeadphoneCheckView: View {
     @StateObject private var monitor = HeadphoneMonitor()
     let levelId: String
-    @State private var navigateToQuiz = false
+    let onSuccess: () -> Void
 
     var body: some View {
         VStack(spacing: 40) {
@@ -42,9 +42,6 @@ struct HeadphoneCheckView: View {
             
         }
         .padding(40)
-        .navigationDestination(isPresented: $navigateToQuiz) {
-            QuizView(levelId: levelId)
-        }
         .onAppear {
             if monitor.isConnected {
                 proceedToQuiz()
@@ -63,11 +60,7 @@ struct HeadphoneCheckView: View {
     
     private func proceedToQuiz() {
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
-            self.navigateToQuiz = true
+            onSuccess()
         }
     }
-}
-
-#Preview("Connected") {
-    HeadphoneCheckView(levelId: "1")
 }

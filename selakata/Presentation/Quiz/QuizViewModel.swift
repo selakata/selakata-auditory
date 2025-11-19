@@ -155,6 +155,9 @@ class QuizViewModel: ObservableObject {
             return ""
         }
         
+        // Debug: Print RMS values
+        print("📊 Question RMS - Main: \(currentQuestion.mainRMS), Noise: \(currentQuestion.noiseRMS)")
+        
         // Try to get cached URL first
         if let cachedURL = cacheService.getCachedURL(for: audioURL) {
             return cachedURL.path
