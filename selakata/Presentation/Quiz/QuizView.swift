@@ -150,21 +150,42 @@ struct QuizView: View {
                 // Answers - only show when audio completed
                 VStack {
                     if audioCompleted {
-                        AnswerView(
-                            question: viewModel.currentQuestion,
-                            selectedAnswer: viewModel.selectedAnswer,
-                            hasAnswered: viewModel.hasAnswered,
-                            layout: .list,  //debug
-                            onSelect: { answer in
-                                withAnimation(.easeInOut(duration: 0.3)) {
-                                    viewModel.selectAnswer(answer)
+                        // Show different view based on question type
+                        if viewModel.currentQuestion.type == 2 {
+                            // Type 2: Fill in the blank
+                            FillInBlankView(
+                                question: viewModel.currentQuestion,
+                                userAnswer: $viewModel.userTextAnswer,
+                                hasAnswered: viewModel.hasAnswered,
+                                isCorrect: viewModel.hasAnswered ? viewModel.isTextAnswerCorrect : nil,
+                                onSubmit: {
+                                    withAnimation(.easeInOut(duration: 0.3)) {
+                                        viewModel.submitTextAnswer()
+                                    }
                                 }
-                            }
-                        )
-                        .padding(.horizontal)
-                        .transition(
-                            .move(edge: .bottom).combined(with: .opacity)
-                        )
+                            )
+                            .padding(.horizontal)
+                            .transition(
+                                .move(edge: .bottom).combined(with: .opacity)
+                            )
+                        } else {
+                            // Type 1: Multiple choice (default)
+                            AnswerView(
+                                question: viewModel.currentQuestion,
+                                selectedAnswer: viewModel.selectedAnswer,
+                                hasAnswered: viewModel.hasAnswered,
+                                layout: .list,
+                                onSelect: { answer in
+                                    withAnimation(.easeInOut(duration: 0.3)) {
+                                        viewModel.selectAnswer(answer)
+                                    }
+                                }
+                            )
+                            .padding(.horizontal)
+                            .transition(
+                                .move(edge: .bottom).combined(with: .opacity)
+                            )
+                        }
                     } else {
                         // Placeholder or instruction text
                         VStack(spacing: 16) {
@@ -220,7 +241,7 @@ struct QuizView: View {
                     correctAnswer: viewModel.correctAnswer,
                     totalQuestions: viewModel.totalQuestions,
                     repetitions: viewModel.totalReplayCount,
-                    averageResponseTime: viewModel.averageResponseTime,
+                    averageResponseTime: viewModel.averageResponseTimeString,
                     onRestart: {
                         viewModel.dismissResults()
                         viewModel.restartQuiz()

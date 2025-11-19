@@ -23,5 +23,5 @@ public struct AudioFile: Codable {
     let createdAt: String
     let updatedAt: String
     let updatedBy: String?
-    let compositions: [String]
+    let compositions: [String]?
 }
