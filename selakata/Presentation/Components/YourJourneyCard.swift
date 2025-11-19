@@ -1,9 +1,4 @@
-//
-//  YourJourneyCard.swift
-//  selakata
-//
 //  Created by Anisa Amalia on 16/11/25.
-//
 
 import SwiftUI
 
@@ -103,7 +98,7 @@ struct YourJourneyCard: View {
                         .frame(height: 150)
                         .background(Color(hex: 0xF6F6F6))
                     }
-                        
+                    
                     Divider()
                     
                     VStack(spacing: 16) {
@@ -115,7 +110,7 @@ struct YourJourneyCard: View {
                             }
                             .font(.footnote)
                             .foregroundStyle(.gray)
-
+                            
                             ProgressView(value: module.percentage)
                                 .progressViewStyle(.linear)
                                 .frame(height: 8)
@@ -135,7 +130,7 @@ struct YourJourneyCard: View {
                     .padding(20)
                     .background(Color.white)
                 }
-            
+                
             case .error(let message):
                 ErrorStateView(
                     title: "Couldn't Load Journey",
@@ -145,7 +140,7 @@ struct YourJourneyCard: View {
                     onRetry()
                 }
                 .padding()
-            
+                
             case .noModules:
                 Text("No modules are available right now.")
                     .padding()
