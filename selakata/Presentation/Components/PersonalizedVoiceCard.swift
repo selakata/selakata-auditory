@@ -9,16 +9,31 @@ import SwiftUI
 
 struct PersonalizedVoiceCard: View {
     let state: HomeViewModel.VoiceCardState
-    let backgroundAssetName = "voice-card-background"
+    let offBackground = "voice-card-background"
+    let activeBackground = "active-voice-card-background"
     
     var body: some View {
         ZStack {
-            Image(backgroundAssetName)
-                .resizable()
-                .aspectRatio(contentMode: .fill)
-                .background(Color.purple)
+            switch state {
+            case .loading:
+                Image(offBackground)
+                    .resizable()
+                    .aspectRatio(contentMode: .fill)
+            case .noVoice:
+                Image(offBackground)
+                    .resizable()
+                    .aspectRatio(contentMode: .fill)
+            case .voiceSelected(let name):
+                Image(activeBackground)
+                    .resizable()
+                    .aspectRatio(contentMode: .fill)
+            case .voiceOff:
+                Image(activeBackground)
+                    .resizable()
+                    .aspectRatio(contentMode: .fill)
+            }
 
-            VStack(alignment: .leading, spacing: 18) {
+            VStack(alignment: .leading) {
                 HStack(spacing: 4) {
                     Image(systemName: "mic.fill")
                     Text("Personalized Voice")
@@ -30,9 +45,10 @@ struct PersonalizedVoiceCard: View {
                     VStack(alignment: .leading, spacing: 18) {
                         SkeletonView(height: 22)
                             .frame(maxWidth: 200)
-                        SkeletonView(height: 34)
-                            .frame(width: 120)
+                        SkeletonView(height: 45)
+                            .frame(width: 150)
                     }
+                    .padding(.top, 18)
                 
                 case .noVoice:
                     VStack(alignment: .leading, spacing: 18) {
@@ -54,38 +70,35 @@ struct PersonalizedVoiceCard: View {
                             .padding(.vertical, 5)
                             .padding(.horizontal, 16)
                             .foregroundColor(.accent)
+                            .frame(width: 150, height: 45)
                             .background(Color(hex: 0xF9F8FE))
-                            .cornerRadius(8)
+                            .cornerRadius(10)
                     }
+                    .padding(.top, 8)
                     
                 case .voiceSelected(let name):
-                    VStack(alignment: .leading, spacing: 18) {
-                        Text("You're currently using this voice")
+                    HStack {
+                        Text(name)
                             .font(.headline)
                             .fontWeight(.bold)
-                            .frame(width: 224, alignment: .leading)
+                            .foregroundStyle(.white)
+                            .underline()
                         
-                        HStack {
-                            Text(name)
-                                .font(.title)
-                                .fontWeight(.bold)
-                                .foregroundStyle(.white)
-                                .underline()
+                        Spacer()
+                        
+                        ZStack {
+                            Circle()
+                                .fill(Color.white)
+                                .frame(width: 44, height: 44)
                             
-                            Spacer()
-                            
-                            Image(systemName: "arrow.right")
-                                .font(.system(size: 27, weight: .semibold))
+                            Image(systemName: "arrow.up.right")
+                                .font(.system(size: 20, weight: .semibold))
+                                .foregroundColor(Color.accentColor)
                         }
                     }
 
                 case .voiceOff:
                     VStack(alignment: .leading, spacing: 18) {
-                        Text("Personalized voice is off\nTap to choose voice")
-                            .font(.headline)
-                            .fontWeight(.bold)
-                            .frame(width: 224, alignment: .leading)
-                        
                         HStack {
                             Text("--")
                                 .font(.title)
@@ -94,8 +107,15 @@ struct PersonalizedVoiceCard: View {
                             
                             Spacer()
                             
-                            Image(systemName: "arrow.right")
-                                .font(.system(size: 27, weight: .semibold))
+                            ZStack {
+                                Circle()
+                                    .fill(Color.white)
+                                    .frame(width: 44, height: 44)
+                                
+                                Image(systemName: "arrow.up.right")
+                                    .font(.system(size: 20, weight: .semibold))
+                                    .foregroundColor(Color.accentColor)
+                            }
                         }
                     }
                 }
@@ -104,7 +124,7 @@ struct PersonalizedVoiceCard: View {
             .padding(20)
             .frame(maxWidth: .infinity, alignment: .leading)
         }
-        .frame(width: 345, height: 197)
+        .frame(width: 345, height: (state == .noVoice || state == .loading) ? 197 : 93)
         .cornerRadius(12)
     }
 }
