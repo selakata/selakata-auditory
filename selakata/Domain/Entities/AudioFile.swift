@@ -1,9 +1,4 @@
-//
-//  AudioFile.swift
-//  selakata
-//
 //  Created by ais on 12/11/25.
-//
 
 public struct AudioFile: Codable {
     let id: String
@@ -23,5 +18,4 @@ public struct AudioFile: Codable {
     let createdAt: String
     let updatedAt: String
     let updatedBy: String?
-    let compositions: [String]
 }
