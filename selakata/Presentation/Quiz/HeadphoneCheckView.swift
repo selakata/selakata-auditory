@@ -43,6 +43,7 @@ struct HeadphoneCheckView: View {
         }
         .padding(40)
         .onAppear {
+            proceedToQuiz()
             if monitor.isConnected {
                 proceedToQuiz()
             }

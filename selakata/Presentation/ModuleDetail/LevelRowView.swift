@@ -43,7 +43,7 @@ struct LevelRowView: View {
                         .foregroundColor(level.isUnlocked ? level.isPassed ? Color.white : Color.Primary._500 : Color.white)
                 }
                 
-                Text(level.label)
+                Text("Level \(level.value)")
                     .font(.title2)
                     .fontWeight(.semibold)
                     .foregroundColor(level.isUnlocked ? level.isPassed ? Color.Primary._500 : Color.white : Color(hex: 0xA5A5A5))

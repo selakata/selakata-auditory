@@ -4,7 +4,8 @@ struct QuizView: View {
     //   var level: Level
     //   var questionCategory: QuestionCategory
     @Environment(\.dismiss) private var dismiss
-
+    
+    @State private var showTipScreen = true
     @State private var audioCompleted: Bool = false
     @State private var hasPlayedOnce: Bool = false
     @State private var triggerReplay: Bool = false
@@ -78,7 +79,29 @@ struct QuizView: View {
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
         } else {
-            quizContent
+            ZStack {
+                quizContent
+            
+                if showTipScreen {
+                    QuizTipView(
+                        levelValue: viewModel.level?.value ?? 1,
+                        onDismissHardTip: {
+                            showTipScreen = false
+                        }
+                    )
+                    .opacity(viewModel.currentQuestionIndex == 0 ? 1 : 0)
+                    .onAppear {
+                        if viewModel.level?.value == 2 {
+                            showTipScreen = false
+                        }
+                    }
+                }
+            }
+            .onAppear {
+                if viewModel.currentQuestionIndex == 0 {
+                    showTipScreen = true
+                }
+            }
         }
     }
 
@@ -135,6 +158,7 @@ struct QuizView: View {
                         }
                         hasPlayedOnce = false
                         viewModel.incrementReplayCount()
+                        triggerReplay.toggle()
                     },
                     shouldReplay: triggerReplay,
                     autoPlay: !viewModel.isLoading && viewModel.isAudioReady,
@@ -150,21 +174,42 @@ struct QuizView: View {
                 // Answers - only show when audio completed
                 VStack {
                     if audioCompleted {
-                        AnswerView(
-                            question: viewModel.currentQuestion,
-                            selectedAnswer: viewModel.selectedAnswer,
-                            hasAnswered: viewModel.hasAnswered,
-                            layout: .list,  //debug
-                            onSelect: { answer in
-                                withAnimation(.easeInOut(duration: 0.3)) {
-                                    viewModel.selectAnswer(answer)
+                        // Show different view based on question type
+                        if viewModel.currentQuestion.type == 2 {
+                            // Type 2: Fill in the blank
+                            FillInBlankView(
+                                question: viewModel.currentQuestion,
+                                userAnswer: $viewModel.userTextAnswer,
+                                hasAnswered: viewModel.hasAnswered,
+                                isCorrect: viewModel.hasAnswered ? viewModel.isTextAnswerCorrect : nil,
+                                onSubmit: {
+                                    withAnimation(.easeInOut(duration: 0.3)) {
+                                        viewModel.submitTextAnswer()
+                                    }
                                 }
-                            }
-                        )
-                        .padding(.horizontal)
-                        .transition(
-                            .move(edge: .bottom).combined(with: .opacity)
-                        )
+                            )
+                            .padding(.horizontal)
+                            .transition(
+                                .move(edge: .bottom).combined(with: .opacity)
+                            )
+                        } else {
+                            // Type 1: Multiple choice (default)
+                            AnswerView(
+                                question: viewModel.currentQuestion,
+                                selectedAnswer: viewModel.selectedAnswer,
+                                hasAnswered: viewModel.hasAnswered,
+                                layout: .list,
+                                onSelect: { answer in
+                                    withAnimation(.easeInOut(duration: 0.3)) {
+                                        viewModel.selectAnswer(answer)
+                                    }
+                                }
+                            )
+                            .padding(.horizontal)
+                            .transition(
+                                .move(edge: .bottom).combined(with: .opacity)
+                            )
+                        }
                     } else {
                         // Placeholder or instruction text
                         VStack(spacing: 16) {
@@ -220,7 +265,7 @@ struct QuizView: View {
                     correctAnswer: viewModel.correctAnswer,
                     totalQuestions: viewModel.totalQuestions,
                     repetitions: viewModel.totalReplayCount,
-                    averageResponseTime: viewModel.averageResponseTime,
+                    averageResponseTime: viewModel.averageResponseTimeString,
                     onRestart: {
                         viewModel.dismissResults()
                         viewModel.restartQuiz()

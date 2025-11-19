@@ -11,6 +11,9 @@ class QuizViewModel: ObservableObject {
     @Published var showResults: Bool = false
     @Published var totalReplayCount: Int = 0
     
+    // Fill in the blank support
+    @Published var userTextAnswer: String = ""
+    
     // Response time tracking
     private var audioCompletedTime: Date?
     private var responseTimes: [TimeInterval] = []
@@ -233,14 +236,47 @@ class QuizViewModel: ObservableObject {
         }
     }
     
+    func submitTextAnswer() {
+        hasAnswered = true
+        
+        // Check if answer is correct (case-insensitive comparison)
+        let correctAnswerText = currentQuestion.answerList.first(where: { $0.isCorrect })?.text ?? ""
+        let isCorrect = userTextAnswer.lowercased().trimmingCharacters(in: .whitespacesAndNewlines) == 
+                       correctAnswerText.lowercased().trimmingCharacters(in: .whitespacesAndNewlines)
+        
+        if isCorrect {
+            correctAnswer += 1
+        }
+        
+        // Calculate response time
+        if let startTime = audioCompletedTime {
+            let responseTime = Date().timeIntervalSince(startTime)
+            responseTimes.append(responseTime)
+            print("⏱️ Response time: \(String(format: "%.2f", responseTime))s")
+        }
+        
+        print("📝 Text answer submitted: '\(userTextAnswer)' - Correct: \(isCorrect)")
+    }
+    
+    var isTextAnswerCorrect: Bool {
+        let correctAnswerText = currentQuestion.answerList.first(where: { $0.isCorrect })?.text ?? ""
+        return userTextAnswer.lowercased().trimmingCharacters(in: .whitespacesAndNewlines) == 
+               correctAnswerText.lowercased().trimmingCharacters(in: .whitespacesAndNewlines)
+    }
+    
     func startResponseTimer() {
         audioCompletedTime = Date()
         print("⏱️ Started response timer")
     }
     
-    var averageResponseTime: String {
-        guard !responseTimes.isEmpty else { return "0.0s" }
+    var averageResponseTime: Double {
+        guard !responseTimes.isEmpty else { return 0.0 }
         let average = responseTimes.reduce(0, +) / Double(responseTimes.count)
+        return average
+    }
+    
+    var averageResponseTimeString: String {
+        let average = averageResponseTime
         return String(format: "%.1fs", average)
     }
 
@@ -250,6 +286,7 @@ class QuizViewModel: ObservableObject {
         } else {
             currentQuestionIndex += 1
             selectedAnswer = nil
+            userTextAnswer = ""  // Reset text answer
             hasAnswered = false
             audioCompletedTime = nil // Reset timer for next question
         }
@@ -257,7 +294,7 @@ class QuizViewModel: ObservableObject {
 
     func showQuizResults() {
         showResults = true
-        levelUseCase.updateLevelScore(levelId: levelId, score: totalScore){ [weak self] result in
+        levelUseCase.updateLevelScore(levelId: levelId, score: totalScore, repetition: totalReplayCount, responseTime: averageResponseTime){ [weak self] result in
             DispatchQueue.main.async {
                 switch result {
                 case .success(let result):
@@ -272,6 +309,7 @@ class QuizViewModel: ObservableObject {
     func restartQuiz() {
         currentQuestionIndex = 0
         selectedAnswer = nil
+        userTextAnswer = ""  // Reset text answer
         hasAnswered = false
         correctAnswer = 0
         totalReplayCount = 0
