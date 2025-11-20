@@ -29,4 +29,17 @@ public class ProgressAPIConfiguration: BaseAPIConfiguration {
         
         return request
     }
+    
+    func makeGetReportRequest() -> URLRequest? {
+        guard let url = makeURL(path: "/user/report") else {
+            return nil
+        }
+        
+        var request = URLRequest(url: url)
+        request.httpMethod = "GET"
+        
+        request.setValue("application/json", forHTTPHeaderField: "Accept")
+        
+        return request
+    }
 }

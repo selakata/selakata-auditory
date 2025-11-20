@@ -1,10 +1,3 @@
-//
-//  ProgressDataSource.swift
-//  selakata
-//
-//  Created by Anisa Amalia on 12/11/25.
-//
-
 import Foundation
 
 public protocol ProgressDataSource {
@@ -12,4 +5,5 @@ public protocol ProgressDataSource {
         data: EarlyTestSubmitRequest,
         completion: @escaping (Result<EmptyResponse, Error>) -> Void
     )
+    func fetchReport(completion: @escaping (Result<ReportAPIResponse, Error>) -> Void)
 }
