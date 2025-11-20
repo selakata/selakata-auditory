@@ -14,7 +14,7 @@ class AppConfiguration: ConfigurationProtocol {
     }
     
     var apiKey: String {
-        return "sk_994189a535350d078eb3316a1900405e5199003656622f47"
+        return "sk_66796f5ffc287f74e18ada77e4fc524ef2b32aa476ec7140"
     }
     
     var localSelakataDataFilename: String {
