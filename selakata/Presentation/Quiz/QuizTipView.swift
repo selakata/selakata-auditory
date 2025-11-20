@@ -48,14 +48,13 @@ struct QuizTipView: View {
             }
             
         case 3:
-            VStack(alignment: .leading, spacing: 30) {
-                Spacer()
-                
+            VStack {
                 Image("no-replay-audio")
                     .resizable()
                     .scaledToFit()
                     .frame(width: 325, height: 325)
-//                    .padding(.trailing, 110)
+                    .padding(.top, 300)
+                    .padding(.trailing, 110)
                 
                 Spacer()
                 
@@ -64,6 +63,7 @@ struct QuizTipView: View {
                 }
                 .padding(.bottom, 40)
                 .padding(.horizontal, 24)
+                .frame(width: 350, height: 45)
             }
             .background(Color.white.ignoresSafeArea())
             .navigationBarBackButtonHidden(true)
