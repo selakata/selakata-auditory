@@ -22,8 +22,8 @@ public class LevelRepositoryImpl: LevelRepository {
         dataSource.fetchDetailLevel (levelId: levelId, voiceId: voiceId, completion: completion)
     }
     
-    public func updateLevelScore(levelId: String, score: Int, repetition: Int, responseTime: Double, completion: @escaping (Result<String, Error>) -> Void) {
-        dataSource.updateLevelScore(levelId: levelId, score: score, repetition: repetition, responseTime: responseTime, completion: completion)
+    public func updateLevelScore(updateLevel: UpdateLevel, completion: @escaping (Result<String, Error>) -> Void) {
+        dataSource.updateLevelScore(updateLevel: updateLevel, completion: completion)
     }
 }
 

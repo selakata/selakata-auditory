@@ -31,6 +31,7 @@ class QuizViewModel: ObservableObject {
     @Published var isAudioReady: Bool = false
     
     private var resultUpdateScore: String = ""
+    private var questionTracker: [QuestionTracker] = []
 
     init(levelUseCase: LevelUseCase, levelId: String) {
         self.levelUseCase = levelUseCase
@@ -228,6 +229,8 @@ class QuizViewModel: ObservableObject {
             correctAnswer += 1
         }
         
+        questionTracker.append(QuestionTracker(questionId: currentQuestion.id, isCorrect: answer.isCorrect))
+           
         // Calculate response time
         if let startTime = audioCompletedTime {
             let responseTime = Date().timeIntervalSince(startTime)
@@ -294,7 +297,8 @@ class QuizViewModel: ObservableObject {
 
     func showQuizResults() {
         showResults = true
-        levelUseCase.updateLevelScore(levelId: levelId, score: totalScore, repetition: totalReplayCount, responseTime: averageResponseTime){ [weak self] result in
+        let updateLevel = UpdateLevel(levelId: levelId, score: totalScore, repetition: totalReplayCount, responseTime: averageResponseTime, questions: questionTracker)
+        levelUseCase.updateLevelScore(updateLevel: updateLevel){ [weak self] result in
             DispatchQueue.main.async {
                 switch result {
                 case .success(let result):

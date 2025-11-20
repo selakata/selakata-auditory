@@ -5,7 +5,7 @@ public struct Question: Codable {
     let text: String
     let urutan: Int
     let mainRMS: Double
-    let noiseRMS: Double
+    let noiseRMS: Double?
     let isActive: Bool
     let snr: Double?
     let poin: Int?

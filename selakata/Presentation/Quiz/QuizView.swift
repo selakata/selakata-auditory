@@ -142,7 +142,7 @@ struct QuizView: View {
                     fileName: viewModel.audioFileName,
                     noiseFileName: viewModel.noiseFileName,
                     mainRMS: viewModel.currentQuestion.mainRMS,
-                    noiseRMS: viewModel.currentQuestion.noiseRMS,
+                    noiseRMS: viewModel.currentQuestion.noiseRMS!,
                     onAudioCompleted: {
                         print("📱 QuizView received audio completion callback")
                         withAnimation(.easeInOut(duration: 0.5)) {
