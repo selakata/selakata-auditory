@@ -16,6 +16,16 @@ class DependencyContainer {
         AppConfiguration()
     }()
     
+    // MARK: - Shared Repositories
+    private lazy var progressRepository: ProgressRepository = {
+        let apiConfiguration = ProgressAPIConfiguration(configuration: appConfiguration)
+        let dataSource: ProgressDataSource = RemoteProgressDataSource(
+            apiClient: apiClient,
+            apiConfiguration: apiConfiguration
+        )
+        return ProgressRepositoryImpl(dataSource: dataSource)
+    }()
+    
     // MARK: - Module Dependencies
     lazy var moduleUseCase: ModuleUseCase = {
         let apiConfiguration = ModuleAPIConfiguration(configuration: appConfiguration)
@@ -55,14 +65,11 @@ class DependencyContainer {
     }()
         
     lazy var submitEarlyTestUseCase: SubmitEarlyTestUseCase = {
-        let apiConfiguration = ProgressAPIConfiguration(configuration: appConfiguration)
-        let dataSource: ProgressDataSource = RemoteProgressDataSource(
-            apiClient: apiClient,
-            apiConfiguration: apiConfiguration
-        )
-        let repository = ProgressRepositoryImpl(dataSource: dataSource)
-        
-        return SubmitEarlyTestUseCase(repository: repository)
+        return SubmitEarlyTestUseCase(repository: progressRepository)
+    }()
+    
+    lazy var reportUseCase: ReportUseCase = {
+        return ReportUseCase(repository: progressRepository)
     }()
     
     
@@ -136,6 +143,10 @@ class DependencyContainer {
     
     func makeAuthenticationService() -> AuthenticationService {
         return AuthenticationService(authUseCase: authUseCase)
+    }
+    
+    func makeReportViewModel() -> ReportViewModel {
+        return ReportViewModel(reportUseCase: reportUseCase)
     }
     
     private init() {}
