@@ -35,8 +35,8 @@ public class RemoteLevelDataSource: LevelDataSource {
     }
     
     
-    public func updateLevelScore(levelId: String, score: Int, repetition: Int, responseTime: Double, completion: @escaping (Result<String, Error>) -> Void) {
-        guard let request = apiConfiguration.makeUpdateLevelScore(levelId: levelId, score: score, repetition: repetition, responseTime: responseTime) else {
+    public func updateLevelScore(updateLevel: UpdateLevel, completion: @escaping (Result<String, Error>) -> Void) {
+        guard let request = apiConfiguration.makeUpdateLevelScore(updateLevel: updateLevel) else {
             completion(.failure(NSError(domain: "", code: -1, userInfo: [NSLocalizedDescriptionKey: "Invalid URL"])))
             return
         }
