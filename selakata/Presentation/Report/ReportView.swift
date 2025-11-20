@@ -1,9 +1,14 @@
 import SwiftUI
 
 struct ReportView: View {
-    @StateObject private var viewModel = ReportViewModel()
-    @Environment(\.dismiss) private var dismiss
+    @StateObject private var viewModel: ReportViewModel
+    
+    init() {
+        let vm = DependencyContainer.shared.makeReportViewModel()
+        _viewModel = StateObject(wrappedValue: vm)
+    }
 
+    @Environment(\.dismiss) private var dismiss
     @State private var isShowingShareSheet: Bool = false
     @State private var itemsToShare: [Any] = []
 
@@ -62,7 +67,7 @@ struct ReportView: View {
                         StatRowCard(
                             icon: "photo",
                             title: "Typical SNR Level",
-                            value: viewModel.reportData.snrLevel != nil ? Double(viewModel.reportData.snrLevel!) : nil,
+                            value: viewModel.reportData.snrLevel,
                             unit: "db",
                             isLoading: viewModel.isLoading
                         )
@@ -70,7 +75,7 @@ struct ReportView: View {
                             icon: "photo",
                             title: "Repetition Rate",
                             value: viewModel.reportData.repetitionRate != nil ? Double(viewModel.reportData.repetitionRate!) : nil,
-                            unit: "%",
+                            unit: "",
                             isLoading: viewModel.isLoading
                         )
                         StatRowCard(
@@ -104,6 +109,9 @@ struct ReportView: View {
                 
             }
             .toolbar(.hidden, for: .tabBar)
+            .onAppear {
+                viewModel.fetchReportData()
+            }
         }
     }
 }
@@ -117,7 +125,7 @@ private struct PerformanceCard: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             Text(title)
-                .font(.app(.footnote))
+                .font(.footnote)
                 .foregroundStyle(.secondary)
                 .lineLimit(2)
                 .fixedSize(horizontal: false, vertical: true)

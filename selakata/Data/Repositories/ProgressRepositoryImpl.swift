@@ -20,4 +20,15 @@ public class ProgressRepositoryImpl: ProgressRepository {
     ) {
         dataSource.submitEarlyTest(data: data, completion: completion)
     }
+    
+    public func fetchReport(completion: @escaping (Result<ReportAPIData, Error>) -> Void) {
+        dataSource.fetchReport { result in
+            switch result {
+            case .success(let apiResponse):
+                completion(.success(apiResponse.data))
+            case .failure(let error):
+                completion(.failure(error))
+            }
+        }
+    }
 }

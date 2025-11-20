@@ -62,6 +62,10 @@ struct QuietPlaceGuideView: View {
 
 #Preview {
     class MockProgressDataSource: ProgressDataSource {
+        func fetchReport(completion: @escaping (Result<ReportAPIResponse, any Error>) -> Void) {
+            
+        }
+        
         func submitEarlyTest(data: EarlyTestSubmitRequest, completion: @escaping (Result<EmptyResponse, Error>)->Void) {
             completion(.success(EmptyResponse()))
         }
