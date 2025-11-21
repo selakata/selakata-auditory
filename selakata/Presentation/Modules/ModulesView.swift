@@ -69,7 +69,7 @@ struct ModulesView: View {
                 }
             }
             .padding(.top, 20)
-            .navigationTitle("Journey")
+            .navigationTitle("Module")
             .onAppear {
                 viewModel.refreshModules()
             }

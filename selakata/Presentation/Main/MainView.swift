@@ -17,7 +17,7 @@ struct MainView: View {
                 
                 ModulesView(viewModel: viewModel)
                     .tabItem {
-                        Label("Journey", systemImage: "flag")
+                        Label("Module", systemImage: "flag")
                     }
                 
                 ProfileView()

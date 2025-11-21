@@ -11,10 +11,10 @@ struct ModuleCard: View {
     
     var body: some View {
         ZStack(alignment: .bottomTrailing) {
-            Image(safe: "mascot-\(module.label.slugified)", default: "mascot")
+            Image(safe: module.isUnlocked ? "mascot-\(module.label.slugified)" : "icon-padlocks", default: "mascot")
                 .resizable()
                 .scaledToFit()
-                .frame(width: 130, height: 130)
+                .frame(width: 135, height: 135)
                 .alignmentGuide(.bottom) { d in d[.bottom] }
                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomTrailing)
             
@@ -25,13 +25,12 @@ struct ModuleCard: View {
                             Image("icon-lock")
                         }
                         Text(module.label)
-                            .font(.title2)
-                            .fontWeight(.bold)
+                            .font(.app(.headline).weight(.semibold))
                             .foregroundColor(Color.Default._700)
                     }
                     
                     Text(module.description)
-                        .font(.subheadline)
+                        .font(.app(.callout))
                         .foregroundColor(Color.Default._700)
                         .lineLimit(2)
                         .multilineTextAlignment(.leading)
@@ -47,8 +46,11 @@ struct ModuleCard: View {
             .padding(padding)
         }
         .frame(maxWidth: .infinity, minHeight: 150, maxHeight: 150, alignment: .leading)
-        .background(Color.Default._50)
         .cornerRadius(cornerRadius)
+        .overlay(
+            RoundedRectangle(cornerRadius: cornerRadius)
+                .stroke(Color.Default._200, lineWidth: 1)
+        )
         .overlay(
             Group {
                 if !module.isUnlocked {
@@ -61,20 +63,38 @@ struct ModuleCard: View {
 }
 
 #Preview {
-    ModuleCard(
-        module: Module(
-            id: "1",
-            label: "Discrimination",
-            value: 42,
-            description: "Tell the difference between similar sounds",
-            isActive: true,
-            createdAt: "",
-            updatedAt: "",
-            updatedBy: "",
-            isUnlocked: false,
-            percentage: 80.0
-        ),
-        showProgressBar: false
-    )
+    VStack(spacing: 20) {
+        ModuleCard(
+            module: Module(
+                id: "1",
+                label: "Comprehension",
+                value: 42,
+                description: "Listen to short sentences and answer the questions",
+                isActive: true,
+                createdAt: "",
+                updatedAt: "",
+                updatedBy: "",
+                isUnlocked: true,
+                percentage: 80.0
+            ),
+            showProgressBar: false
+        )
+        
+        ModuleCard(
+            module: Module(
+                id: "1",
+                label: "Comprehension",
+                value: 42,
+                description: "Listen to short sentences and answer the questions",
+                isActive: true,
+                createdAt: "",
+                updatedAt: "",
+                updatedBy: "",
+                isUnlocked: false,
+                percentage: 80.0
+            ),
+            showProgressBar: false
+        )
+    }
     .padding()
 }
