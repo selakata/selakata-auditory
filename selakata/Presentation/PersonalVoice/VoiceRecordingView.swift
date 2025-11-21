@@ -28,11 +28,19 @@ struct VoiceRecordingView: View {
         ScrollView {
             VStack(spacing: 0) {
                 HStack(spacing: 4) {
-                    TextField("Voice Name", text: $viewModel.voiceName)
-                        .font(.title2.weight(.bold))
-                        .multilineTextAlignment(.center)
-                        .focused($isNameFieldFocused)
-                        .fixedSize()
+                    ZStack {
+                        Text(viewModel.voiceName.isEmpty ? "Voice Name" : viewModel.voiceName)
+                            .font(.title2.weight(.bold))
+                            .opacity(0)
+                            .padding(.horizontal, 10)
+                            .layoutPriority(1)
+                        
+                        TextField("Voice Name", text: $viewModel.voiceName)
+                            .font(.title2.weight(.bold))
+                            .multilineTextAlignment(.center)
+                            .focused($isNameFieldFocused)
+                    }
+                    .fixedSize(horizontal: true, vertical: false)
                     
                     Image(systemName: "pencil")
                         .foregroundStyle(.secondary)
@@ -118,24 +126,29 @@ private struct IdleView: View {
                 .cornerRadius(16)
                 .padding(.horizontal)
             
+            Spacer(minLength: 20)
+            
             RoundedRectangle(cornerRadius: 10)
                 .frame(height: 100)
                 .padding(.horizontal)
                 .opacity(0)
             
-            Spacer(minLength: 20)
-            
-            Text("Tap the button to record and read the sentence loud")
+            Text("Tap the button to record and read\nthe sentence loud")
                 .font(.headline)
+                .multilineTextAlignment(.center)
 
             Spacer(minLength: 40)
             
             Button(action: {
                 viewModel.startRecording()
             }) {
-                Image(systemName: "mic.circle.fill")
+                Image(systemName: "circle.fill")
                     .font(.system(size: 80))
                     .foregroundStyle(.red)
+                    .overlay(
+                        Circle()
+                            .stroke(Color(hex: 0xE7E7E7), lineWidth: 2)
+                    )
             }
             .padding(.bottom, 40)
         }
@@ -168,9 +181,8 @@ private struct WaveformView: View {
             }
         }
         .frame(height: 100)
-        .padding(.horizontal, 10)
         .background(Color(.systemGray6))
-        .cornerRadius(10)
+        .cornerRadius(16)
         .padding(.horizontal)
     }
 }
@@ -183,8 +195,8 @@ private struct RecordingView: View {
     @Binding var audioLevels: [Float]
     
     var body: some View {
-        VStack(spacing: 0) {
-            Spacer()
+        VStack {
+            Spacer(minLength: 40)
             
             Text(viewModel.promptText)
                 .font(.title3)
@@ -198,7 +210,7 @@ private struct RecordingView: View {
 
             WaveformView(audioLevels: audioLevels, isRecording: true)
             
-            Text(timeDisplay)
+            Text(timeDisplay + "\n")
                 .font(.footnote.monospaced())
             
             Spacer(minLength: 40)
@@ -233,7 +245,7 @@ private struct ReviewView: View {
     
     var body: some View {
         VStack {
-            Spacer()
+            Spacer(minLength: 40)
             
             Text(viewModel.promptText)
                 .font(.title3)
@@ -313,12 +325,23 @@ private struct ErrorCardView: View {
         .padding(.horizontal)
     }
 }
-//#Preview {
-//    let container = try! ModelContainer(
-//        for: LocalAudioFile.self,
-//        configurations: ModelConfiguration(isStoredInMemoryOnly: true)
-//    )
-//    NavigationStack {
-//        VoiceRecordingView(isPresented: .constant(true), useCase: PersonalVoiceUseCase(repository: PersonalVoiceRepositoryImpl()), modelContext: container.mainContext)
-//    }
-//}
+#Preview {
+    let sharedModelContainer: ModelContainer = {
+        let schema = Schema([
+            // Voice.self, // <-- UNCOMMENT and replace with your actual Model class
+        ])
+        let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: true)
+
+        do {
+            return try ModelContainer(for: schema, configurations: [modelConfiguration])
+        } catch {
+            fatalError("Could not create ModelContainer: \(error)")
+        }
+    }()
+    
+    return VoiceRecordingView(
+        isPresented: .constant(true),
+        useCase: DependencyContainer.shared.personalVoiceUseCase,
+        modelContext: sharedModelContainer.mainContext
+    )
+}
