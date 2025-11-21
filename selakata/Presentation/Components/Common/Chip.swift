@@ -13,7 +13,7 @@ struct Chip: View {
         
         var textColor: Color {
             switch self {
-            case .primary: return Color(hex: 0x5E43E8)
+            case .primary: return Color.Primary._500
             case .secondary: return Color.gray
             case .danger: return Color.red
             }
@@ -34,17 +34,17 @@ struct Chip: View {
                 leftIcon
                     .resizable()
                     .scaledToFit()
-                    .frame(width: 14, height: 14)
+                    .frame(width: 13, height: 13)
             }
             
             Text(text)
-                .font(.footnote.weight(.semibold))
+                .font(.app(.footnote))
             
             if let rightIcon = rightIcon {
                 rightIcon
                     .resizable()
                     .scaledToFit()
-                    .frame(width: 14, height: 14)
+                    .frame(width: 13, height: 13)
             }
         }
         .foregroundColor(variant.textColor)

@@ -39,23 +39,21 @@ struct OnboardingView: View {
                     VStack(spacing: 24) {
                         
                         Text(pages[index].title)
-                            .font(.title3.bold())
+                            .font(.app(.subtitle))
                             .multilineTextAlignment(.center)
-                            .foregroundColor(.black)
+                            .foregroundColor(Color.Default._950)
                             .padding(.horizontal, 24)
                         
                         Image(pages[index].imageName)
                             .resizable()
                             .scaledToFit()
-                            .frame(height: 200)
-                            .foregroundColor(.gray.opacity(0.7))
-                            .padding(.horizontal, 40)
+                            .frame(height: 240)
                         
                     }
                     .tag(index)
                 }
             }
-            .frame(height: 320)
+            .frame(height: 400)
             .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
             .onAppear {
                 timerCancellable = timer.autoconnect().sink { _ in

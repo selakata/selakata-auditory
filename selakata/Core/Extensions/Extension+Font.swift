@@ -5,6 +5,7 @@ import SwiftUI
 enum AppFont {
     case largeTitle
     case title
+    case subtitle
     case headline
     case body
     case callout
@@ -17,6 +18,7 @@ enum AppFont {
         switch self {
         case .largeTitle: return .custom("DMSans-Bold", size: 34)
         case .title:      return .custom("DMSans-SemiBold", size: 28)
+        case .subtitle:   return .custom("DMSans-SemiBold", size: 24)
         case .headline:   return .custom("DMSans-Medium", size: 20)
         case .body:       return .custom("DMSans-Regular", size: 17)
         case .callout:    return .custom("DMSans-Regular", size: 12)
