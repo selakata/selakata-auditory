@@ -106,7 +106,7 @@ struct YourJourneyCard: View {
                             HStack {
                                 Text("Progress")
                                 Spacer()
-                                Text("\(Int(module.percentage * 100))% completed")
+                                Text("\(Int(module.percentage))% completed")
                             }
                             .font(.footnote)
                             .foregroundStyle(.gray)
@@ -168,7 +168,7 @@ struct YourJourneyCard: View {
         updatedAt: "",
         updatedBy: nil,
         isUnlocked: true,
-        percentage: 0.5
+        percentage: 50
     )
     
     YourJourneyCard(state: .newUser(firstModule: sampleModule), onRetry: {})
